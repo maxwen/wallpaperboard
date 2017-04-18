@@ -1,0 +1,47 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion '25.0.2'
+    defaultConfig {
+        applicationId "com.maxwen.wallpaper"
+        minSdkVersion rootProject.ext.MinSdk
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+        vectorDrawables.useSupportLibrary = true
+    }
+    signingConfigs {
+        config {
+            keyAlias 'AndroidKey'
+            keyPassword 'aididify'
+            storeFile file('/home/maxl/keystores/android.jks')
+            storePassword 'aididify'
+        }
+    }
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        //abortOnError false
+    }
+    dexOptions {
+        javaMaxHeapSize "2g"
+    }
+    productFlavors {
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.config
+        }
+        debug {
+            applicationIdSuffix '.debug'
+            versionNameSuffix ' DEBUG'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile project(':library')
+}

@@ -41,7 +41,7 @@
     <string name="dev_email"></string>
 
     <!-- Wallpaper json link -->
-    <string name="wallpaper_json">https://drive.google.com/uc?id=0B0f4ypHfNKm5ekphR1RZTWVPYWM</string>
+    <string name="wallpaper_json">http://www.maxwen.at/wallpaper/wallpaper_omni.json</string>
 
     <!-- Allow to download wallpaper
     * If disabled user only able to apply wallpaper from dashboard -->
@@ -132,7 +132,7 @@
 
     <!-- Contributors dialog
     * Take a look inside values/xml/contributors.xml to add contributors -->
-    <bool name="show_contributors_dialog">true</bool>
+    <bool name="show_contributors_dialog">false</bool>
 
     <!-- CONFIG: DONATE -->
 
@@ -140,7 +140,7 @@
     * Show support development option in navigation view
     * default: true
     * change to false to disable it -->
-    <bool name="enable_donation">true</bool>
+    <bool name="enable_donation">false</bool>
 
     <!-- Take a look inside License.java for donation product -->
 

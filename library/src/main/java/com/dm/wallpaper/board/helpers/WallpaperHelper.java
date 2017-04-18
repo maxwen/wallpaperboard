@@ -331,7 +331,35 @@ public class WallpaperHelper {
 
     public static void applyWallpaper(@NonNull Context context, @Nullable RectF rectF,
                                       @ColorInt int color, String url, String name) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            final MaterialDialog.Builder builder = new MaterialDialog.Builder(context);
+            builder.title(R.string.wallpaper_type_dialog_title)
+                    .widgetColor(color)
+                    .items(R.array.wallpaper_type_list)
+                    .itemsCallback(new MaterialDialog.ListCallback() {
+                        @Override
+                        public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                            int applyFlag = WallpaperManager.FLAG_LOCK | WallpaperManager.FLAG_SYSTEM;
+                            if (which == 1) {
+                                applyFlag = WallpaperManager.FLAG_SYSTEM;
+                            } else if (which == 2) {
+                                applyFlag = WallpaperManager.FLAG_LOCK;
+                            }
+                            doApplyWallpaper(context, rectF, color, url, name, applyFlag);
+                        }
+                    })
+                    .negativeText(android.R.string.cancel)
+                    .show();
+
+        } else {
+            doApplyWallpaper(context, rectF, color, url, name, -1);
+        }
+    }
+    public static void doApplyWallpaper(@NonNull Context context, @Nullable RectF rectF,
+                                      @ColorInt int color, String url, String name, int applyFlag) {
         final MaterialDialog.Builder builder = new MaterialDialog.Builder(context);
+
         builder.widgetColor(color)
                 .progress(true, 0)
                 .progressIndeterminateStyle(true)
@@ -341,13 +369,13 @@ public class WallpaperHelper {
         String imageUri = getWallpaperUri(context, url, name + FileHelper.IMAGE_EXTENSION);
 
         ImageSize imageSize = getScaledSize(context, url);
-        loadBitmap(context, dialog, 1, imageUri, rectF, imageSize);
+        loadBitmap(context, dialog, 1, imageUri, rectF, imageSize, applyFlag);
     }
 
     private static void loadBitmap(Context context, MaterialDialog dialog, int call, String imageUri,
-                                   RectF rectF, ImageSize imageSize) {
+                                   RectF rectF, ImageSize imageSize, int applyFlag) {
         final AsyncTask<Bitmap, Void, Boolean> setWallpaper = getWallpaperAsync(
-                context, dialog, rectF);
+                context, dialog, rectF, applyFlag);
 
         dialog.setOnDismissListener(dialogInterface -> {
             ImageLoader.getInstance().stop();
@@ -375,7 +403,7 @@ public class WallpaperHelper {
                                 int scaledHeight = Double.valueOf(imageSize.getHeight() * scaleFactor).intValue();
 
                                 RectF scaledRecF = getScaledRectF(rectF, (float) scaleFactor);
-                                loadBitmap(context, dialog, (call + 1), imageUri, scaledRecF, new ImageSize(scaledWidth, scaledHeight));
+                                loadBitmap(context, dialog, (call + 1), imageUri, scaledRecF, new ImageSize(scaledWidth, scaledHeight), applyFlag);
                                 return;
                             }
                         }
@@ -402,7 +430,7 @@ public class WallpaperHelper {
     }
 
     private static AsyncTask<Bitmap, Void, Boolean> getWallpaperAsync(@NonNull Context context, MaterialDialog dialog,
-                                                                      RectF rectF) {
+                                                                      RectF rectF, int applyFlag) {
         return new AsyncTask<Bitmap, Void, Boolean>() {
 
             @Override
@@ -435,7 +463,7 @@ public class WallpaperHelper {
                             }
 
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                manager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK | WallpaperManager.FLAG_SYSTEM);
+                                manager.setBitmap(bitmap, null, true, applyFlag);
                             } else {
                                 manager.setBitmap(bitmap);
                             }

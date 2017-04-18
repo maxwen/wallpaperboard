@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="wallpaper_type_dialog_title">Set wallpaper</string>
+    <string name="wallpaper_type_both">Home and lock screen</string>
+    <string name="wallpaper_type_system">Home screen only</string>
+    <string name="wallpaper_type_lock">Lock screen only</string>
+</resources>
