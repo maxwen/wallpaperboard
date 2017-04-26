@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -26,6 +27,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.URLUtil;
 import android.widget.ImageView;
@@ -41,7 +43,6 @@ import com.dm.wallpaper.board.fragments.AboutFragment;
 import com.dm.wallpaper.board.fragments.FavoritesFragment;
 import com.dm.wallpaper.board.fragments.SettingsFragment;
 import com.dm.wallpaper.board.fragments.WallpapersFragment;
-import com.dm.wallpaper.board.fragments.dialogs.InAppBillingFragment;
 import com.dm.wallpaper.board.helpers.ColorHelper;
 import com.dm.wallpaper.board.helpers.DrawableHelper;
 import com.dm.wallpaper.board.helpers.InAppBillingHelper;
@@ -98,6 +99,8 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
     DrawerLayout mDrawerLayout;
     @BindView(R2.id.appbar)
     AppBarLayout mAppBar;
+    @BindView(R2.id.navigation_bottom)
+    BottomNavigationView mBottomNavigationView;
 
     private BillingProcessor mBillingProcessor;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -105,7 +108,7 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
     private WallpaperBoardReceiver mReceiver;
 
     private String mFragmentTag;
-    private int mPosition, mLastPosition;
+    private int mPosition;
 
     private String mLicenseKey;
     private String[] mDonationProductsId;
@@ -140,16 +143,53 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
         ViewHelper.setupToolbar(toolbar, true);
         setSupportActionBar(toolbar);
 
+        mBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
+                if (id == R.id.navigation_view_wallpapers) {
+                    setMenuChecked(false);
+                    mPosition = 0;
+                    setFragment(getFragment(mPosition));
+                    item.setChecked(true);
+                    mToolbarTitle.setText(item.getTitle());
+                    return true;
+                }
+                if (id == R.id.navigation_view_favorites) {
+                    setMenuChecked(false);
+                    mPosition = 1;
+                    setFragment(getFragment(mPosition));
+                    item.setChecked(true);
+                    mToolbarTitle.setText(item.getTitle());
+                    return true;
+                }
+                /*if (id == R.id.menu_filter) {
+                    FilterFragment.showFilterDialog(WallpaperBoardActivity.this.getSupportFragmentManager(), false);
+                    item.setChecked(true);
+                    return true;
+                }*/
+                return false;
+            }
+        });
+
         initNavigationView(toolbar);
         initNavigationViewHeader();
         initInAppBilling();
 
-        mPosition = mLastPosition = 0;
+        mPosition = 0;
         if (savedInstanceState != null) {
-            mPosition = mLastPosition = savedInstanceState.getInt(Extras.EXTRA_POSITION, 0);
+            mPosition = savedInstanceState.getInt(Extras.EXTRA_POSITION, 0);
         }
-
+        setMenuChecked(false);
         setFragment(getFragment(mPosition));
+        MenuItem item = mBottomNavigationView.getMenu().findItem(mapPositionToMenuId());
+        if (item == null) {
+            item = mNavigationView.getMenu().findItem(mapPositionToMenuId());
+        }
+        if (item != null) {
+            item.setChecked(true);
+            mToolbarTitle.setText(item.getTitle());
+        }
 
         if (Preferences.getPreferences(this).isFirstRun() && isLicenseCheckerEnabled) {
             LicenseHelper.getLicenseChecker(this).checkLicense(mLicenseKey, salt);
@@ -210,8 +250,16 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
         }
 
         if (!mFragmentTag.equals(Extras.TAG_WALLPAPERS)) {
-            mPosition = mLastPosition = 0;
+            mPosition = 0;
             setFragment(getFragment(mPosition));
+            MenuItem item = mBottomNavigationView.getMenu().findItem(mapPositionToMenuId());
+            if (item == null) {
+                item = mNavigationView.getMenu().findItem(mapPositionToMenuId());
+            }
+            if (item != null) {
+                item.setChecked(true);
+                mToolbarTitle.setText(item.getTitle());
+            }
             return;
         }
         super.onBackPressed();
@@ -245,13 +293,13 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
     public void onWallpapersChecked(@Nullable Intent intent) {
         if (intent != null) {
             String packageName = intent.getStringExtra("packageName");
-            LogUtil.d("Broadcast received from service with packageName: " +packageName);
+            LogUtil.d("Broadcast received from service with packageName: " + packageName);
 
             if (packageName == null)
                 return;
 
             if (!packageName.equals(getPackageName())) {
-                LogUtil.d("Received broadcast from different packageName, expected: " +getPackageName());
+                LogUtil.d("Received broadcast from different packageName, expected: " + getPackageName());
                 return;
             }
 
@@ -262,7 +310,7 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
 
             if (size > offlineSize) {
                 int accent = ColorHelper.getAttributeColor(this, R.attr.colorAccent);
-                LinearLayout container = (LinearLayout) mNavigationView.getMenu().getItem(0).getActionView();
+                LinearLayout container = (LinearLayout) mBottomNavigationView.getMenu().findItem(R.id.navigation_view_wallpapers).getActionView();
                 if (container != null) {
                     TextView counter = (TextView) container.findViewById(R.id.counter);
                     if (counter == null) return;
@@ -284,7 +332,7 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
             }
         }
 
-        LinearLayout container = (LinearLayout) mNavigationView.getMenu().getItem(0).getActionView();
+        LinearLayout container = (LinearLayout) mBottomNavigationView.getMenu().getItem(0).getActionView();
         if (container != null) container.setVisibility(View.GONE);
     }
 
@@ -341,20 +389,7 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
-                if (mPosition == 4) {
-                    mPosition = mLastPosition;
-                    mNavigationView.getMenu().getItem(mPosition).setChecked(true);
-                    InAppBillingFragment.showInAppBillingDialog(mFragManager,
-                            mBillingProcessor,
-                            mLicenseKey,
-                            mDonationProductsId);
-                    return;
-                }
-
-                if (mPosition != mLastPosition) {
-                    mLastPosition = mPosition;
-                    setFragment(getFragment(mPosition));
-                }
+                setFragment(getFragment(mPosition));
             }
         };
 
@@ -375,6 +410,7 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
         mNavigationView.setItemBackground(background);
         mNavigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
+            setMenuChecked(false);
             if (id == R.id.navigation_view_wallpapers) mPosition = 0;
             else if (id == R.id.navigation_view_favorites) mPosition = 1;
             else if (id == R.id.navigation_view_settings) mPosition = 2;
@@ -382,6 +418,7 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
             else if (id == R.id.navigation_view_donate) mPosition = 4;
 
             item.setChecked(true);
+            mToolbarTitle.setText(item.getTitle());
             mDrawerLayout.closeDrawers();
             return true;
         });
@@ -393,7 +430,7 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
         View header = mNavigationView.getHeaderView(0);
         ImageView image = (ImageView) header.findViewById(R.id.header_image);
         LinearLayout container = (LinearLayout) header.findViewById(R.id.header_title_container);
-        TextView title = (TextView )header.findViewById(R.id.header_title);
+        TextView title = (TextView) header.findViewById(R.id.header_title);
         TextView version = (TextView) header.findViewById(R.id.header_version);
 
         if (titleText.length() == 0) {
@@ -404,7 +441,8 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
                 String versionText = "v" + getPackageManager()
                         .getPackageInfo(getPackageName(), 0).versionName;
                 version.setText(versionText);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
 
         if (ColorHelper.isValidColor(imageUrl)) {
@@ -479,9 +517,7 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
             ft.commitAllowingStateLoss();
         }
 
-        mNavigationView.getMenu().getItem(mPosition).setChecked(true);
         resetToolbarLogo();
-        mToolbarTitle.setText(mNavigationView.getMenu().getItem(mPosition).getTitle());
     }
 
     @Nullable
@@ -511,6 +547,30 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
         if (mFragManager.getBackStackEntryCount() > 0) {
             mFragManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             onSearchExpanded(false);
+        }
+    }
+
+    private int mapPositionToMenuId() {
+        switch (mPosition) {
+            case 0:
+                return R.id.navigation_view_wallpapers;
+            case 1:
+                return R.id.navigation_view_favorites;
+            case 2:
+                return R.id.navigation_view_settings;
+            case 3:
+                return R.id.navigation_view_about;
+        }
+        return R.id.navigation_view_wallpapers;
+    }
+
+    private void setMenuChecked(boolean value) {
+        MenuItem item = mBottomNavigationView.getMenu().findItem(mapPositionToMenuId());
+        if (item == null) {
+            item = mNavigationView.getMenu().findItem(mapPositionToMenuId());
+        }
+        if (item != null) {
+            item.setChecked(value);
         }
     }
 }

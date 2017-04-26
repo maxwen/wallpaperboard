@@ -30,10 +30,10 @@ import com.dm.wallpaper.board.R;
 import com.dm.wallpaper.board.R2;
 import com.dm.wallpaper.board.adapters.WallpapersAdapter;
 import com.dm.wallpaper.board.databases.Database;
-import com.dm.wallpaper.board.fragments.dialogs.FilterFragment;
 import com.dm.wallpaper.board.helpers.ColorHelper;
 import com.dm.wallpaper.board.helpers.DrawableHelper;
 import com.dm.wallpaper.board.helpers.ViewHelper;
+import com.dm.wallpaper.board.items.Category;
 import com.dm.wallpaper.board.items.Wallpaper;
 import com.dm.wallpaper.board.items.WallpaperJson;
 import com.dm.wallpaper.board.preferences.Preferences;
@@ -84,6 +84,7 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
 
     private WallpapersAdapter mAdapter;
     private AsyncTask<Void, Void, Boolean> mGetWallpapers;
+    private static final int MENU_CATEGORY_START = Integer.MAX_VALUE - 10;
 
     @Nullable
     @Override
@@ -165,10 +166,33 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.menu_filter) {
-            FilterFragment.showFilterDialog(getActivity().getSupportFragmentManager(), false);
+        List<Category> categories = new Database(getActivity()).getCategories();
+        for (Category c : categories) {
+            if (MENU_CATEGORY_START + c.getId() == id) {
+                Database database = new Database(getActivity());
+                item.setChecked(!item.isChecked());
+                database.selectCategory(c.getId(), item.isChecked());
+                filterWallpapers();
+                break;
+            }
         }
+        /*if (id == R.id.menu_filter) {
+            FilterFragment.showFilterDialog(getActivity().getSupportFragmentManager(), false);
+        }*/
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        List<Category> categories = new Database(getActivity()).getCategories();
+        for (Category c : categories) {
+            menu.removeItem(MENU_CATEGORY_START + c.getId());
+            MenuItem item = menu.add(Menu.NONE, MENU_CATEGORY_START + c.getId(), Menu.NONE, c.getName());
+            item.setCheckable(true);
+            item.setChecked(c.isSelected());
+        }
+
+        super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -226,7 +250,8 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
                 wallpapers = new ArrayList<>();
 
                 DrawMeButton popupBubble = (DrawMeButton) getActivity().findViewById(R.id.popup_bubble);
-                if (popupBubble.getVisibility() == View.VISIBLE) popupBubble.setVisibility(View.GONE);
+                if (popupBubble.getVisibility() == View.VISIBLE)
+                    popupBubble.setVisibility(View.GONE);
             }
 
             @Override
