@@ -28,21 +28,15 @@ public class Wallpaper {
     private String mCategory;
     private boolean mIsFavorite;
 
-    public Wallpaper(int id, String name, String author, String thumbUrl, String url, boolean isFavorite) {
+    public Wallpaper(int id, String name, String author, String thumbUrl, String url,
+                     String category, boolean isFavorite) {
         mId = id;
         mName = name;
         mAuthor = author;
         mThumbUrl = thumbUrl;
         mUrl = url;
-        mIsFavorite = isFavorite;
-    }
-
-    public Wallpaper(String name, String author, String thumbUrl, String url, String category) {
-        mName = name;
-        mAuthor = author;
-        mThumbUrl = thumbUrl;
-        mUrl = url;
         mCategory = category;
+        mIsFavorite = isFavorite;
     }
 
     public int getId() {

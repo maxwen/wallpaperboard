@@ -55,12 +55,17 @@ public class FavoritesFragment extends Fragment implements WallpaperListener {
     SwipeRefreshLayout mSwipe;
 
     private AsyncTask<Void, Void, Boolean> mGetWallpapers;
+    private List<Wallpaper> mWallpapers;
+    private WallpapersAdapter mAdapter;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_wallpapers, container, false);
         ButterKnife.bind(this, view);
+        mWallpapers = new ArrayList<Wallpaper>();
+        mAdapter = new WallpapersAdapter(getActivity(), mWallpapers, true, false);
+        mRecyclerView.setAdapter(mAdapter);
         return view;
     }
 
@@ -83,6 +88,8 @@ public class FavoritesFragment extends Fragment implements WallpaperListener {
         super.onConfigurationChanged(newConfig);
         ViewHelper.resetSpanCount(getActivity(), mRecyclerView);
         ViewHelper.resetViewBottomPadding(mRecyclerView, true);
+        // force reload aspect ratio for images
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override
@@ -99,15 +106,18 @@ public class FavoritesFragment extends Fragment implements WallpaperListener {
         mRecyclerView.scrollToPosition(position);
     }
 
+    public void filterWallpapers() {
+        if (mAdapter == null) return;
+        getWallpapers();
+    }
+
     private void getWallpapers() {
         mGetWallpapers = new AsyncTask<Void, Void, Boolean>() {
-
-            List<Wallpaper> wallpapers;
 
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                wallpapers = new ArrayList<>();
+                mWallpapers.clear();
             }
 
             @Override
@@ -116,7 +126,7 @@ public class FavoritesFragment extends Fragment implements WallpaperListener {
                     try {
                         Thread.sleep(1);
                         Database database = new Database(getActivity());
-                        wallpapers = database.getFavoriteWallpapers();
+                        mWallpapers.addAll(database.getFavoriteWallpapers());
                         return true;
                     } catch (Exception e) {
                         LogUtil.e(Log.getStackTraceString(e));
@@ -129,9 +139,7 @@ public class FavoritesFragment extends Fragment implements WallpaperListener {
             @Override
             protected void onPostExecute(Boolean aBoolean) {
                 super.onPostExecute(aBoolean);
-                if (aBoolean) {
-                    mRecyclerView.setAdapter(new WallpapersAdapter(getActivity(), wallpapers, true, false));
-                }
+                mAdapter.notifyDataSetChanged();
                 mGetWallpapers = null;
             }
         }.execute();

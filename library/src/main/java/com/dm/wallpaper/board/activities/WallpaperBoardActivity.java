@@ -26,9 +26,12 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.URLUtil;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -50,6 +53,7 @@ import com.dm.wallpaper.board.helpers.LicenseHelper;
 import com.dm.wallpaper.board.helpers.PermissionHelper;
 import com.dm.wallpaper.board.helpers.SoftKeyboardHelper;
 import com.dm.wallpaper.board.helpers.ViewHelper;
+import com.dm.wallpaper.board.items.Category;
 import com.dm.wallpaper.board.items.InAppBilling;
 import com.dm.wallpaper.board.preferences.Preferences;
 import com.dm.wallpaper.board.receivers.WallpaperBoardReceiver;
@@ -63,6 +67,8 @@ import com.dm.wallpaper.board.utils.listeners.WallpaperBoardListener;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -101,6 +107,8 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
     AppBarLayout mAppBar;
     @BindView(R2.id.navigation_bottom)
     BottomNavigationView mBottomNavigationView;
+
+    private static final int MENU_CATEGORY_START = Integer.MAX_VALUE - 10;
 
     private BillingProcessor mBillingProcessor;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -163,11 +171,31 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
                     mToolbarTitle.setText(item.getTitle());
                     return true;
                 }
-                /*if (id == R.id.menu_filter) {
-                    FilterFragment.showFilterDialog(WallpaperBoardActivity.this.getSupportFragmentManager(), false);
-                    item.setChecked(true);
-                    return true;
-                }*/
+                if (id == R.id.menu_filter) {
+                    final PopupMenu popup = new PopupMenu(WallpaperBoardActivity.this, ((ViewGroup)mBottomNavigationView.getChildAt(0)).getChildAt(2));
+                    fileCategoryMenu(popup.getMenu());
+                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        public boolean onMenuItemClick(MenuItem item) {
+                            item.setChecked(!item.isChecked());
+                            new Database(WallpaperBoardActivity.this).selectCategory(item.getItemId() - MENU_CATEGORY_START, item.isChecked());
+                            if (mPosition == 0) {
+                                WallpapersFragment fragment = (WallpapersFragment) mFragManager.findFragmentByTag(Extras.TAG_WALLPAPERS);
+                                if (fragment != null) {
+                                    fragment.filterWallpapers();
+                                }
+                            }
+                            if (mPosition == 1) {
+                                FavoritesFragment fragment = (FavoritesFragment) mFragManager.findFragmentByTag(Extras.TAG_FAVORITES);
+                                if (fragment != null) {
+                                    fragment.filterWallpapers();
+                                }
+                            }
+                            return true;
+                        }
+                    });
+                    popup.show();
+                    return false;
+                }
                 return false;
             }
         });
@@ -389,7 +417,9 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
-                setFragment(getFragment(mPosition));
+                if (mPosition >= 2 && mPosition <= 4) {
+                    setFragment(getFragment(mPosition));
+                }
             }
         };
 
@@ -571,6 +601,16 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
         }
         if (item != null) {
             item.setChecked(value);
+        }
+    }
+
+    public void fileCategoryMenu(Menu menu) {
+        List<Category> categories = new Database(this).getCategories();
+        for (Category c : categories) {
+            menu.removeItem(MENU_CATEGORY_START + c.getId());
+            MenuItem item = menu.add(Menu.NONE, MENU_CATEGORY_START + c.getId(), Menu.NONE, c.getName());
+            item.setCheckable(true);
+            item.setChecked(c.isSelected());
         }
     }
 }

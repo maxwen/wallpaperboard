@@ -135,7 +135,7 @@ public class ViewHelper {
 
         int left = view.getPaddingLeft();
         int right = view.getPaddingRight();
-        int bottom = view.getPaddingBottom();
+        int bottom = view.getPaddingBottom() + context.getResources().getDimensionPixelSize(R.dimen.bottom_nav_height);
         int top = view.getPaddingTop();
         int navBar = 0;
 

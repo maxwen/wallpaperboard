@@ -241,6 +241,7 @@ public class Database extends SQLiteOpenHelper {
                         cursor.getString(2),
                         cursor.getString(3),
                         cursor.getString(4),
+                        cursor.getString(5),
                         cursor.getInt(6) == 1);
                 wallpapers.add(wallpaper);
             } while (cursor.moveToNext());
@@ -258,11 +259,13 @@ public class Database extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 Wallpaper wallpaper = new Wallpaper(
+                        cursor.getInt(0),
                         cursor.getString(1),
                         cursor.getString(2),
                         cursor.getString(3),
                         cursor.getString(4),
-                        cursor.getString(5));
+                        cursor.getString(5),
+                        cursor.getInt(6) == 1);
                 wallpapers.add(wallpaper);
             } while (cursor.moveToNext());
         }
@@ -294,11 +297,13 @@ public class Database extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 wallpaper = new Wallpaper(
+                        cursor.getInt(0),
                         cursor.getString(1),
                         cursor.getString(2),
                         cursor.getString(3),
                         cursor.getString(4),
-                        cursor.getString(5));
+                        cursor.getString(5),
+                        cursor.getInt(6) == 1);
             } while (cursor.moveToNext());
         }
         cursor.close();
@@ -317,9 +322,30 @@ public class Database extends SQLiteOpenHelper {
 
     public List<Wallpaper> getFavoriteWallpapers() {
         List<Wallpaper> wallpapers = new ArrayList<>();
+        List<String> selected = getSelectedCategories(false);
+        List<String> selection = new ArrayList<>();
+        if (selected.size() == 0) return wallpapers;
+
+        StringBuilder CONDITION = new StringBuilder();
+        for (String item : selected) {
+            if (CONDITION.length() > 0 ) {
+                CONDITION.append(" OR ").append("LOWER(").append(KEY_CATEGORY).append(")").append(" LIKE ?");
+            } else {
+                CONDITION.append("LOWER(").append(KEY_CATEGORY).append(")").append(" LIKE ?");
+            }
+            selection.add("%" +item.toLowerCase(Locale.getDefault())+ "%");
+        }
+        CONDITION.append(" AND " + KEY_FAVORITE +" = ?");
+        selection.add("1");
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_WALLPAPERS, null, CONDITION.toString(),
+                selection.toArray(new String[selection.size()]),
+                null, null, KEY_ADDED_ON+ " DESC, " +KEY_ID);
+
+        /*List<Wallpaper> wallpapers = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_WALLPAPERS, null, KEY_FAVORITE +" = ?",
-                new String[]{"1"}, null, null, KEY_ADDED_ON+ " DESC, " +KEY_ID);
+                new String[]{"1"}, null, null, KEY_ADDED_ON+ " DESC, " +KEY_ID);*/
         if (cursor.moveToFirst()) {
             do {
                 Wallpaper wallpaper = new Wallpaper(
@@ -328,6 +354,7 @@ public class Database extends SQLiteOpenHelper {
                         cursor.getString(2),
                         cursor.getString(3),
                         cursor.getString(4),
+                        cursor.getString(5),
                         cursor.getInt(6) == 1);
                 wallpapers.add(wallpaper);
             } while (cursor.moveToNext());

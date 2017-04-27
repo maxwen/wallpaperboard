@@ -59,4 +59,5 @@
     <color name="wallpaperStatusBar">#AA000000</color>
     <color name="wallpaperToolbar">#66000000</color>
 
+    <color name="image_info_bg">#80ffffff</color>
 </resources>

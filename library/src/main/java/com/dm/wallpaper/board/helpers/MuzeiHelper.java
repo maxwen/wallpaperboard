@@ -55,11 +55,13 @@ public class MuzeiHelper {
                 if (size > 0) {
                     int position = getRandomInt(size);
                     return new Wallpaper(
+                            0,
                             wallpapers.getWallpapers.get(position).name,
                             wallpapers.getWallpapers.get(position).author,
                             wallpapers.getWallpapers.get(position).thumbUrl,
                             wallpapers.getWallpapers.get(position).url,
-                            wallpapers.getWallpapers.get(position).category);
+                            wallpapers.getWallpapers.get(position).category,
+                            false);
                 }
             }
             return null;
