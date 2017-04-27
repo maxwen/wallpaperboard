@@ -128,7 +128,7 @@ public class WallpapersAdapter extends RecyclerView.Adapter<WallpapersAdapter.Vi
         holder.category.setText(mWallpapers.get(position).getCategory());
 
         setFavorite(holder.favorite, ColorHelper.getAttributeColor(
-                mContext, android.R.attr.textColorPrimary), position);
+                mContext, android.R.attr.textColorPrimary), position, false);
 
         String url = WallpaperHelper.getThumbnailUrl(mContext,
                 mWallpapers.get(position).getUrl(),
@@ -174,7 +174,7 @@ public class WallpapersAdapter extends RecyclerView.Adapter<WallpapersAdapter.Vi
                                     holder.name.setTextColor(text);
                                     holder.author.setTextColor(text);
                                     holder.category.setTextColor(text);
-                                    setFavorite(holder.favorite, text, holder.getAdapterPosition());
+                                    setFavorite(holder.favorite, text, holder.getAdapterPosition(), false);
                                 });
                             }
                         } else {
@@ -183,7 +183,7 @@ public class WallpapersAdapter extends RecyclerView.Adapter<WallpapersAdapter.Vi
                             holder.name.setTextColor(color);
                             holder.author.setTextColor(color);
                             holder.category.setTextColor(color);
-                            setFavorite(holder.favorite, color, holder.getAdapterPosition());
+                            setFavorite(holder.favorite, color, holder.getAdapterPosition(), false);
                         }
                     }
                 }, null);
@@ -268,7 +268,7 @@ public class WallpapersAdapter extends RecyclerView.Adapter<WallpapersAdapter.Vi
                 }
 
                 mWallpapers.get(position).setFavorite(!mWallpapers.get(position).isFavorite());
-                setFavorite(favorite, name.getCurrentTextColor(), position);
+                setFavorite(favorite, name.getCurrentTextColor(), position, true);
 
                 CafeBar.builder(mContext)
                         .theme(new CafeBarTheme.Custom(ColorHelper.getAttributeColor(
@@ -305,7 +305,7 @@ public class WallpapersAdapter extends RecyclerView.Adapter<WallpapersAdapter.Vi
         }
     }
 
-    private void setFavorite(@NonNull ImageView imageView, @ColorInt int color, int position) {
+    private void setFavorite(@NonNull ImageView imageView, @ColorInt int color, int position, boolean write) {
         if (position < 0 || position > mWallpapers.size()) return;
 
         if (mIsFavoriteMode) {
@@ -320,8 +320,10 @@ public class WallpapersAdapter extends RecyclerView.Adapter<WallpapersAdapter.Vi
             color = ContextCompat.getColor(mContext, R.color.favoriteColor);
         imageView.setImageDrawable(DrawableHelper.getTintedDrawable(mContext,
                 isFavorite ? R.drawable.ic_toolbar_love : R.drawable.ic_toolbar_unlove, color));
-        Database database = new Database(mContext);
-        database.favoriteWallpaper(mWallpapers.get(position).getId(), isFavorite);
+        if (write) {
+            Database database = new Database(mContext);
+            database.favoriteWallpaper(mWallpapers.get(position).getId(), isFavorite);
+        }
     }
 
     public void filter() {
