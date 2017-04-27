@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -18,6 +17,8 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -30,6 +31,7 @@ import com.dm.wallpaper.board.adapters.WallpapersAdapter;
 import com.dm.wallpaper.board.databases.Database;
 import com.dm.wallpaper.board.helpers.ColorHelper;
 import com.dm.wallpaper.board.helpers.DrawableHelper;
+import com.dm.wallpaper.board.helpers.PreferencesHelper;
 import com.dm.wallpaper.board.helpers.SoftKeyboardHelper;
 import com.dm.wallpaper.board.helpers.ViewHelper;
 import com.dm.wallpaper.board.items.Wallpaper;
@@ -72,6 +74,11 @@ public class WallpaperSearchFragment extends Fragment implements WallpaperListen
     private SearchView mSearchView;
     private WallpapersAdapter mAdapter;
     private AsyncTask<Void, Void, Boolean> mGetWallpapers;
+    private ScaleGestureDetector mScaleGestureDetector;
+    private int mCurrentSpan;
+    private int mDefaultSpan;
+    private boolean mScaleInProgress;
+    private int mMaxSpan;
 
     @Nullable
     @Override
@@ -85,15 +92,65 @@ public class WallpaperSearchFragment extends Fragment implements WallpaperListen
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
-        ViewCompat.setNestedScrollingEnabled(mRecyclerView, false);
+        //ViewCompat.setNestedScrollingEnabled(mRecyclerView, false);
         ViewHelper.resetViewBottomPadding(mRecyclerView, false);
         mSwipe.setEnabled(false);
+        mDefaultSpan = getActivity().getResources().getInteger(R.integer.wallpapers_column_count);
+        mMaxSpan = getActivity().getResources().getInteger(R.integer.wallpapers_max_column_count);
+        PreferencesHelper p = new PreferencesHelper(getActivity());
+        mCurrentSpan = Math.min(p.getColumnSpanCount(mDefaultSpan), mMaxSpan);
 
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(),
-                getActivity().getResources().getInteger(R.integer.wallpapers_column_count)));
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), mCurrentSpan));
         mRecyclerView.setHasFixedSize(false);
 
+        //set scale gesture detector
+        mScaleGestureDetector = new ScaleGestureDetector(getActivity(), new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+            @Override
+            public boolean onScale(ScaleGestureDetector detector) {
+                if (detector.getCurrentSpan() > 200 && detector.getTimeDelta() > 200) {
+                    if (detector.getCurrentSpan() - detector.getPreviousSpan() < -1) {
+                        int span = Math.min(mCurrentSpan + 1, mDefaultSpan + 1);
+                        if (span != mCurrentSpan) {
+                            mCurrentSpan = span;
+                            ViewHelper.setSpanCountToColumns(getActivity(), mRecyclerView, mCurrentSpan);
+                            PreferencesHelper p = new PreferencesHelper(getActivity());
+                            p.setColumnSpanCount(mCurrentSpan);
+                        }
+                        return true;
+                    } else if (detector.getCurrentSpan() - detector.getPreviousSpan() > 1) {
+                        int span = Math.max(mCurrentSpan - 1, mDefaultSpan - 1);
+                        if (span != mCurrentSpan) {
+                            mCurrentSpan = span;
+                            ViewHelper.setSpanCountToColumns(getActivity(), mRecyclerView, mCurrentSpan);
+                            PreferencesHelper p = new PreferencesHelper(getActivity());
+                            p.setColumnSpanCount(mCurrentSpan);
+                        }
+                        ViewHelper.setSpanCountToColumns(getActivity(), mRecyclerView, mCurrentSpan);
+                        return true;
+                    }
+                }
+                return false;
+            }
+            @Override
+            public void onScaleEnd(ScaleGestureDetector detector) {
+                mScaleInProgress = false;
+                mRecyclerView.setNestedScrollingEnabled(true);
+            }
+            @Override
+            public boolean onScaleBegin(ScaleGestureDetector detector) {
+                mScaleInProgress = true;
+                mRecyclerView.setNestedScrollingEnabled(false);
+                return true;
+            }
+        });
+        mRecyclerView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                mScaleGestureDetector.onTouchEvent(event);
+                return false;
+            }
+        });
         getWallpapers();
     }
 
@@ -147,8 +204,15 @@ public class WallpaperSearchFragment extends Fragment implements WallpaperListen
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        ViewHelper.resetSpanCount(getActivity(), mRecyclerView);
+        mScaleInProgress = false;
+        mDefaultSpan = getActivity().getResources().getInteger(R.integer.wallpapers_column_count);
+        mMaxSpan = getActivity().getResources().getInteger(R.integer.wallpapers_max_column_count);
+        PreferencesHelper p = new PreferencesHelper(getActivity());
+        mCurrentSpan = Math.min(p.getColumnSpanCount(mDefaultSpan), mMaxSpan);
+        ViewHelper.setSpanCountToColumns(getActivity(), mRecyclerView, mCurrentSpan);
         ViewHelper.resetViewBottomPadding(mRecyclerView, false);
+        // force reload aspect ratio for images
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override
@@ -218,5 +282,10 @@ public class WallpaperSearchFragment extends Fragment implements WallpaperListen
                 }
             }
         }.execute();
+    }
+
+    @Override
+    public boolean isSelectEnabled() {
+        return !mScaleInProgress;
     }
 }

@@ -148,7 +148,7 @@ public class WallpapersAdapter extends RecyclerView.Adapter<WallpapersAdapter.Vi
                             holder.name.setTextColor(primary);
                             holder.author.setTextColor(primary);
                             holder.category.setTextColor(primary);
-                        }  else {
+                        } else {
                             int color = Color.WHITE;
                             holder.imageInfo.setBackgroundColor(mContext.getResources().getColor(R.color.image_info_bg));
                             holder.name.setTextColor(color);
@@ -217,7 +217,7 @@ public class WallpapersAdapter extends RecyclerView.Adapter<WallpapersAdapter.Vi
             super(itemView);
             ButterKnife.bind(this, itemView);
             container.setOnClickListener(this);
-            container.setOnLongClickListener(this);
+            //container.setOnLongClickListener(this);
             favorite.setOnClickListener(this);
         }
 
@@ -242,17 +242,9 @@ public class WallpapersAdapter extends RecyclerView.Adapter<WallpapersAdapter.Vi
                         sIsClickable = true;
                     }
 
-                    FragmentManager fm = ((AppCompatActivity) mContext).getSupportFragmentManager();
-                    if (fm != null) {
-                        Fragment fragment = fm.findFragmentById(R.id.container);
-                        if (fragment != null) {
-                            if (fragment instanceof WallpapersFragment ||
-                                    fragment instanceof FavoritesFragment ||
-                                    fragment instanceof WallpaperSearchFragment) {
-                                WallpaperListener listener = (WallpaperListener) fragment;
-                                listener.onWallpaperSelected(position);
-                            }
-                        }
+                    WallpaperListener listener = getWallpaperListener();
+                    if (listener != null) {
+                        listener.onWallpaperSelected(position);
                     }
                 }
             } else if (id == R.id.favorite) {
@@ -289,6 +281,12 @@ public class WallpapersAdapter extends RecyclerView.Adapter<WallpapersAdapter.Vi
             int id = view.getId();
             int position = getAdapterPosition();
             if (id == R.id.container) {
+                WallpaperListener listener = getWallpaperListener();
+                if (listener != null) {
+                    if (!listener.isSelectEnabled()) {
+                        return false;
+                    }
+                }
                 if (position < 0 || position > mWallpapers.size()) {
                     mLastSelectedPosition = -1;
                     return false;
@@ -357,5 +355,20 @@ public class WallpapersAdapter extends RecyclerView.Adapter<WallpapersAdapter.Vi
             }
         }
         notifyDataSetChanged();
+    }
+
+    private WallpaperListener getWallpaperListener() {
+        FragmentManager fm = ((AppCompatActivity) mContext).getSupportFragmentManager();
+        if (fm != null) {
+            Fragment fragment = fm.findFragmentById(R.id.container);
+            if (fragment != null) {
+                if (fragment instanceof WallpapersFragment ||
+                        fragment instanceof FavoritesFragment ||
+                        fragment instanceof WallpaperSearchFragment) {
+                    return (WallpaperListener) fragment;
+                }
+            }
+        }
+        return null;
     }
 }

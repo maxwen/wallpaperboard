@@ -11,6 +11,8 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -18,6 +20,7 @@ import com.dm.wallpaper.board.R;
 import com.dm.wallpaper.board.R2;
 import com.dm.wallpaper.board.adapters.WallpapersAdapter;
 import com.dm.wallpaper.board.databases.Database;
+import com.dm.wallpaper.board.helpers.PreferencesHelper;
 import com.dm.wallpaper.board.helpers.ViewHelper;
 import com.dm.wallpaper.board.items.Wallpaper;
 import com.dm.wallpaper.board.utils.LogUtil;
@@ -57,6 +60,11 @@ public class FavoritesFragment extends Fragment implements WallpaperListener {
     private AsyncTask<Void, Void, Boolean> mGetWallpapers;
     private List<Wallpaper> mWallpapers;
     private WallpapersAdapter mAdapter;
+    private ScaleGestureDetector mScaleGestureDetector;
+    private int mCurrentSpan;
+    private int mDefaultSpan;
+    private boolean mScaleInProgress;
+    private int mMaxSpan;
 
     @Nullable
     @Override
@@ -74,19 +82,74 @@ public class FavoritesFragment extends Fragment implements WallpaperListener {
         super.onActivityCreated(savedInstanceState);
         ViewHelper.resetViewBottomPadding(mRecyclerView, true);
         mSwipe.setEnabled(false);
+        mDefaultSpan = getActivity().getResources().getInteger(R.integer.wallpapers_column_count);
+        mMaxSpan = getActivity().getResources().getInteger(R.integer.wallpapers_max_column_count);
+        PreferencesHelper p = new PreferencesHelper(getActivity());
+        mCurrentSpan = Math.min(p.getColumnSpanCount(mDefaultSpan), mMaxSpan);
 
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(),
-                getActivity().getResources().getInteger(R.integer.wallpapers_column_count)));
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), mCurrentSpan));
         mRecyclerView.setHasFixedSize(false);
 
+        //set scale gesture detector
+        mScaleGestureDetector = new ScaleGestureDetector(getActivity(), new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+            @Override
+            public boolean onScale(ScaleGestureDetector detector) {
+                if (detector.getCurrentSpan() > 200 && detector.getTimeDelta() > 200) {
+                    if (detector.getCurrentSpan() - detector.getPreviousSpan() < -1) {
+                        int span = Math.min(mCurrentSpan + 1, mDefaultSpan + 1);
+                        if (span != mCurrentSpan) {
+                            mCurrentSpan = span;
+                            ViewHelper.setSpanCountToColumns(getActivity(), mRecyclerView, mCurrentSpan);
+                            PreferencesHelper p = new PreferencesHelper(getActivity());
+                            p.setColumnSpanCount(mCurrentSpan);
+                        }
+                        return true;
+                    } else if (detector.getCurrentSpan() - detector.getPreviousSpan() > 1) {
+                        int span = Math.max(mCurrentSpan - 1, mDefaultSpan - 1);
+                        if (span != mCurrentSpan) {
+                            mCurrentSpan = span;
+                            ViewHelper.setSpanCountToColumns(getActivity(), mRecyclerView, mCurrentSpan);
+                            PreferencesHelper p = new PreferencesHelper(getActivity());
+                            p.setColumnSpanCount(mCurrentSpan);
+                        }
+                        ViewHelper.setSpanCountToColumns(getActivity(), mRecyclerView, mCurrentSpan);
+                        return true;
+                    }
+                }
+                return false;
+            }
+            @Override
+            public void onScaleEnd(ScaleGestureDetector detector) {
+                mScaleInProgress = false;
+                mRecyclerView.setNestedScrollingEnabled(true);
+            }
+            @Override
+            public boolean onScaleBegin(ScaleGestureDetector detector) {
+                mScaleInProgress = true;
+                mRecyclerView.setNestedScrollingEnabled(false);
+                return true;
+            }
+        });
+        mRecyclerView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                mScaleGestureDetector.onTouchEvent(event);
+                return false;
+            }
+        });
         getWallpapers();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        ViewHelper.resetSpanCount(getActivity(), mRecyclerView);
+        mScaleInProgress = false;
+        mDefaultSpan = getActivity().getResources().getInteger(R.integer.wallpapers_column_count);
+        mMaxSpan = getActivity().getResources().getInteger(R.integer.wallpapers_max_column_count);
+        PreferencesHelper p = new PreferencesHelper(getActivity());
+        mCurrentSpan = Math.min(p.getColumnSpanCount(mDefaultSpan), mMaxSpan);
+        ViewHelper.setSpanCountToColumns(getActivity(), mRecyclerView, mCurrentSpan);
         ViewHelper.resetViewBottomPadding(mRecyclerView, true);
         // force reload aspect ratio for images
         mRecyclerView.setAdapter(mAdapter);
@@ -143,5 +206,10 @@ public class FavoritesFragment extends Fragment implements WallpaperListener {
                 mGetWallpapers = null;
             }
         }.execute();
+    }
+
+    @Override
+    public boolean isSelectEnabled() {
+        return !mScaleInProgress;
     }
 }

@@ -232,7 +232,7 @@ public class Database extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_WALLPAPERS, null, CONDITION.toString(),
                 selection.toArray(new String[selection.size()]),
-                null, null, KEY_ADDED_ON+ " DESC, " +KEY_ID);
+                null, null, KEY_CATEGORY);
         if (cursor.moveToFirst()) {
             do {
                 Wallpaper wallpaper = new Wallpaper(
@@ -255,7 +255,7 @@ public class Database extends SQLiteOpenHelper {
         List<Wallpaper> wallpapers = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_WALLPAPERS, null, null, null, null, null,
-                KEY_ADDED_ON+ " DESC, " +KEY_ID);
+                KEY_CATEGORY);
         if (cursor.moveToFirst()) {
             do {
                 Wallpaper wallpaper = new Wallpaper(
@@ -340,12 +340,7 @@ public class Database extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_WALLPAPERS, null, CONDITION.toString(),
                 selection.toArray(new String[selection.size()]),
-                null, null, KEY_ADDED_ON+ " DESC, " +KEY_ID);
-
-        /*List<Wallpaper> wallpapers = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_WALLPAPERS, null, KEY_FAVORITE +" = ?",
-                new String[]{"1"}, null, null, KEY_ADDED_ON+ " DESC, " +KEY_ID);*/
+                null, null, KEY_CATEGORY);
         if (cursor.moveToFirst()) {
             do {
                 Wallpaper wallpaper = new Wallpaper(

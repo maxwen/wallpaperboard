@@ -41,6 +41,7 @@ public class PreferencesHelper {
     private static final String KEY_WALLS_DIRECTORY = "wallpaper_directory";
     private static final String KEY_SCROLL_WALLPAPER = "scroll_wallpaper";
     private static final String KEY_AVAILABLE_WALLPAPERS_COUNT = "available_wallpapers_count";
+    private static final String KEY_COLUMN_SPAN_COUNT = "column_span_count";
 
     public PreferencesHelper(@NonNull Context context) {
         mContext = context;
@@ -147,5 +148,13 @@ public class PreferencesHelper {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public void setColumnSpanCount(int columnSpan) {
+        getSharedPreferences().edit().putInt(KEY_COLUMN_SPAN_COUNT, columnSpan).apply();
+    }
+
+    public int getColumnSpanCount(int defaultVale) {
+        return getSharedPreferences().getInt(KEY_COLUMN_SPAN_COUNT, defaultVale);
     }
 }

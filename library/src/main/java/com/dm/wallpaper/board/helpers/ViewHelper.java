@@ -89,6 +89,16 @@ public class ViewHelper {
         }
     }
 
+    public static void setSpanCountToColumns(@NonNull Context context, @NonNull RecyclerView recyclerView, int columns) {
+        try {
+            GridLayoutManager manager = (GridLayoutManager) recyclerView.getLayoutManager();
+            manager.setSpanCount(columns);
+            manager.requestLayout();
+        } catch (Exception e) {
+            LogUtil.e(Log.getStackTraceString(e));
+        }
+    }
+
     public static void resetSpanCount(@NonNull Context context, @NonNull RecyclerView recyclerView, @IntegerRes int res) {
         try {
             if (recyclerView.getLayoutManager() instanceof GridLayoutManager) {

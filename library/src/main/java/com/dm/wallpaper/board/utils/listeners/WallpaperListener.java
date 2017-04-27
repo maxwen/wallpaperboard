@@ -22,4 +22,5 @@ public interface WallpaperListener {
 
     void onWallpaperSelected(int position);
 
+    boolean isSelectEnabled();
 }
