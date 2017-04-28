@@ -15,8 +15,10 @@ import com.dm.wallpaper.board.items.Wallpaper;
 import com.dm.wallpaper.board.items.WallpaperJson;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /*
  * Wallpaper Board
@@ -214,6 +216,26 @@ public class Database extends SQLiteOpenHelper {
         return categories;
     }
 
+    public Map<String, Category> getCategoryMap() {
+        Map<String, Category> categories = new HashMap<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_CATEGORIES, null, null, null, null, null, KEY_NAME);
+        if (cursor.moveToFirst()) {
+            do {
+                Category category = new Category(
+                        cursor.getInt(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getInt(3) == 1,
+                        cursor.getInt(4) == 1);
+                categories.put(cursor.getString(1), category);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return categories;
+    }
+
     public List<Wallpaper> getFilteredWallpapers() {
         List<Wallpaper> wallpapers = new ArrayList<>();
         List<String> selected = getSelectedCategories(false);
@@ -251,6 +273,63 @@ public class Database extends SQLiteOpenHelper {
         return wallpapers;
     }
 
+    public List<Object> getFilteredWallpapersUnified() {
+        List<Object> wallpapers = new ArrayList<>();
+        List<String> selected = getSelectedCategories(false);
+        List<String> selection = new ArrayList<>();
+        if (selected.size() == 0) return wallpapers;
+        Map<String, Category> categoryMap = getCategoryMap();
+
+        StringBuilder CONDITION = new StringBuilder();
+        for (String item : selected) {
+            if (CONDITION.length() > 0 ) {
+                CONDITION.append(" OR ").append("LOWER(").append(KEY_CATEGORY).append(")").append(" LIKE ?");
+            } else {
+                CONDITION.append("LOWER(").append(KEY_CATEGORY).append(")").append(" LIKE ?");
+            }
+            selection.add("%" +item.toLowerCase(Locale.getDefault())+ "%");
+        }
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_WALLPAPERS, null, CONDITION.toString(),
+                selection.toArray(new String[selection.size()]),
+                null, null, KEY_CATEGORY);
+        if (cursor.moveToFirst()) {
+            String categoryName = cursor.getString(5);
+            Category category = new Category(
+                    0,
+                    categoryName,
+                    categoryMap.get(categoryName).getThumbUrl(),
+                    false,
+                    false);
+            wallpapers.add(category);
+            do {
+                String newCategoryName = cursor.getString(5);
+                if (!newCategoryName.equals(categoryName)) {
+                    categoryName = newCategoryName;
+                    category = new Category(
+                            0,
+                            newCategoryName,
+                            categoryMap.get(newCategoryName).getThumbUrl(),
+                            false,
+                            false);
+                    wallpapers.add(category);
+                }
+                Wallpaper wallpaper = new Wallpaper(
+                        cursor.getInt(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getString(3),
+                        cursor.getString(4),
+                        cursor.getString(5),
+                        cursor.getInt(6) == 1);
+                wallpapers.add(wallpaper);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return wallpapers;
+    }
+
     public List<Wallpaper> getWallpapers() {
         List<Wallpaper> wallpapers = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -258,6 +337,49 @@ public class Database extends SQLiteOpenHelper {
                 KEY_CATEGORY);
         if (cursor.moveToFirst()) {
             do {
+                Wallpaper wallpaper = new Wallpaper(
+                        cursor.getInt(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getString(3),
+                        cursor.getString(4),
+                        cursor.getString(5),
+                        cursor.getInt(6) == 1);
+                wallpapers.add(wallpaper);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return wallpapers;
+    }
+
+    public List<Object> getWallpapersUnified() {
+        List<Object> wallpapers = new ArrayList<>();
+        Map<String, Category> categoryMap = getCategoryMap();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_WALLPAPERS, null, null, null, null, null,
+                KEY_CATEGORY);
+        if (cursor.moveToFirst()) {
+            String categoryName = cursor.getString(5);
+            Category category = new Category(
+                    0,
+                    categoryName,
+                    categoryMap.get(categoryName).getThumbUrl(),
+                    false,
+                    false);
+            wallpapers.add(category);
+            do {
+                String newCategoryName = cursor.getString(5);
+                if (!newCategoryName.equals(categoryName)) {
+                    categoryName = newCategoryName;
+                    category = new Category(
+                            0,
+                            newCategoryName,
+                            categoryMap.get(newCategoryName).getThumbUrl(),
+                            false,
+                            false);
+                    wallpapers.add(category);
+                }
                 Wallpaper wallpaper = new Wallpaper(
                         cursor.getInt(0),
                         cursor.getString(1),
@@ -343,6 +465,65 @@ public class Database extends SQLiteOpenHelper {
                 null, null, KEY_CATEGORY);
         if (cursor.moveToFirst()) {
             do {
+                Wallpaper wallpaper = new Wallpaper(
+                        cursor.getInt(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getString(3),
+                        cursor.getString(4),
+                        cursor.getString(5),
+                        cursor.getInt(6) == 1);
+                wallpapers.add(wallpaper);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return wallpapers;
+    }
+
+    public List<Object> getFavoriteWallpapersUnified() {
+        List<Object> wallpapers = new ArrayList<>();
+        List<String> selected = getSelectedCategories(false);
+        List<String> selection = new ArrayList<>();
+        if (selected.size() == 0) return wallpapers;
+        Map<String, Category> categoryMap = getCategoryMap();
+
+        StringBuilder CONDITION = new StringBuilder();
+        for (String item : selected) {
+            if (CONDITION.length() > 0 ) {
+                CONDITION.append(" OR ").append("LOWER(").append(KEY_CATEGORY).append(")").append(" LIKE ?");
+            } else {
+                CONDITION.append("LOWER(").append(KEY_CATEGORY).append(")").append(" LIKE ?");
+            }
+            selection.add("%" +item.toLowerCase(Locale.getDefault())+ "%");
+        }
+        CONDITION.append(" AND " + KEY_FAVORITE +" = ?");
+        selection.add("1");
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_WALLPAPERS, null, CONDITION.toString(),
+                selection.toArray(new String[selection.size()]),
+                null, null, KEY_CATEGORY);
+        if (cursor.moveToFirst()) {
+            String categoryName = cursor.getString(5);
+            Category category = new Category(
+                    0,
+                    categoryName,
+                    categoryMap.get(categoryName).getThumbUrl(),
+                    false,
+                    false);
+            wallpapers.add(category);
+            do {
+                String newCategoryName = cursor.getString(5);
+                if (!newCategoryName.equals(categoryName)) {
+                    categoryName = newCategoryName;
+                    category = new Category(
+                            0,
+                            newCategoryName,
+                            categoryMap.get(newCategoryName).getThumbUrl(),
+                            false,
+                            false);
+                    wallpapers.add(category);
+                }
                 Wallpaper wallpaper = new Wallpaper(
                         cursor.getInt(0),
                         cursor.getString(1),

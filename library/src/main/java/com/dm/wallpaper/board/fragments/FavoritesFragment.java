@@ -19,10 +19,10 @@ import android.view.ViewGroup;
 import com.dm.wallpaper.board.R;
 import com.dm.wallpaper.board.R2;
 import com.dm.wallpaper.board.adapters.WallpapersAdapter;
+import com.dm.wallpaper.board.adapters.WallpapersAdapterUnified;
 import com.dm.wallpaper.board.databases.Database;
 import com.dm.wallpaper.board.helpers.PreferencesHelper;
 import com.dm.wallpaper.board.helpers.ViewHelper;
-import com.dm.wallpaper.board.items.Wallpaper;
 import com.dm.wallpaper.board.utils.LogUtil;
 import com.dm.wallpaper.board.utils.listeners.WallpaperListener;
 
@@ -58,8 +58,8 @@ public class FavoritesFragment extends Fragment implements WallpaperListener {
     SwipeRefreshLayout mSwipe;
 
     private AsyncTask<Void, Void, Boolean> mGetWallpapers;
-    private List<Wallpaper> mWallpapers;
-    private WallpapersAdapter mAdapter;
+    private List<Object> mWallpapers;
+    private WallpapersAdapterUnified mAdapter;
     private ScaleGestureDetector mScaleGestureDetector;
     private int mCurrentSpan;
     private int mDefaultSpan;
@@ -71,8 +71,8 @@ public class FavoritesFragment extends Fragment implements WallpaperListener {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_wallpapers, container, false);
         ButterKnife.bind(this, view);
-        mWallpapers = new ArrayList<Wallpaper>();
-        mAdapter = new WallpapersAdapter(getActivity(), mWallpapers, true, false);
+        mWallpapers = new ArrayList<Object>();
+        mAdapter = new WallpapersAdapterUnified(getActivity(), mWallpapers, true);
         mRecyclerView.setAdapter(mAdapter);
         return view;
     }
@@ -138,6 +138,18 @@ public class FavoritesFragment extends Fragment implements WallpaperListener {
                 return false;
             }
         });
+        ((GridLayoutManager)mRecyclerView.getLayoutManager()).setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                switch(mAdapter.getItemViewType(position)){
+                    case WallpapersAdapter.TYPE_HEADER:
+                        return mCurrentSpan;
+                    case WallpapersAdapter.TYPE_IMAGE:
+                        return 1;
+                }
+                return 1;
+            }
+        });
         getWallpapers();
     }
 
@@ -189,7 +201,7 @@ public class FavoritesFragment extends Fragment implements WallpaperListener {
                     try {
                         Thread.sleep(1);
                         Database database = new Database(getActivity());
-                        mWallpapers.addAll(database.getFavoriteWallpapers());
+                        mWallpapers.addAll(database.getFavoriteWallpapersUnified());
                         return true;
                     } catch (Exception e) {
                         LogUtil.e(Log.getStackTraceString(e));

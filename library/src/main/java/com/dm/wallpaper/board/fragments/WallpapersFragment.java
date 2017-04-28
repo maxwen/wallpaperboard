@@ -31,6 +31,7 @@ import com.bluelinelabs.logansquare.LoganSquare;
 import com.dm.wallpaper.board.R;
 import com.dm.wallpaper.board.R2;
 import com.dm.wallpaper.board.adapters.WallpapersAdapter;
+import com.dm.wallpaper.board.adapters.WallpapersAdapterUnified;
 import com.dm.wallpaper.board.databases.Database;
 import com.dm.wallpaper.board.helpers.ColorHelper;
 import com.dm.wallpaper.board.helpers.DrawableHelper;
@@ -84,7 +85,7 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
     @BindView(R2.id.progress)
     ProgressBar mProgress;
 
-    private WallpapersAdapter mAdapter;
+    private WallpapersAdapterUnified mAdapter;
     private AsyncTask<Void, Void, Boolean> mGetWallpapers;
     private ScaleGestureDetector mScaleGestureDetector;
     private int mCurrentSpan;
@@ -130,7 +131,7 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
         mScaleGestureDetector = new ScaleGestureDetector(getActivity(), new ScaleGestureDetector.SimpleOnScaleGestureListener() {
             @Override
             public boolean onScale(ScaleGestureDetector detector) {
-                if (detector.getCurrentSpan() > 200 && detector.getTimeDelta() > 200) {
+                if (detector.getCurrentSpan() > 100 && detector.getTimeDelta() > 200) {
                     if (detector.getCurrentSpan() - detector.getPreviousSpan() < -1) {
                         int span = Math.min(mCurrentSpan + 1, mDefaultSpan + 1);
                         if (span != mCurrentSpan) {
@@ -175,6 +176,19 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
             public boolean onTouch(View v, MotionEvent event) {
                 mScaleGestureDetector.onTouchEvent(event);
                 return false;
+            }
+        });
+
+        ((GridLayoutManager)mRecyclerView.getLayoutManager()).setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                switch(mAdapter.getItemViewType(position)){
+                    case WallpapersAdapter.TYPE_HEADER:
+                        return mCurrentSpan;
+                    case WallpapersAdapter.TYPE_IMAGE:
+                        return 1;
+                }
+                return 1;
             }
         });
         getWallpapers(false);
@@ -278,21 +292,21 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
 
     public void downloadWallpaper() {
         if (mAdapter == null) return;
-        mAdapter.downloadLastSelectedWallpaper();
+        //mAdapter.downloadLastSelectedWallpaper();
     }
 
     private void getWallpapers(boolean refreshing) {
         final String wallpaperUrl = getActivity().getResources().getString(R.string.wallpaper_json);
         mGetWallpapers = new AsyncTask<Void, Void, Boolean>() {
 
-            List<Wallpaper> wallpapers;
+            List<Object> wallpapersUnified;
 
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
                 if (!refreshing) mProgress.setVisibility(View.VISIBLE);
                 else mSwipe.setRefreshing(true);
-                wallpapers = new ArrayList<>();
+                wallpapersUnified = new ArrayList<>();
 
                 DrawMeButton popupBubble = (DrawMeButton) getActivity().findViewById(R.id.popup_bubble);
                 if (popupBubble.getVisibility() == View.VISIBLE)
@@ -306,7 +320,7 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
                         Thread.sleep(1);
                         Database database = new Database(getActivity());
                         if (!refreshing && database.getWallpapersCount() > 0) {
-                            wallpapers = database.getFilteredWallpapers();
+                            wallpapersUnified = database.getFilteredWallpapersUnified();
                             return true;
                         }
 
@@ -321,7 +335,7 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
                             if (wallpapersJson == null) return false;
                             if (refreshing) {
                                 if (database.getWallpapersCount() > 0) {
-                                    wallpapers = database.getWallpapers();
+                                    List<Wallpaper> wallpapers = database.getWallpapers();
                                     List<Wallpaper> newWallpapers = new ArrayList<>();
                                     for (WallpaperJson wallpaper : wallpapersJson.getWallpapers) {
                                         newWallpapers.add(new Wallpaper(
@@ -348,7 +362,7 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
 
                                     Preferences.getPreferences(getActivity()).setAvailableWallpapersCount(
                                             database.getWallpapersCount());
-                                    wallpapers = database.getFilteredWallpapers();
+                                    wallpapersUnified = database.getFilteredWallpapersUnified();
                                     return true;
                                 }
                             }
@@ -358,7 +372,7 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
 
                             database.addCategories(wallpapersJson.getCategories);
                             database.addWallpapers(wallpapersJson);
-                            wallpapers = database.getFilteredWallpapers();
+                            wallpapersUnified = database.getFilteredWallpapersUnified();
                             return true;
                         }
                         return false;
@@ -377,7 +391,7 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
                 mProgress.setVisibility(View.GONE);
                 if (aBoolean) {
                     setHasOptionsMenu(true);
-                    mAdapter = new WallpapersAdapter(getActivity(), wallpapers, false, false);
+                    mAdapter = new WallpapersAdapterUnified(getActivity(), wallpapersUnified, false);
                     mRecyclerView.setAdapter(mAdapter);
 
                     WallpaperBoardListener listener = (WallpaperBoardListener) getActivity();
