@@ -16,10 +16,6 @@
             android:id="@+id/recyclerview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingTop="@dimen/card_margin_top"
-            android:paddingStart="@dimen/card_margin_left"
-            android:paddingLeft="@dimen/card_margin_left"
-            android:paddingBottom="@dimen/card_margin_bottom"
             android:clipToPadding="false"
             android:scrollbars="vertical"
             android:scrollbarThumbVertical="?attr/colorAccent"
@@ -68,4 +64,10 @@
         android:layout_height="@dimen/toolbar_shadow"
         android:background="@drawable/toolbar_shadow" />
 
+    <View
+        android:id="@+id/reveal_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:visibility="gone"/>
 </FrameLayout>

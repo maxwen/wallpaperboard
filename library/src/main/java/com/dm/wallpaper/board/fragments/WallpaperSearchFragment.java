@@ -34,6 +34,7 @@ import com.dm.wallpaper.board.helpers.DrawableHelper;
 import com.dm.wallpaper.board.helpers.PreferencesHelper;
 import com.dm.wallpaper.board.helpers.SoftKeyboardHelper;
 import com.dm.wallpaper.board.helpers.ViewHelper;
+import com.dm.wallpaper.board.items.Category;
 import com.dm.wallpaper.board.items.Wallpaper;
 import com.dm.wallpaper.board.utils.LogUtil;
 import com.dm.wallpaper.board.utils.listeners.WallpaperListener;
@@ -108,7 +109,7 @@ public class WallpaperSearchFragment extends Fragment implements WallpaperListen
         mScaleGestureDetector = new ScaleGestureDetector(getActivity(), new ScaleGestureDetector.SimpleOnScaleGestureListener() {
             @Override
             public boolean onScale(ScaleGestureDetector detector) {
-                if (detector.getCurrentSpan() > 200 && detector.getTimeDelta() > 200) {
+                if (detector.getTimeDelta() > 200 && Math.abs(detector.getCurrentSpan() - detector.getPreviousSpan()) > 100) {
                     if (detector.getCurrentSpan() - detector.getPreviousSpan() < -1) {
                         int span = Math.min(mCurrentSpan + 1, mDefaultSpan + 1);
                         if (span != mCurrentSpan) {
@@ -227,6 +228,10 @@ public class WallpaperSearchFragment extends Fragment implements WallpaperListen
         if (position < 0 || position > mAdapter.getItemCount()) return;
 
         mRecyclerView.scrollToPosition(position);
+    }
+
+    @Override
+    public void onCategorySelected(int position, View v, Category c) {
     }
 
     private void filterSearch(String query) {

@@ -63,14 +63,14 @@
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-        <android.support.design.widget.BottomNavigationView
+        <com.dm.wallpaper.board.fragments.widgets.BottomNavigationViewNew
             android:id="@+id/navigation_bottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:background="?android:attr/windowBackground"
-            app:menu="@menu/bottom_navigation_view"
-            app:layout_behavior="com.dm.wallpaper.board.activities.BottomNavigationBehavior"/>
+            app:menu="@menu/bottom_navigation_view" />
+        <!--app:layout_behavior="com.dm.wallpaper.board.activities.BottomNavigationBehavior"-->
 
     </android.support.design.widget.CoordinatorLayout>
 

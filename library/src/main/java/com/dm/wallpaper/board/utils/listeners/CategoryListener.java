@@ -18,16 +18,10 @@ package com.dm.wallpaper.board.utils.listeners;
  * limitations under the License.
  */
 
-import android.view.View;
-
 import com.dm.wallpaper.board.items.Category;
 
-public interface WallpaperListener {
+public interface CategoryListener {
 
-    void onWallpaperSelected(int position);
-
-    boolean isSelectEnabled();
-
-    void onCategorySelected(int position, View v, Category c);
+    void onCategorySelected(Category c);
 
 }

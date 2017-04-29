@@ -216,6 +216,60 @@ public class Database extends SQLiteOpenHelper {
         return categories;
     }
 
+    public List<Object> getCategoriesUnified() {
+        List<Object> categories = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_CATEGORIES, null, null, null, null, null, KEY_NAME);
+        if (cursor.moveToFirst()) {
+            do {
+                Category category = new Category(
+                        cursor.getInt(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getInt(3) == 1,
+                        cursor.getInt(4) == 1);
+                categories.add(category);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return categories;
+    }
+
+    public List<Object> getFilteredCategoriesUnified() {
+        List<Object> categories = new ArrayList<>();
+        List<String> selected = getSelectedCategories(false);
+        List<String> selection = new ArrayList<>();
+        if (selected.size() == 0) return categories;
+
+        StringBuilder CONDITION = new StringBuilder();
+        for (String item : selected) {
+            if (CONDITION.length() > 0 ) {
+                CONDITION.append(" OR ").append("LOWER(").append(KEY_NAME).append(")").append(" LIKE ?");
+            } else {
+                CONDITION.append("LOWER(").append(KEY_NAME).append(")").append(" LIKE ?");
+            }
+            selection.add("%" +item.toLowerCase(Locale.getDefault())+ "%");
+        }
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_CATEGORIES, null, CONDITION.toString(),
+                selection.toArray(new String[selection.size()]), null, null, KEY_NAME);
+        if (cursor.moveToFirst()) {
+            do {
+                Category category = new Category(
+                        cursor.getInt(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getInt(3) == 1,
+                        cursor.getInt(4) == 1);
+                categories.add(category);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return categories;
+    }
+
     public Map<String, Category> getCategoryMap() {
         Map<String, Category> categories = new HashMap<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -561,5 +615,73 @@ public class Database extends SQLiteOpenHelper {
         db.delete("SQLITE_SEQUENCE", "NAME = ?", new String[]{TABLE_CATEGORIES});
         db.delete(TABLE_CATEGORIES, null, null);
         db.close();
+    }
+
+    @Nullable
+    public List<Wallpaper> getWallpapersOfCatgegory(String category) {
+        List<Wallpaper> wallpapers = new ArrayList<>();
+        List<String> selection = new ArrayList<>();
+
+        StringBuilder CONDITION = new StringBuilder();
+        CONDITION.append("LOWER(").append(KEY_CATEGORY).append(")").append(" LIKE ?");
+        selection.add("%" +category.toLowerCase(Locale.getDefault())+ "%");
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_WALLPAPERS, null, CONDITION.toString(),
+                selection.toArray(new String[selection.size()]), null, null, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+                Wallpaper wallpaper = new Wallpaper(
+                        cursor.getInt(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getString(3),
+                        cursor.getString(4),
+                        cursor.getString(5),
+                        cursor.getInt(6) == 1);
+                wallpapers.add(wallpaper);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return wallpapers;
+    }
+
+    @Nullable
+    public List<Object> getWallpapersOfCatgegoryUnified(String category) {
+        List<Object> wallpapers = new ArrayList<>();
+        List<String> selection = new ArrayList<>();
+        Map<String, Category> categoryMap = getCategoryMap();
+
+        StringBuilder CONDITION = new StringBuilder();
+        CONDITION.append("LOWER(").append(KEY_CATEGORY).append(")").append(" LIKE ?");
+        selection.add("%" +category.toLowerCase(Locale.getDefault())+ "%");
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_WALLPAPERS, null, CONDITION.toString(),
+                selection.toArray(new String[selection.size()]), null, null, null, null);
+        if (cursor.moveToFirst()) {
+            Category c = new Category(
+                    0,
+                    category,
+                    categoryMap.get(category).getThumbUrl(),
+                    false,
+                    false);
+            wallpapers.add(c);
+            do {
+                Wallpaper wallpaper = new Wallpaper(
+                        cursor.getInt(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getString(3),
+                        cursor.getString(4),
+                        cursor.getString(5),
+                        cursor.getInt(6) == 1);
+                wallpapers.add(wallpaper);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return wallpapers;
     }
 }

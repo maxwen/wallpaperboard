@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <integer name="wallpapers_column_count">2</integer>
-    <integer name="wallpapers_max_column_count">3</integer>
+    <integer name="wallpapers_max_column_count">4</integer>
+    <integer name="wallpapers_min_column_count">1</integer>
     <integer name="about_column_count">1</integer>
-    <integer name="height_ratio">15</integer>
-    <integer name="width_ratio">10</integer>
+    <integer name="height_ratio">1</integer>
+    <integer name="width_ratio">1</integer>
 </resources>

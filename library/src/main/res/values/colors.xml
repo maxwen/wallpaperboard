@@ -60,5 +60,5 @@
     <color name="wallpaperToolbar">#66000000</color>
 
     <color name="image_info_bg">#80ffffff</color>
-    <color name="category_card_background">@color/colorAccent</color>
+    <color name="category_card_background">@android:color/white</color>
 </resources>

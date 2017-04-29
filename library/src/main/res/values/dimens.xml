@@ -6,13 +6,18 @@
 
     <!-- Card Global -->
     <dimen name="card_padding_bottom">4dp</dimen>
-    <dimen name="card_elevation">2dp</dimen>
-    <dimen name="card_margin_right">4dp</dimen>
-    <dimen name="card_margin_left">4dp</dimen>
-    <dimen name="card_margin_top">4dp</dimen>
-    <dimen name="card_margin_bottom">4dp</dimen>
-    <dimen name="card_corner_radius">2dp</dimen>
+    <dimen name="card_elevation">0dp</dimen>
 
+    <dimen name="card_margin_right">0dp</dimen>
+    <dimen name="card_margin_left">0dp</dimen>
+    <dimen name="card_margin_top">0dp</dimen>
+    <dimen name="card_margin_bottom">0dp</dimen>
+    <dimen name="card_corner_radius">0dp</dimen>
+
+    <dimen name="card_category_margin_right">0dp</dimen>
+    <dimen name="card_category_margin_left">0dp</dimen>
+    <dimen name="card_category_margin_top">0dp</dimen>
+    <dimen name="card_category_margin_bottom">0dp</dimen>
     <!-- FAB -->
     <dimen name="fab_size">56dp</dimen>
 

@@ -1,9 +1,5 @@
-package com.dm.wallpaper.board.utils.listeners;
-
 /*
- * Wallpaper Board
- *
- * Copyright (c) 2017 Dani Mahardhika
+ * Copyright (C) 2016 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,16 +14,12 @@ package com.dm.wallpaper.board.utils.listeners;
  * limitations under the License.
  */
 
-import android.view.View;
+package com.dm.wallpaper.board.fragments.widgets;
 
-import com.dm.wallpaper.board.items.Category;
+import android.view.ViewGroup;
 
-public interface WallpaperListener {
-
-    void onWallpaperSelected(int position);
-
-    boolean isSelectEnabled();
-
-    void onCategorySelected(int position, View v, Category c);
-
+class BottomNavigationAnimationHelperBase {
+    void beginDelayedTransition(ViewGroup view) {
+        // Do nothing.
+    }
 }

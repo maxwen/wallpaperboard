@@ -10,6 +10,10 @@
             android:icon="@drawable/ic_drawer_wallpapers"
             android:title="@string/navigation_view_wallpapers" />
         <item
+            android:id="@+id/navigation_view_categories"
+            android:icon="@drawable/ic_drawer_categories"
+            android:title="@string/navigation_view_categories" />
+        <item
             android:id="@+id/navigation_view_favorites"
             android:icon="@drawable/ic_drawer_favorites"
             android:title="@string/navigation_view_favorites" />

@@ -37,6 +37,7 @@ import com.dm.wallpaper.board.helpers.ColorHelper;
 import com.dm.wallpaper.board.helpers.DrawableHelper;
 import com.dm.wallpaper.board.helpers.PreferencesHelper;
 import com.dm.wallpaper.board.helpers.ViewHelper;
+import com.dm.wallpaper.board.items.Category;
 import com.dm.wallpaper.board.items.Wallpaper;
 import com.dm.wallpaper.board.items.WallpaperJson;
 import com.dm.wallpaper.board.preferences.Preferences;
@@ -84,6 +85,8 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
     SwipeRefreshLayout mSwipe;
     @BindView(R2.id.progress)
     ProgressBar mProgress;
+    //@BindView(R2.id.reveal_bg)
+    //View mRevealBg;
 
     private WallpapersAdapterUnified mAdapter;
     private AsyncTask<Void, Void, Boolean> mGetWallpapers;
@@ -91,7 +94,9 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
     private int mCurrentSpan;
     private int mDefaultSpan;
     private int mMaxSpan;
+    private int mMinSpan;
     private boolean mScaleInProgress;
+    private boolean mCategoryMode;
 
     @Nullable
     @Override
@@ -110,11 +115,12 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
                 getActivity(), R.attr.colorAccent), PorterDuff.Mode.SRC_IN);
         mDefaultSpan = getActivity().getResources().getInteger(R.integer.wallpapers_column_count);
         mMaxSpan = getActivity().getResources().getInteger(R.integer.wallpapers_max_column_count);
+        mMinSpan = getActivity().getResources().getInteger(R.integer.wallpapers_min_column_count);
         PreferencesHelper p = new PreferencesHelper(getActivity());
         mCurrentSpan = Math.min(p.getColumnSpanCount(mDefaultSpan), mMaxSpan);
 
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), mCurrentSpan));
+        mRecyclerView.setLayoutManager(new WallpaperGridLayoutManager(getActivity(), mCurrentSpan));
         mRecyclerView.setHasFixedSize(false);
 
         mSwipe.setColorSchemeColors(ColorHelper.getAttributeColor(
@@ -131,9 +137,9 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
         mScaleGestureDetector = new ScaleGestureDetector(getActivity(), new ScaleGestureDetector.SimpleOnScaleGestureListener() {
             @Override
             public boolean onScale(ScaleGestureDetector detector) {
-                if (detector.getCurrentSpan() > 100 && detector.getTimeDelta() > 200) {
+                if (detector.getTimeDelta() > 200 && Math.abs(detector.getCurrentSpan() - detector.getPreviousSpan()) > 100) {
                     if (detector.getCurrentSpan() - detector.getPreviousSpan() < -1) {
-                        int span = Math.min(mCurrentSpan + 1, mDefaultSpan + 1);
+                        int span = Math.min(mCurrentSpan + 1, mMaxSpan);
                         if (span != mCurrentSpan) {
                             mCurrentSpan = span;
                             ViewHelper.setSpanCountToColumns(getActivity(), mRecyclerView, mCurrentSpan);
@@ -142,7 +148,7 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
                         }
                         return true;
                     } else if (detector.getCurrentSpan() - detector.getPreviousSpan() > 1) {
-                        int span = Math.max(mCurrentSpan - 1, mDefaultSpan - 1);
+                        int span = Math.max(mCurrentSpan - 1, mMinSpan);
                         if (span != mCurrentSpan) {
                             mCurrentSpan = span;
                             ViewHelper.setSpanCountToColumns(getActivity(), mRecyclerView, mCurrentSpan);
@@ -159,14 +165,12 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
             @Override
             public void onScaleEnd(ScaleGestureDetector detector) {
                 mScaleInProgress = false;
-                mSwipe.setEnabled(true);
                 mRecyclerView.setNestedScrollingEnabled(true);
             }
 
             @Override
             public boolean onScaleBegin(ScaleGestureDetector detector) {
                 mScaleInProgress = true;
-                mSwipe.setEnabled(false);
                 mRecyclerView.setNestedScrollingEnabled(false);
                 return true;
             }
@@ -179,10 +183,10 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
             }
         });
 
-        ((GridLayoutManager)mRecyclerView.getLayoutManager()).setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+        ((GridLayoutManager) mRecyclerView.getLayoutManager()).setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                switch(mAdapter.getItemViewType(position)){
+                switch (mAdapter.getItemViewType(position)) {
                     case WallpapersAdapter.TYPE_HEADER:
                         return mCurrentSpan;
                     case WallpapersAdapter.TYPE_IMAGE:
@@ -198,9 +202,9 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mScaleInProgress = false;
-        mSwipe.setEnabled(true);
         mDefaultSpan = getActivity().getResources().getInteger(R.integer.wallpapers_column_count);
         mMaxSpan = getActivity().getResources().getInteger(R.integer.wallpapers_max_column_count);
+        mMinSpan = getActivity().getResources().getInteger(R.integer.wallpapers_min_column_count);
         PreferencesHelper p = new PreferencesHelper(getActivity());
         mCurrentSpan = Math.min(p.getColumnSpanCount(mDefaultSpan), mMaxSpan);
         ViewHelper.setSpanCountToColumns(getActivity(), mRecyclerView, mCurrentSpan);
@@ -268,6 +272,69 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
         mRecyclerView.scrollToPosition(position);
     }
 
+    @Override
+    public void onCategorySelected(int position, View v, Category c) {
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        if (fm == null) return;
+
+        CategoryFragment cf = new CategoryFragment();
+        cf.setCategory(c);
+        FragmentTransaction ft = fm.beginTransaction()
+                .replace(R.id.container, cf, Extras.TAG_CATEGORY)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .addToBackStack(null);
+        try {
+            ft.commit();
+        } catch (Exception e) {
+            ft.commitAllowingStateLoss();
+        }
+
+        /*int[] coords = new int[2];
+        v.getLocationOnScreen(coords);
+        final Point viewPoint = new Point(coords[0] + v.getWidth() / 2, coords[1]);
+
+        int width = getContext().getResources().getDisplayMetrics().widthPixels;
+        int height = getContext().getResources().getDisplayMetrics().heightPixels;
+        int cx = viewPoint.x;
+        int cy = viewPoint.y;
+        float finalRadius = (float) Math.sqrt(width * width + height * height);
+        mRevealBg.setVisibility(View.VISIBLE);
+        android.animation.Animator anim = ViewAnimationUtils.createCircularReveal(mRevealBg, cx, cy, 0, finalRadius);
+        anim.addListener(new android.animation.Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(android.animation.Animator animation) {
+                CategoryFragment cf = new CategoryFragment();
+                cf.setCategory(c);
+                cf.setTouchPoint(viewPoint);
+                FragmentTransaction ft = fm.beginTransaction()
+                        .replace(R.id.container, cf, Extras.TAG_CATEGORY)
+                        //.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                        .addToBackStack(null);
+                try {
+                    ft.commit();
+                } catch (Exception e) {
+                    ft.commitAllowingStateLoss();
+                }
+            }
+
+            @Override
+            public void onAnimationEnd(android.animation.Animator animation) {
+                mRevealBg.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationCancel(android.animation.Animator animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(android.animation.Animator animation) {
+            }
+        });
+        anim.setDuration(1500);
+        anim.setInterpolator(new LinearInterpolator());
+        anim.start();*/
+    }
+
     public void initPopupBubble() {
         int wallpapersCount = new Database(getActivity()).getWallpapersCount();
         if (wallpapersCount == 0) return;
@@ -320,7 +387,11 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
                         Thread.sleep(1);
                         Database database = new Database(getActivity());
                         if (!refreshing && database.getWallpapersCount() > 0) {
-                            wallpapersUnified = database.getFilteredWallpapersUnified();
+                            if (mCategoryMode) {
+                                wallpapersUnified = database.getFilteredCategoriesUnified();
+                            } else {
+                                wallpapersUnified = database.getFilteredWallpapersUnified();
+                            }
                             return true;
                         }
 
@@ -362,7 +433,11 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
 
                                     Preferences.getPreferences(getActivity()).setAvailableWallpapersCount(
                                             database.getWallpapersCount());
-                                    wallpapersUnified = database.getFilteredWallpapersUnified();
+                                    if (mCategoryMode) {
+                                        wallpapersUnified = database.getFilteredCategoriesUnified();
+                                    } else {
+                                        wallpapersUnified = database.getFilteredWallpapersUnified();
+                                    }
                                     return true;
                                 }
                             }
@@ -372,7 +447,11 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
 
                             database.addCategories(wallpapersJson.getCategories);
                             database.addWallpapers(wallpapersJson);
-                            wallpapersUnified = database.getFilteredWallpapersUnified();
+                            if (mCategoryMode) {
+                                wallpapersUnified = database.getFilteredCategoriesUnified();
+                            } else {
+                                wallpapersUnified = database.getFilteredWallpapersUnified();
+                            }
                             return true;
                         }
                         return false;
@@ -392,6 +471,7 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
                 if (aBoolean) {
                     setHasOptionsMenu(true);
                     mAdapter = new WallpapersAdapterUnified(getActivity(), wallpapersUnified, false);
+                    mAdapter.setCategoryMode(mCategoryMode);
                     mRecyclerView.setAdapter(mAdapter);
 
                     WallpaperBoardListener listener = (WallpaperBoardListener) getActivity();
@@ -408,5 +488,9 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
     @Override
     public boolean isSelectEnabled() {
         return !mScaleInProgress;
+    }
+
+    public void setCategoryMode(boolean value) {
+        mCategoryMode = value;
     }
 }

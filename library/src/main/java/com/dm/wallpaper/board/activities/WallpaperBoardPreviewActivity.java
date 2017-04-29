@@ -31,7 +31,6 @@ import com.danimahardhika.cafebar.CafeBar;
 import com.danimahardhika.cafebar.CafeBarTheme;
 import com.dm.wallpaper.board.R;
 import com.dm.wallpaper.board.R2;
-import com.dm.wallpaper.board.adapters.WallpapersAdapter;
 import com.dm.wallpaper.board.fragments.dialogs.WallpaperSettingsFragment;
 import com.dm.wallpaper.board.helpers.ColorHelper;
 import com.dm.wallpaper.board.helpers.DrawableHelper;
@@ -225,7 +224,6 @@ public class WallpaperBoardPreviewActivity extends AppCompatActivity implements 
 
     @Override
     public void onBackPressed() {
-        WallpapersAdapter.sIsClickable = true;
         if (mHandler != null && mRunnable != null)
             mHandler.removeCallbacks(mRunnable);
         if (mExitTransition != null) mExitTransition.exit(this);

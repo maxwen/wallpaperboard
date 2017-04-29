@@ -1,6 +1,7 @@
 package com.dm.wallpaper.board.fragments;
 
 import android.content.res.Configuration;
+import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,12 +20,13 @@ import android.view.ViewGroup;
 import com.dm.wallpaper.board.R;
 import com.dm.wallpaper.board.R2;
 import com.dm.wallpaper.board.adapters.WallpapersAdapter;
+import com.dm.wallpaper.board.adapters.WallpapersAdapterUnified;
 import com.dm.wallpaper.board.databases.Database;
 import com.dm.wallpaper.board.helpers.PreferencesHelper;
 import com.dm.wallpaper.board.helpers.ViewHelper;
 import com.dm.wallpaper.board.items.Category;
-import com.dm.wallpaper.board.items.Wallpaper;
 import com.dm.wallpaper.board.utils.LogUtil;
+import com.dm.wallpaper.board.utils.listeners.CategoryListener;
 import com.dm.wallpaper.board.utils.listeners.WallpaperListener;
 
 import java.util.ArrayList;
@@ -51,7 +53,7 @@ import butterknife.ButterKnife;
  * limitations under the License.
  */
 
-public class FavoritesFragment extends Fragment implements WallpaperListener {
+public class CategoryFragment extends Fragment implements WallpaperListener {
 
     @BindView(R2.id.recyclerview)
     RecyclerView mRecyclerView;
@@ -59,13 +61,23 @@ public class FavoritesFragment extends Fragment implements WallpaperListener {
     SwipeRefreshLayout mSwipe;
 
     private AsyncTask<Void, Void, Boolean> mGetWallpapers;
-    private List<Wallpaper> mWallpapers;
-    private WallpapersAdapter mAdapter;
+    private List<Object> mWallpapers;
+    private WallpapersAdapterUnified mAdapter;
     private ScaleGestureDetector mScaleGestureDetector;
     private int mCurrentSpan;
     private int mDefaultSpan;
     private boolean mScaleInProgress;
     private int mMaxSpan;
+    private Category mCategory;
+    private Point mTouchPoint = new Point(0, 0);
+
+    public void setCategory(Category c) {
+        mCategory = c;
+    }
+
+    public void setTouchPoint(Point p) {
+        mTouchPoint = p;
+    }
 
     @Nullable
     @Override
@@ -73,8 +85,45 @@ public class FavoritesFragment extends Fragment implements WallpaperListener {
         View view = inflater.inflate(R.layout.fragment_wallpapers, container, false);
         ButterKnife.bind(this, view);
         mWallpapers = new ArrayList<>();
-        mAdapter = new WallpapersAdapter(getActivity(), mWallpapers, true, false);
+        mAdapter = new WallpapersAdapterUnified(getActivity(), mWallpapers, false);
         mRecyclerView.setAdapter(mAdapter);
+        CategoryListener listener = (CategoryListener) getActivity();
+        listener.onCategorySelected(mCategory);
+
+        /*view.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                v.removeOnLayoutChangeListener(this);
+                int width = getContext().getResources().getDisplayMetrics().widthPixels;
+                int height = getContext().getResources().getDisplayMetrics().heightPixels;
+                int cx = mTouchPoint.x;
+                int cy = mTouchPoint.y;
+                float finalRadius = (float) Math.sqrt(width * width + height * height);
+                Animator anim = ViewAnimationUtils.createCircularReveal(v, cx, cy, 0, finalRadius);
+                anim.setDuration(1500);
+                anim.setInterpolator(new LinearInterpolator());
+                anim.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        CategoryListener listener = (CategoryListener) getActivity();
+                        listener.onCategorySelected(mCategory);
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+                    }
+                });
+                anim.start();
+            }
+        });*/
         return view;
     }
 
@@ -139,6 +188,18 @@ public class FavoritesFragment extends Fragment implements WallpaperListener {
                 return false;
             }
         });
+        ((GridLayoutManager)mRecyclerView.getLayoutManager()).setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                switch(mAdapter.getItemViewType(position)){
+                    case WallpapersAdapter.TYPE_HEADER:
+                        return mCurrentSpan;
+                    case WallpapersAdapter.TYPE_IMAGE:
+                        return 1;
+                }
+                return 1;
+            }
+        });
         getWallpapers();
     }
 
@@ -174,11 +235,6 @@ public class FavoritesFragment extends Fragment implements WallpaperListener {
     public void onCategorySelected(int position, View v, Category c) {
     }
 
-    public void filterWallpapers() {
-        if (mAdapter == null) return;
-        getWallpapers();
-    }
-
     private void getWallpapers() {
         mGetWallpapers = new AsyncTask<Void, Void, Boolean>() {
 
@@ -194,7 +250,7 @@ public class FavoritesFragment extends Fragment implements WallpaperListener {
                     try {
                         Thread.sleep(1);
                         Database database = new Database(getActivity());
-                        mWallpapers.addAll(database.getFavoriteWallpapers());
+                        mWallpapers.addAll(database.getWallpapersOfCatgegoryUnified(mCategory.getName()));
                         return true;
                     } catch (Exception e) {
                         LogUtil.e(Log.getStackTraceString(e));

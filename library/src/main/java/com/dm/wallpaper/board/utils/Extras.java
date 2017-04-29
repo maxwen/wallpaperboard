@@ -25,6 +25,8 @@ public class Extras {
     public static final String TAG_FAVORITES = "favorites";
     public static final String TAG_SETTINGS = "settings";
     public static final String TAG_ABOUT = "about";
+    public static final String TAG_CATEGORY = "category";
+    public static final String TAG_CATEGORIES = "categories";
 
     public static final String EXTRA_POSITION = "position";
     public static final String EXTRA_URL = "url";
@@ -38,6 +40,8 @@ public class Extras {
     public static final String EXTRA_KEY = "key";
     public static final String EXTRA_PRODUCT_ID = "productId";
     public static final String EXTRA_TYPE = "type";
+
+    public static final String EXTRA_CATEGORY = "category";
 
     public static final int TYPE_CONTRIBUTORS = 1;
 
