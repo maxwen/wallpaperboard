@@ -2,7 +2,7 @@ package com.maxwen.wallpaper.activities;
 
 import android.os.Bundle;
 
-import com.dm.wallpaper.board.activities.WallpaperBoardActivity;
+import com.maxwen.wallpaper.board.activities.WallpaperBoardActivity;
 import com.maxwen.wallpaper.licenses.License;
 
 public class MainActivity extends WallpaperBoardActivity {

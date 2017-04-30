@@ -10,6 +10,15 @@
     <!-- If you are not using license checker, you need to remove CHECK_LICENSE permission -->
     <!--<uses-permission android:name="com.android.vending.CHECK_LICENSE" />-->
 
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.SET_WALLPAPER" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
     <supports-screens
         android:smallScreens="true"
         android:normalScreens="true"
@@ -67,9 +76,20 @@
             </intent-filter>
             <meta-data android:name="color" android:value="@color/muzei_color" />
             <meta-data android:name="settingsActivity"
-                android:value="com.dm.wallpaper.board.sample.activities.MuzeiActivity"/>
+                android:value="com.maxwen.wallpaper.board.sample.activities.MuzeiActivity"/>
         </service>-->
 
+        <activity android:name=".board.activities.WallpaperBoardCrashReport"
+                  android:launchMode="singleInstance"
+                  android:noHistory="true"
+                  android:theme="@style/Theme.AppCompat.Light.Dialog" />
+
+        <activity android:name=".board.activities.WallpaperBoardPreviewActivity"
+                  android:launchMode="singleTop"
+                  android:theme="@style/WallpaperTheme"
+                  android:configChanges="orientation|keyboardHidden|screenSize" />
+
+        <service android:name=".board.services.WallpaperBoardService" />
         <!-- This is important -->
         <provider
             android:name="android.support.v4.content.FileProvider"

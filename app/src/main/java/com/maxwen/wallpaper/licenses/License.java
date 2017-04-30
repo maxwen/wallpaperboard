@@ -1,6 +1,6 @@
 package com.maxwen.wallpaper.licenses;
 
-import com.dm.wallpaper.board.items.InAppBilling;
+import com.maxwen.wallpaper.board.items.InAppBilling;
 
 public class License {
 

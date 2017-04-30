@@ -9,7 +9,7 @@
 
     <!-- CONFIG: APPLICATION NAME -->
 
-    <string name="app_name">WallpaperBoard</string>
+    <string name="app_name">WallpaperBoard Demo</string>
 
     <!-- CONFIG: DEFAULT THEME -->
 
@@ -30,7 +30,7 @@
     <!-- CONFIG: TOOLBAR -->
 
     <!-- Toolbar title -->
-    <string name="toolbar_title">Wallpapers</string>
+    <string name="toolbar_title">Wallpaper Board</string>
 
     <!-- CONFIG: Wallpapers -->
 
@@ -48,7 +48,7 @@
     <bool name="enable_wallpaper_download">true</bool>
 
     <!-- Auto generated color for wallpaper card -->
-    <bool name="card_wallpaper_auto_generated_color">true</bool>
+    <bool name="card_wallpaper_auto_generated_color">false</bool>
 
     <!-- Wallpapers grid preview quality
     * Image quality when displaying wallpapers in grid

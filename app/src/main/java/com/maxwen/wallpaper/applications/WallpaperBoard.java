@@ -1,6 +1,6 @@
 package com.maxwen.wallpaper.applications;
 
-import com.dm.wallpaper.board.applications.WallpaperBoardApplication;
+import com.maxwen.wallpaper.board.applications.WallpaperBoardApplication;
 
 public class WallpaperBoard extends WallpaperBoardApplication {
 

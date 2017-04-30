@@ -3,7 +3,7 @@ package com.maxwen.wallpaper.activities;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
-import com.dm.wallpaper.board.activities.WallpaperBoardSplashActivity;
+import com.maxwen.wallpaper.board.activities.WallpaperBoardSplashActivity;
 
 public class SplashActivity extends WallpaperBoardSplashActivity {
 

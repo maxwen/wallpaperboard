@@ -3,7 +3,7 @@ package com.maxwen.wallpaper.services;
 import android.content.Intent;
 
 import com.maxwen.wallpaper.R;
-import com.dm.wallpaper.board.services.WallpaperBoardMuzeiService;
+import com.maxwen.wallpaper.board.services.WallpaperBoardMuzeiService;
 import com.google.android.apps.muzei.api.RemoteMuzeiArtSource;
 
 public class MuzeiService extends WallpaperBoardMuzeiService{

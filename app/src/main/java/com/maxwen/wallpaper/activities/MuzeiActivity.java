@@ -3,7 +3,7 @@ package com.maxwen.wallpaper.activities;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
-import com.dm.wallpaper.board.activities.WallpaperBoardMuzeiActivity;
+import com.maxwen.wallpaper.board.activities.WallpaperBoardMuzeiActivity;
 import com.maxwen.wallpaper.services.MuzeiService;
 
 public class MuzeiActivity extends WallpaperBoardMuzeiActivity {
