@@ -41,12 +41,10 @@ public class FilterAdapter extends BaseAdapter {
 
     private final Context mContext;
     private final List<Category> mCategories;
-    private final boolean mIsMuzei;
 
-    public FilterAdapter(@NonNull Context context, @NonNull List<Category> categories, boolean isMuzei) {
+    public FilterAdapter(@NonNull Context context, @NonNull List<Category> categories) {
         mContext = context;
         mCategories = categories;
-        mIsMuzei = isMuzei;
     }
 
     @Override
@@ -76,24 +74,15 @@ public class FilterAdapter extends BaseAdapter {
         }
 
         holder.title.setText(mCategories.get(position).getName());
-        holder.checkBox.setChecked(mIsMuzei ?
-                mCategories.get(position).isMuzeiSelected() :
-                mCategories.get(position).isSelected());
+        holder.checkBox.setChecked(mCategories.get(position).isSelected());
         holder.container.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Database database = new Database(mContext);
-                if (mIsMuzei) {
-                    database.selectCategoryForMuzei(mCategories.get(position).getId(),
-                            !mCategories.get(position).isMuzeiSelected());
-                    mCategories.get(position).setMuzeiSelected(
-                            !mCategories.get(position).isMuzeiSelected());
-                } else {
-                    database.selectCategory(mCategories.get(position).getId(),
-                            !mCategories.get(position).isSelected());
-                    mCategories.get(position).setSelected(
-                            !mCategories.get(position).isSelected());
-                }
+                database.selectCategory(mCategories.get(position).getId(),
+                        !mCategories.get(position).isSelected());
+                mCategories.get(position).setSelected(
+                        !mCategories.get(position).isSelected());
 
                 notifyDataSetChanged();
             }

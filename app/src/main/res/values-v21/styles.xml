@@ -41,18 +41,4 @@
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
-    <!-- Muzei Theme -->
-    <style name="MuzeiTheme" parent="AppTheme">
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:windowTranslucentStatus">false</item>
-        <item name="android:windowBackground">@color/mainBackground</item>
-    </style>
-
-    <!-- Muzei Theme -->
-    <style name="MuzeiThemeDark" parent="AppThemeDark">
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:windowTranslucentStatus">false</item>
-        <item name="android:windowBackground">@color/mainBackgroundDark</item>
-    </style>
-
 </resources>

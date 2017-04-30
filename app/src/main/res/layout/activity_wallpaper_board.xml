@@ -40,19 +40,6 @@
                     android:textSize="@dimen/text_toolbar_title"
                     fontPath="fonts/Font-Medium.ttf"/>
 
-                <TextView
-                    android:id="@+id/toolbar_logo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:text="@string/toolbar_title"
-                    android:textColor="?attr/toolbar_icon"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:textSize="@dimen/text_toolbar_title"
-                    android:visibility="gone"
-                    fontPath="fonts/Font-Logo.ttf"/>
-
             </android.support.v7.widget.Toolbar>
 
         </android.support.design.widget.AppBarLayout>

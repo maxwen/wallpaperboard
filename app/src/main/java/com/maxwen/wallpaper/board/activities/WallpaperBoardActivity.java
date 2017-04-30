@@ -98,8 +98,6 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
 
     @BindView(R.id.toolbar_title)
     TextView mToolbarTitle;
-    @BindView(R.id.toolbar_logo)
-    TextView mToolbarLogo;
     @BindView(R.id.navigation_view)
     NavigationView mNavigationView;
     @BindView(R.id.drawer_layout)
@@ -626,11 +624,6 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
         }
         return null;
     }
-
-    /*private void resetToolbarLogo() {
-        mToolbarTitle.setVisibility(mPosition == 0 ? View.GONE : View.VISIBLE);
-        mToolbarLogo.setVisibility(mPosition == 0 ? View.VISIBLE : View.GONE);
-    }*/
 
     private void clearBackStack() {
         if (mFragManager.getBackStackEntryCount() > 0) {

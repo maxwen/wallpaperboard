@@ -54,7 +54,6 @@ public class Database extends SQLiteOpenHelper {
     private static final String KEY_FAVORITE = "favorite";
     private static final String KEY_CATEGORY = "category";
     private static final String KEY_SELECTED = "selected";
-    private static final String KEY_MUZEI_SELECTED = "muzeiSelected";
     private static final String KEY_ADDED_ON = "addedOn";
 
     public Database(@NonNull Context context) {
@@ -67,8 +66,7 @@ public class Database extends SQLiteOpenHelper {
                 KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
                 KEY_NAME + " TEXT NOT NULL UNIQUE," +
                 KEY_THUMB_URL + " TEXT, " +
-                KEY_SELECTED + " INTEGER DEFAULT 1," +
-                KEY_MUZEI_SELECTED + " INTEGER DEFAULT 1" + ")";
+                KEY_SELECTED + " INTEGER DEFAULT 1" + ")";
         String CREATE_TABLE_WALLPAPER = "CREATE TABLE IF NOT EXISTS " +TABLE_WALLPAPERS+ "(" +
                 KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 KEY_NAME+ " TEXT NOT NULL, " +
@@ -164,14 +162,6 @@ public class Database extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void selectCategoryForMuzei(int id, boolean isSelected) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(KEY_MUZEI_SELECTED, isSelected ? 1 : 0);
-        db.update(TABLE_CATEGORIES, values, KEY_ID +" = ?", new String[]{String.valueOf(id)});
-        db.close();
-    }
-
     public void favoriteWallpaper(int id, boolean isFavorite) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -183,7 +173,7 @@ public class Database extends SQLiteOpenHelper {
     private List<String> getSelectedCategories(boolean isMuzei) {
         List<String> categories = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        String column = isMuzei ? KEY_MUZEI_SELECTED : KEY_SELECTED;
+        String column = KEY_SELECTED;
         Cursor cursor = db.query(TABLE_CATEGORIES, new String[]{KEY_NAME}, column +" = ?",
                 new String[]{"1"}, null, null, KEY_NAME);
         if (cursor.moveToFirst()) {

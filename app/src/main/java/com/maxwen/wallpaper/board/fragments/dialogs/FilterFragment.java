@@ -48,20 +48,16 @@ public class FilterFragment extends DialogFragment {
     @BindView(R.id.listview)
     ListView listView;
 
-    private boolean mIsMuzei;
-
-    private static final String MUZEI = "muzei";
     private static final String TAG = "com.maxwen.wallpaper.board.dialog.filter";
 
-    private static FilterFragment newInstance(boolean isMuzei) {
+    private static FilterFragment newInstance() {
         FilterFragment fragment = new FilterFragment();
         Bundle bundle = new Bundle();
-        bundle.putBoolean(MUZEI, isMuzei);
         fragment.setArguments(bundle);
         return fragment;
     }
 
-    public static void showFilterDialog(FragmentManager fm, boolean isMuzei) {
+    public static void showFilterDialog(FragmentManager fm) {
         FragmentTransaction ft = fm.beginTransaction();
         Fragment prev = fm.findFragmentByTag(TAG);
         if (prev != null) {
@@ -69,7 +65,7 @@ public class FilterFragment extends DialogFragment {
         }
 
         try {
-            DialogFragment dialog = FilterFragment.newInstance(isMuzei);
+            DialogFragment dialog = FilterFragment.newInstance();
             dialog.show(ft, TAG);
         } catch (IllegalArgumentException | IllegalStateException ignored) {}
     }
@@ -78,7 +74,7 @@ public class FilterFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         MaterialDialog.Builder builder = new MaterialDialog.Builder(getActivity());
-        builder.title(mIsMuzei ? R.string.muzei_category : R.string.wallpaper_filter);
+        builder.title(R.string.wallpaper_filter);
         builder.customView(R.layout.fragment_filter, false);
         MaterialDialog dialog = builder.build();
         dialog.show();
@@ -90,14 +86,13 @@ public class FilterFragment extends DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mIsMuzei = getArguments().getBoolean(MUZEI);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         List<Category> categories = new Database(getActivity()).getCategories();
-        listView.setAdapter(new FilterAdapter(getActivity(), categories, mIsMuzei));
+        listView.setAdapter(new FilterAdapter(getActivity(), categories));
     }
 
     @Override
