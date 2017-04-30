@@ -26,16 +26,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.maxwen.wallpaper.R;
-
 import com.maxwen.wallpaper.board.adapters.WallpapersAdapter;
 import com.maxwen.wallpaper.board.databases.Database;
 import com.maxwen.wallpaper.board.helpers.ColorHelper;
 import com.maxwen.wallpaper.board.helpers.DrawableHelper;
-import com.maxwen.wallpaper.board.helpers.PreferencesHelper;
 import com.maxwen.wallpaper.board.helpers.SoftKeyboardHelper;
 import com.maxwen.wallpaper.board.helpers.ViewHelper;
 import com.maxwen.wallpaper.board.items.Category;
 import com.maxwen.wallpaper.board.items.Wallpaper;
+import com.maxwen.wallpaper.board.preferences.Preferences;
 import com.maxwen.wallpaper.board.utils.LogUtil;
 import com.maxwen.wallpaper.board.utils.listeners.WallpaperListener;
 
@@ -98,8 +97,7 @@ public class WallpaperSearchFragment extends Fragment implements WallpaperListen
         mSwipe.setEnabled(false);
         mDefaultSpan = getActivity().getResources().getInteger(R.integer.wallpapers_column_count);
         mMaxSpan = getActivity().getResources().getInteger(R.integer.wallpapers_max_column_count);
-        PreferencesHelper p = new PreferencesHelper(getActivity());
-        mCurrentSpan = Math.min(p.getColumnSpanCount(mDefaultSpan), mMaxSpan);
+        mCurrentSpan = Math.min(Preferences.getPreferences(getActivity()).getColumnSpanCount(mDefaultSpan), mMaxSpan);
 
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), mCurrentSpan));
@@ -115,8 +113,7 @@ public class WallpaperSearchFragment extends Fragment implements WallpaperListen
                         if (span != mCurrentSpan) {
                             mCurrentSpan = span;
                             ViewHelper.setSpanCountToColumns(getActivity(), mRecyclerView, mCurrentSpan);
-                            PreferencesHelper p = new PreferencesHelper(getActivity());
-                            p.setColumnSpanCount(mCurrentSpan);
+                            Preferences.getPreferences(getActivity()).setColumnSpanCount(mCurrentSpan);
                         }
                         return true;
                     } else if (detector.getCurrentSpan() - detector.getPreviousSpan() > 1) {
@@ -124,8 +121,7 @@ public class WallpaperSearchFragment extends Fragment implements WallpaperListen
                         if (span != mCurrentSpan) {
                             mCurrentSpan = span;
                             ViewHelper.setSpanCountToColumns(getActivity(), mRecyclerView, mCurrentSpan);
-                            PreferencesHelper p = new PreferencesHelper(getActivity());
-                            p.setColumnSpanCount(mCurrentSpan);
+                            Preferences.getPreferences(getActivity()).setColumnSpanCount(mCurrentSpan);
                         }
                         ViewHelper.setSpanCountToColumns(getActivity(), mRecyclerView, mCurrentSpan);
                         return true;
@@ -208,8 +204,7 @@ public class WallpaperSearchFragment extends Fragment implements WallpaperListen
         mScaleInProgress = false;
         mDefaultSpan = getActivity().getResources().getInteger(R.integer.wallpapers_column_count);
         mMaxSpan = getActivity().getResources().getInteger(R.integer.wallpapers_max_column_count);
-        PreferencesHelper p = new PreferencesHelper(getActivity());
-        mCurrentSpan = Math.min(p.getColumnSpanCount(mDefaultSpan), mMaxSpan);
+        mCurrentSpan = Math.min(Preferences.getPreferences(getActivity()).getColumnSpanCount(mDefaultSpan), mMaxSpan);
         ViewHelper.setSpanCountToColumns(getActivity(), mRecyclerView, mCurrentSpan);
         ViewHelper.resetViewBottomPadding(mRecyclerView, false);
         // force reload aspect ratio for images

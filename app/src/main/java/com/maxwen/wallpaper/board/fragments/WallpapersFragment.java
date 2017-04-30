@@ -33,7 +33,6 @@ import com.maxwen.wallpaper.board.adapters.WallpapersAdapterUnified;
 import com.maxwen.wallpaper.board.databases.Database;
 import com.maxwen.wallpaper.board.helpers.ColorHelper;
 import com.maxwen.wallpaper.board.helpers.DrawableHelper;
-import com.maxwen.wallpaper.board.helpers.PreferencesHelper;
 import com.maxwen.wallpaper.board.helpers.ViewHelper;
 import com.maxwen.wallpaper.board.items.Category;
 import com.maxwen.wallpaper.board.items.Wallpaper;
@@ -116,8 +115,7 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
         mDefaultSpan = getActivity().getResources().getInteger(R.integer.wallpapers_column_count);
         mMaxSpan = getActivity().getResources().getInteger(R.integer.wallpapers_max_column_count);
         mMinSpan = getActivity().getResources().getInteger(R.integer.wallpapers_min_column_count);
-        PreferencesHelper p = new PreferencesHelper(getActivity());
-        mCurrentSpan = Math.min(p.getColumnSpanCount(mDefaultSpan), mMaxSpan);
+        mCurrentSpan = Math.min(Preferences.getPreferences(getActivity()).getColumnSpanCount(mDefaultSpan), mMaxSpan);
 
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setLayoutManager(new WallpaperGridLayoutManager(getActivity(), mCurrentSpan));
@@ -146,8 +144,7 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
                         if (span != mCurrentSpan) {
                             mCurrentSpan = span;
                             ViewHelper.setSpanCountToColumns(getActivity(), mRecyclerView, mCurrentSpan);
-                            PreferencesHelper p = new PreferencesHelper(getActivity());
-                            p.setColumnSpanCount(mCurrentSpan);
+                            Preferences.getPreferences(getActivity()).setColumnSpanCount(mCurrentSpan);
                         }
                         return true;
                     } else if (detector.getCurrentSpan() - detector.getPreviousSpan() > 1) {
@@ -155,8 +152,7 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
                         if (span != mCurrentSpan) {
                             mCurrentSpan = span;
                             ViewHelper.setSpanCountToColumns(getActivity(), mRecyclerView, mCurrentSpan);
-                            PreferencesHelper p = new PreferencesHelper(getActivity());
-                            p.setColumnSpanCount(mCurrentSpan);
+                            Preferences.getPreferences(getActivity()).setColumnSpanCount(mCurrentSpan);
                         }
                         ViewHelper.setSpanCountToColumns(getActivity(), mRecyclerView, mCurrentSpan);
                         return true;
@@ -208,8 +204,7 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
         mDefaultSpan = getActivity().getResources().getInteger(R.integer.wallpapers_column_count);
         mMaxSpan = getActivity().getResources().getInteger(R.integer.wallpapers_max_column_count);
         mMinSpan = getActivity().getResources().getInteger(R.integer.wallpapers_min_column_count);
-        PreferencesHelper p = new PreferencesHelper(getActivity());
-        mCurrentSpan = Math.min(p.getColumnSpanCount(mDefaultSpan), mMaxSpan);
+        mCurrentSpan = Math.min(Preferences.getPreferences(getActivity()).getColumnSpanCount(mDefaultSpan), mMaxSpan);
         ViewHelper.setSpanCountToColumns(getActivity(), mRecyclerView, mCurrentSpan);
         ViewHelper.resetViewBottomPadding(mRecyclerView, true);
         // force reload aspect ratio for images
@@ -233,9 +228,9 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
                 listener.onSearchExpanded(true);
 
                 FragmentTransaction ft = fm.beginTransaction()
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                         .replace(R.id.container, new WallpaperSearchFragment(),
                                 Extras.TAG_WALLPAPER_SEARCH)
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                         .addToBackStack(null);
                 try {
                     ft.commit();
@@ -283,8 +278,8 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
         CategoryFragment cf = new CategoryFragment();
         cf.setCategory(c);
         FragmentTransaction ft = fm.beginTransaction()
-                .replace(R.id.container, cf, Extras.TAG_CATEGORY)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .replace(R.id.container, cf, Extras.TAG_CATEGORY)
                 .addToBackStack(null);
         try {
             ft.commit();
@@ -476,8 +471,7 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
                 mProgress.setVisibility(View.GONE);
                 if (aBoolean) {
                     setHasOptionsMenu(true);
-                    mAdapter = new WallpapersAdapterUnified(getActivity(), wallpapersUnified, false);
-                    mAdapter.setCategoryMode(mCategoryMode);
+                    mAdapter = new WallpapersAdapterUnified(getActivity(), wallpapersUnified, false, mCategoryMode, !mCategoryMode);
                     mRecyclerView.setAdapter(mAdapter);
 
                     WallpaperBoardListener listener = (WallpaperBoardListener) getActivity();

@@ -588,16 +588,14 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
 
         mAppBar.setExpanded(true);
 
-        FragmentTransaction ft = mFragManager.beginTransaction().replace(
-                R.id.container, fragment, mFragmentTag);
-        //ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        FragmentTransaction ft = mFragManager.beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .replace(R.id.container, fragment, mFragmentTag);
         try {
             ft.commit();
         } catch (Exception e) {
             ft.commitAllowingStateLoss();
         }
-
-        //resetToolbarLogo();
     }
 
     @Nullable

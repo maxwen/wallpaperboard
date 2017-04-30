@@ -8,6 +8,9 @@ import android.support.annotation.NonNull;
 
 import com.maxwen.wallpaper.R;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /*
  * Wallpaper Board
  *
@@ -42,6 +45,7 @@ public class PreferencesHelper {
     private static final String KEY_SCROLL_WALLPAPER = "scroll_wallpaper";
     private static final String KEY_AVAILABLE_WALLPAPERS_COUNT = "available_wallpapers_count";
     private static final String KEY_COLUMN_SPAN_COUNT = "column_span_count";
+    private static final String KEY_COLLAPSED_CATEGORY = "collapsed_category";
 
     public PreferencesHelper(@NonNull Context context) {
         mContext = context;
@@ -156,5 +160,13 @@ public class PreferencesHelper {
 
     public int getColumnSpanCount(int defaultVale) {
         return getSharedPreferences().getInt(KEY_COLUMN_SPAN_COUNT, defaultVale);
+    }
+
+    public void setCollapsedCategories(Set<String> categories) {
+        getSharedPreferences().edit().putStringSet(KEY_COLLAPSED_CATEGORY, categories).apply();
+    }
+
+    public Set<String> getCollapsedCategories() {
+        return getSharedPreferences().getStringSet(KEY_COLLAPSED_CATEGORY, new HashSet<String>());
     }
 }
