@@ -59,7 +59,7 @@ import com.maxwen.wallpaper.board.services.WallpaperBoardService;
 import com.maxwen.wallpaper.board.utils.Extras;
 import com.maxwen.wallpaper.board.utils.ImageConfig;
 import com.maxwen.wallpaper.board.utils.LogUtil;
-import com.maxwen.wallpaper.board.utils.listeners.CategoryListener;
+import com.maxwen.wallpaper.board.utils.listeners.FragmentListener;
 import com.maxwen.wallpaper.board.utils.listeners.InAppBillingListener;
 import com.maxwen.wallpaper.board.utils.listeners.SearchListener;
 import com.maxwen.wallpaper.board.utils.listeners.WallpaperBoardListener;
@@ -94,7 +94,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
  */
 
 public class WallpaperBoardActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback,
-        WallpaperBoardListener, InAppBillingListener, SearchListener, CategoryListener {
+        WallpaperBoardListener, InAppBillingListener, SearchListener, FragmentListener {
 
     @BindView(R.id.toolbar_title)
     TextView mToolbarTitle;
@@ -348,9 +348,9 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
             int size = intent.getIntExtra(Extras.EXTRA_SIZE, 0);
             Database database = new Database(this);
             int offlineSize = database.getWallpapersCount();
-            Preferences.getPreferences(this).setAvailableWallpapersCount(size);
+            int newWallpaperCount = size - offlineSize;
 
-            if (size > offlineSize) {
+            if (newWallpaperCount > 0) {
                 int accent = ColorHelper.getAttributeColor(this, R.attr.colorAccent);
                 LinearLayout container = (LinearLayout) mBottomNavigationView.getMenu().findItem(R.id.navigation_view_wallpapers).getActionView();
                 if (container != null) {
@@ -360,16 +360,13 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
                     ViewCompat.setBackground(counter, DrawableHelper.getTintedDrawable(this,
                             R.drawable.ic_toolbar_circle, accent));
                     counter.setTextColor(ColorHelper.getTitleTextColor(accent));
-                    int newItem = (size - offlineSize);
-                    counter.setText(String.valueOf(newItem > 99 ? "99+" : newItem));
+                    counter.setText(String.valueOf(newWallpaperCount > 99 ? "99+" : newWallpaperCount));
                     container.setVisibility(View.VISIBLE);
-
-                    if (mFragmentTag.equals(Extras.TAG_WALLPAPERS)) {
-                        WallpapersFragment fragment = (WallpapersFragment)
-                                mFragManager.findFragmentByTag(Extras.TAG_WALLPAPERS);
-                        if (fragment != null) fragment.initPopupBubble();
-                    }
-                    return;
+                }
+                if (mFragmentTag.equals(Extras.TAG_WALLPAPERS)) {
+                    WallpapersFragment fragment = (WallpapersFragment)
+                            mFragManager.findFragmentByTag(Extras.TAG_WALLPAPERS);
+                    if (fragment != null) fragment.initPopupBubble(newWallpaperCount);
                 }
             }
         }
@@ -434,7 +431,7 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
     }
 
     @Override
-    public void onCategorySelected(Category c) {
+    public void onCategoryFragmentShow(Category c) {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         int icon = ColorHelper.getAttributeColor(this, R.attr.toolbar_icon);
@@ -456,6 +453,31 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
         });
         mAppBar.setExpanded(true);
         mToolbarTitle.setText(c.getName());
+    }
+
+    @Override
+    public void onNewWallpapersFragmentShow() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        int icon = ColorHelper.getAttributeColor(this, R.attr.toolbar_icon);
+        toolbar.setNavigationIcon(DrawableHelper.getTintedDrawable(
+                this, R.drawable.ic_toolbar_back, icon));
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
+        mBottomNavigationView.animate().alpha(0f).setDuration(500).withEndAction(new Runnable() {
+            @Override
+            public void run() {
+                mBottomNavigationView.setVisibility(View.GONE);
+                mBottomNavigationView.setAlpha(1f);
+            }
+        });
+        mAppBar.setExpanded(true);
+        mToolbarTitle.setText(getResources().getString(R.string.wallpaper_new_title));
     }
 
     private void initNavigationView(Toolbar toolbar) {

@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.SparseArrayCompat;
 
-import com.maxwen.wallpaper.board.helpers.TimeHelper;
 import com.maxwen.wallpaper.board.items.Category;
 import com.maxwen.wallpaper.board.items.Wallpaper;
 import com.maxwen.wallpaper.board.items.WallpaperJson;
@@ -44,6 +43,8 @@ public class Database extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
 
     private static final String TABLE_WALLPAPERS = "wallpapers";
+    private static final String TABLE_WALLPAPERS_NEW = "wallpapers_new";
+
     private static final String TABLE_CATEGORIES = "categories";
 
     private static final String KEY_ID = "id";
@@ -75,7 +76,7 @@ public class Database extends SQLiteOpenHelper {
                 KEY_URL + " TEXT NOT NULL UNIQUE, " +
                 KEY_CATEGORY + " TEXT NOT NULL," +
                 KEY_FAVORITE + " INTEGER DEFAULT 0," +
-                KEY_ADDED_ON + " TEXT NOT NULL" + ")";
+                KEY_ADDED_ON + " INTEGER DEFAULT 0" + ")";
         db.execSQL(CREATE_TABLE_CATEGORY);
         db.execSQL(CREATE_TABLE_WALLPAPER);
     }
@@ -110,12 +111,12 @@ public class Database extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void addCategories(List<WallpaperJson> categories) {
+    public void addCategories(WallpaperJson categories) {
         SQLiteDatabase db = this.getWritableDatabase();
-        for (int i = 0; i < categories.size(); i++) {
+        for (int i = 0; i < categories.getCategories.size(); i++) {
             ContentValues values = new ContentValues();
-            values.put(KEY_NAME, categories.get(i).name);
-            values.put(KEY_THUMB_URL, categories.get(i).thumbUrl);
+            values.put(KEY_NAME, categories.getCategories.get(i).name);
+            values.put(KEY_THUMB_URL, categories.getCategories.get(i).thumbUrl);
 
             db.insert(TABLE_CATEGORIES, null, values);
         }
@@ -124,6 +125,7 @@ public class Database extends SQLiteOpenHelper {
 
     public void addWallpapers(@NonNull WallpaperJson wallpapers) {
         SQLiteDatabase db = this.getWritableDatabase();
+        long insertTime = System.currentTimeMillis();
         for (int i = 0; i < wallpapers.getWallpapers.size(); i++) {
             ContentValues values = new ContentValues();
             values.put(KEY_NAME, wallpapers.getWallpapers.get(i).name);
@@ -131,7 +133,7 @@ public class Database extends SQLiteOpenHelper {
             values.put(KEY_URL, wallpapers.getWallpapers.get(i).url);
             values.put(KEY_THUMB_URL, wallpapers.getWallpapers.get(i).thumbUrl);
             values.put(KEY_CATEGORY, wallpapers.getWallpapers.get(i).category);
-            values.put(KEY_ADDED_ON, TimeHelper.getDateTime());
+            values.put(KEY_ADDED_ON, insertTime);
 
             db.insert(TABLE_WALLPAPERS, null, values);
         }
@@ -140,6 +142,7 @@ public class Database extends SQLiteOpenHelper {
 
     public void addWallpapers(@NonNull List<Wallpaper> wallpapers) {
         SQLiteDatabase db = this.getWritableDatabase();
+        long insertTime = System.currentTimeMillis();
         for (int i = 0; i < wallpapers.size(); i++) {
             ContentValues values = new ContentValues();
             values.put(KEY_NAME, wallpapers.get(i).getName());
@@ -147,9 +150,22 @@ public class Database extends SQLiteOpenHelper {
             values.put(KEY_URL, wallpapers.get(i).getUrl());
             values.put(KEY_THUMB_URL, wallpapers.get(i).getThumbUrl());
             values.put(KEY_CATEGORY, wallpapers.get(i).getCategory());
-            values.put(KEY_ADDED_ON, TimeHelper.getDateTime());
+            values.put(KEY_ADDED_ON, insertTime);
 
             db.insert(TABLE_WALLPAPERS, null, values);
+        }
+        db.close();
+    }
+
+    public void addCategories(List<Category> categories) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        for (int i = 0; i < categories.size(); i++) {
+            ContentValues values = new ContentValues();
+            values.put(KEY_NAME, categories.get(i).getName());
+            values.put(KEY_THUMB_URL, categories.get(i).getThumbUrl());
+            values.put(KEY_SELECTED, categories.get(i).isSelected());
+
+            db.insert(TABLE_CATEGORIES, null, values);
         }
         db.close();
     }
@@ -170,7 +186,7 @@ public class Database extends SQLiteOpenHelper {
         db.close();
     }
 
-    private List<String> getSelectedCategories(boolean isMuzei) {
+    private List<String> getSelectedCategories() {
         List<String> categories = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         String column = KEY_SELECTED;
@@ -196,8 +212,7 @@ public class Database extends SQLiteOpenHelper {
                         cursor.getInt(0),
                         cursor.getString(1),
                         cursor.getString(2),
-                        cursor.getInt(3) == 1,
-                        cursor.getInt(4) == 1);
+                        cursor.getInt(3) == 1);
                 int count = getWallpapersCountOfCatgegory(cursor.getString(1));
                 category.setNumWallpapers(count);
                 categories.add(category);
@@ -218,8 +233,7 @@ public class Database extends SQLiteOpenHelper {
                         cursor.getInt(0),
                         cursor.getString(1),
                         cursor.getString(2),
-                        cursor.getInt(3) == 1,
-                        cursor.getInt(4) == 1);
+                        cursor.getInt(3) == 1);
                 int count = getWallpapersCountOfCatgegory(cursor.getString(1));
                 category.setNumWallpapers(count);
                 categories.add(category);
@@ -232,7 +246,7 @@ public class Database extends SQLiteOpenHelper {
 
     public List<Object> getFilteredCategoriesUnified() {
         List<Object> categories = new ArrayList<>();
-        List<String> selected = getSelectedCategories(false);
+        List<String> selected = getSelectedCategories();
         List<String> selection = new ArrayList<>();
         if (selected.size() == 0) return categories;
 
@@ -254,8 +268,7 @@ public class Database extends SQLiteOpenHelper {
                         cursor.getInt(0),
                         cursor.getString(1),
                         cursor.getString(2),
-                        cursor.getInt(3) == 1,
-                        cursor.getInt(4) == 1);
+                        cursor.getInt(3) == 1);
                 int count = getWallpapersCountOfCatgegory(cursor.getString(1));
                 category.setNumWallpapers(count);
                 categories.add(category);
@@ -276,8 +289,7 @@ public class Database extends SQLiteOpenHelper {
                         cursor.getInt(0),
                         cursor.getString(1),
                         cursor.getString(2),
-                        cursor.getInt(3) == 1,
-                        cursor.getInt(4) == 1);
+                        cursor.getInt(3) == 1);
                 categories.put(cursor.getString(1), category);
             } while (cursor.moveToNext());
         }
@@ -288,7 +300,7 @@ public class Database extends SQLiteOpenHelper {
 
     public List<Wallpaper> getFilteredWallpapers() {
         List<Wallpaper> wallpapers = new ArrayList<>();
-        List<String> selected = getSelectedCategories(false);
+        List<String> selected = getSelectedCategories();
         List<String> selection = new ArrayList<>();
         if (selected.size() == 0) return wallpapers;
 
@@ -314,7 +326,8 @@ public class Database extends SQLiteOpenHelper {
                         cursor.getString(3),
                         cursor.getString(4),
                         cursor.getString(5),
-                        cursor.getInt(6) == 1);
+                        cursor.getInt(6) == 1,
+                        cursor.getLong(7));
                 wallpapers.add(wallpaper);
             } while (cursor.moveToNext());
         }
@@ -325,7 +338,7 @@ public class Database extends SQLiteOpenHelper {
 
     public List<Object> getFilteredWallpapersUnified() {
         List<Object> wallpapers = new ArrayList<>();
-        List<String> selected = getSelectedCategories(false);
+        List<String> selected = getSelectedCategories();
         List<String> selection = new ArrayList<>();
         if (selected.size() == 0) return wallpapers;
         Map<String, Category> categoryMap = getCategoryMap();
@@ -349,7 +362,6 @@ public class Database extends SQLiteOpenHelper {
                     0,
                     categoryName,
                     categoryMap.get(categoryName).getThumbUrl(),
-                    false,
                     false);
             wallpapers.add(category);
             int numWallpapers =  0;
@@ -363,7 +375,6 @@ public class Database extends SQLiteOpenHelper {
                             0,
                             newCategoryName,
                             categoryMap.get(newCategoryName).getThumbUrl(),
-                            false,
                             false);
                     wallpapers.add(category);
                 }
@@ -374,7 +385,8 @@ public class Database extends SQLiteOpenHelper {
                         cursor.getString(3),
                         cursor.getString(4),
                         cursor.getString(5),
-                        cursor.getInt(6) == 1);
+                        cursor.getInt(6) == 1,
+                        cursor.getLong(7));
                 wallpapers.add(wallpaper);
                 numWallpapers++;
             } while (cursor.moveToNext());
@@ -399,7 +411,37 @@ public class Database extends SQLiteOpenHelper {
                         cursor.getString(3),
                         cursor.getString(4),
                         cursor.getString(5),
-                        cursor.getInt(6) == 1);
+                        cursor.getInt(6) == 1,
+                        cursor.getLong(7));
+                wallpapers.add(wallpaper);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return wallpapers;
+    }
+
+    public List<Wallpaper> getWallpapersNewer(long millis) {
+        List<Wallpaper> wallpapers = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        StringBuilder CONDITION = new StringBuilder();
+        List<String> selection = new ArrayList<>();
+        CONDITION.append(KEY_ADDED_ON + " > ?");
+        selection.add(String.valueOf(millis));
+        Cursor cursor = db.query(TABLE_WALLPAPERS, null, CONDITION.toString(),
+                selection.toArray(new String[selection.size()]), null, null,
+                KEY_CATEGORY);
+        if (cursor.moveToFirst()) {
+            do {
+                Wallpaper wallpaper = new Wallpaper(
+                        cursor.getInt(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getString(3),
+                        cursor.getString(4),
+                        cursor.getString(5),
+                        cursor.getInt(6) == 1,
+                        cursor.getLong(7));
                 wallpapers.add(wallpaper);
             } while (cursor.moveToNext());
         }
@@ -420,7 +462,6 @@ public class Database extends SQLiteOpenHelper {
                     0,
                     categoryName,
                     categoryMap.get(categoryName).getThumbUrl(),
-                    false,
                     false);
             wallpapers.add(category);
             int numWallpapers = 0;
@@ -434,7 +475,6 @@ public class Database extends SQLiteOpenHelper {
                             0,
                             newCategoryName,
                             categoryMap.get(newCategoryName).getThumbUrl(),
-                            false,
                             false);
                     wallpapers.add(category);
                 }
@@ -445,7 +485,8 @@ public class Database extends SQLiteOpenHelper {
                         cursor.getString(3),
                         cursor.getString(4),
                         cursor.getString(5),
-                        cursor.getInt(6) == 1);
+                        cursor.getInt(6) == 1,
+                        cursor.getLong(7));
                 wallpapers.add(wallpaper);
                 numWallpapers++;
             } while (cursor.moveToNext());
@@ -459,7 +500,7 @@ public class Database extends SQLiteOpenHelper {
     @Nullable
     public Wallpaper getRandomWallpaper() {
         Wallpaper wallpaper = null;
-        List<String> selected = getSelectedCategories(true);
+        List<String> selected = getSelectedCategories();
         List<String> selection = new ArrayList<>();
         if (selected.size() == 0) return null;
 
@@ -485,7 +526,8 @@ public class Database extends SQLiteOpenHelper {
                         cursor.getString(3),
                         cursor.getString(4),
                         cursor.getString(5),
-                        cursor.getInt(6) == 1);
+                        cursor.getInt(6) == 1,
+                        cursor.getLong(7));
             } while (cursor.moveToNext());
         }
         cursor.close();
@@ -504,7 +546,7 @@ public class Database extends SQLiteOpenHelper {
 
     public List<Wallpaper> getFavoriteWallpapers() {
         List<Wallpaper> wallpapers = new ArrayList<>();
-        List<String> selected = getSelectedCategories(false);
+        List<String> selected = getSelectedCategories();
         List<String> selection = new ArrayList<>();
         if (selected.size() == 0) return wallpapers;
 
@@ -513,11 +555,11 @@ public class Database extends SQLiteOpenHelper {
             if (CONDITION.length() > 0 ) {
                 CONDITION.append(" OR ").append("LOWER(").append(KEY_CATEGORY).append(")").append(" LIKE ?");
             } else {
-                CONDITION.append("LOWER(").append(KEY_CATEGORY).append(")").append(" LIKE ?");
+                CONDITION.append("(LOWER(").append(KEY_CATEGORY).append(")").append(" LIKE ?");
             }
             selection.add("%" +item.toLowerCase(Locale.getDefault())+ "%");
         }
-        CONDITION.append(" AND " + KEY_FAVORITE +" = ?");
+        CONDITION.append(") AND " + KEY_FAVORITE +" = ?");
         selection.add("1");
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_WALLPAPERS, null, CONDITION.toString(),
@@ -532,7 +574,8 @@ public class Database extends SQLiteOpenHelper {
                         cursor.getString(3),
                         cursor.getString(4),
                         cursor.getString(5),
-                        cursor.getInt(6) == 1);
+                        cursor.getInt(6) == 1,
+                        cursor.getLong(7));
                 wallpapers.add(wallpaper);
             } while (cursor.moveToNext());
         }
@@ -543,7 +586,7 @@ public class Database extends SQLiteOpenHelper {
 
     public List<Object> getFavoriteWallpapersUnified() {
         List<Object> wallpapers = new ArrayList<>();
-        List<String> selected = getSelectedCategories(false);
+        List<String> selected = getSelectedCategories();
         List<String> selection = new ArrayList<>();
         if (selected.size() == 0) return wallpapers;
         Map<String, Category> categoryMap = getCategoryMap();
@@ -569,7 +612,6 @@ public class Database extends SQLiteOpenHelper {
                     0,
                     categoryName,
                     categoryMap.get(categoryName).getThumbUrl(),
-                    false,
                     false);
             wallpapers.add(category);
             int numWallpapers = 0;
@@ -583,7 +625,6 @@ public class Database extends SQLiteOpenHelper {
                             0,
                             newCategoryName,
                             categoryMap.get(newCategoryName).getThumbUrl(),
-                            false,
                             false);
                     wallpapers.add(category);
                 }
@@ -594,7 +635,8 @@ public class Database extends SQLiteOpenHelper {
                         cursor.getString(3),
                         cursor.getString(4),
                         cursor.getString(5),
-                        cursor.getInt(6) == 1);
+                        cursor.getInt(6) == 1,
+                        cursor.getLong(7));
                 wallpapers.add(wallpaper);
                 numWallpapers++;
             } while (cursor.moveToNext());
@@ -618,6 +660,15 @@ public class Database extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete("SQLITE_SEQUENCE", "NAME = ?", new String[]{TABLE_WALLPAPERS});
         db.delete(TABLE_WALLPAPERS, null, null);
+        db.close();
+    }
+
+    public void deleteCategories(@NonNull List<Category> categories) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        for (int i = 0; i < categories.size(); i++) {
+            db.delete(TABLE_CATEGORIES, KEY_NAME +" = ?",
+                    new String[]{categories.get(i).getName()});
+        }
         db.close();
     }
 
@@ -649,7 +700,8 @@ public class Database extends SQLiteOpenHelper {
                         cursor.getString(3),
                         cursor.getString(4),
                         cursor.getString(5),
-                        cursor.getInt(6) == 1);
+                        cursor.getInt(6) == 1,
+                        cursor.getLong(7));
                 wallpapers.add(wallpaper);
             } while (cursor.moveToNext());
         }
@@ -676,7 +728,6 @@ public class Database extends SQLiteOpenHelper {
                     0,
                     category,
                     categoryMap.get(category).getThumbUrl(),
-                    false,
                     false);
             wallpapers.add(c);
             int numWallpapers = 0;
@@ -688,7 +739,8 @@ public class Database extends SQLiteOpenHelper {
                         cursor.getString(3),
                         cursor.getString(4),
                         cursor.getString(5),
-                        cursor.getInt(6) == 1);
+                        cursor.getInt(6) == 1,
+                        cursor.getLong(7));
                 wallpapers.add(wallpaper);
                 numWallpapers++;
             } while (cursor.moveToNext());

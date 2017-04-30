@@ -5,4 +5,6 @@
     <string name="wallpaper_type_system">Home screen only</string>
     <string name="wallpaper_type_lock">Lock screen only</string>
     <string name="category_count">Wallpapers</string>
+    <string name="wallpaper_new_added_new">new wallpapers</string>
+    <string name="wallpaper_new_title">New Wallpapers</string>
 </resources>

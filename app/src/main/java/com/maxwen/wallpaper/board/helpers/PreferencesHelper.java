@@ -46,6 +46,7 @@ public class PreferencesHelper {
     private static final String KEY_AVAILABLE_WALLPAPERS_COUNT = "available_wallpapers_count";
     private static final String KEY_COLUMN_SPAN_COUNT = "column_span_count";
     private static final String KEY_COLLAPSED_CATEGORY = "collapsed_category";
+    private static final String KEY_LAST_UPDATE = "last_update";
 
     public PreferencesHelper(@NonNull Context context) {
         mContext = context;
@@ -168,5 +169,13 @@ public class PreferencesHelper {
 
     public Set<String> getCollapsedCategories() {
         return getSharedPreferences().getStringSet(KEY_COLLAPSED_CATEGORY, new HashSet<String>());
+    }
+
+    public void setLastUpdate(long millis) {
+        getSharedPreferences().edit().putLong(KEY_LAST_UPDATE, millis).apply();
+    }
+
+    public long getLastUpdate() {
+        return getSharedPreferences().getLong(KEY_LAST_UPDATE, 0);
     }
 }

@@ -6,29 +6,24 @@ import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.bluelinelabs.logansquare.LoganSquare;
-import com.maxwen.wallpaper.board.adapters.WallpapersAdapter;
+import com.maxwen.wallpaper.R;
 import com.maxwen.wallpaper.board.adapters.WallpapersAdapterUnified;
 import com.maxwen.wallpaper.board.databases.Database;
 import com.maxwen.wallpaper.board.helpers.ColorHelper;
@@ -44,9 +39,6 @@ import com.maxwen.wallpaper.board.utils.ListUtils;
 import com.maxwen.wallpaper.board.utils.LogUtil;
 import com.maxwen.wallpaper.board.utils.listeners.SearchListener;
 import com.maxwen.wallpaper.board.utils.listeners.WallpaperBoardListener;
-import com.maxwen.wallpaper.board.utils.listeners.WallpaperListener;
-import com.maxwen.wallpaper.R;
-
 import com.rafakob.drawme.DrawMeButton;
 
 import java.io.InputStream;
@@ -76,10 +68,8 @@ import butterknife.ButterKnife;
  * limitations under the License.
  */
 
-public class WallpapersFragment extends Fragment implements WallpaperListener {
+public class WallpapersFragment extends BaseFragment {
 
-    @BindView(R.id.recyclerview)
-    RecyclerView mRecyclerView;
     @BindView(R.id.swipe)
     SwipeRefreshLayout mSwipe;
     @BindView(R.id.progress)
@@ -89,12 +79,6 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
 
     private WallpapersAdapterUnified mAdapter;
     private AsyncTask<Void, Void, Boolean> mGetWallpapers;
-    private ScaleGestureDetector mScaleGestureDetector;
-    private int mCurrentSpan;
-    private int mDefaultSpan;
-    private int mMaxSpan;
-    private int mMinSpan;
-    private boolean mScaleInProgress;
     private boolean mCategoryMode;
 
     @Nullable
@@ -112,14 +96,6 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
 
         mProgress.getIndeterminateDrawable().setColorFilter(ColorHelper.getAttributeColor(
                 getActivity(), R.attr.colorAccent), PorterDuff.Mode.SRC_IN);
-        mDefaultSpan = getActivity().getResources().getInteger(R.integer.wallpapers_column_count);
-        mMaxSpan = getActivity().getResources().getInteger(R.integer.wallpapers_max_column_count);
-        mMinSpan = getActivity().getResources().getInteger(R.integer.wallpapers_min_column_count);
-        mCurrentSpan = Math.min(Preferences.getPreferences(getActivity()).getColumnSpanCount(mDefaultSpan), mMaxSpan);
-
-        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mRecyclerView.setLayoutManager(new WallpaperGridLayoutManager(getActivity(), mCurrentSpan));
-        mRecyclerView.setHasFixedSize(false);
 
         mSwipe.setColorSchemeColors(ColorHelper.getAttributeColor(
                 getActivity(), R.attr.colorAccent));
@@ -127,58 +103,10 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
             @Override
             public void onRefresh() {
                 if (mProgress.getVisibility() == View.GONE) {
-                    getWallpapers(true);
+                    getWallpapers(true, false);
                     return;
                 }
                 mSwipe.setRefreshing(false);
-            }
-        });
-
-        //set scale gesture detector
-        mScaleGestureDetector = new ScaleGestureDetector(getActivity(), new ScaleGestureDetector.SimpleOnScaleGestureListener() {
-            @Override
-            public boolean onScale(ScaleGestureDetector detector) {
-                if (detector.getTimeDelta() > 200 && Math.abs(detector.getCurrentSpan() - detector.getPreviousSpan()) > 100) {
-                    if (detector.getCurrentSpan() - detector.getPreviousSpan() < -1) {
-                        int span = Math.min(mCurrentSpan + 1, mMaxSpan);
-                        if (span != mCurrentSpan) {
-                            mCurrentSpan = span;
-                            ViewHelper.setSpanCountToColumns(getActivity(), mRecyclerView, mCurrentSpan);
-                            Preferences.getPreferences(getActivity()).setColumnSpanCount(mCurrentSpan);
-                        }
-                        return true;
-                    } else if (detector.getCurrentSpan() - detector.getPreviousSpan() > 1) {
-                        int span = Math.max(mCurrentSpan - 1, mMinSpan);
-                        if (span != mCurrentSpan) {
-                            mCurrentSpan = span;
-                            ViewHelper.setSpanCountToColumns(getActivity(), mRecyclerView, mCurrentSpan);
-                            Preferences.getPreferences(getActivity()).setColumnSpanCount(mCurrentSpan);
-                        }
-                        ViewHelper.setSpanCountToColumns(getActivity(), mRecyclerView, mCurrentSpan);
-                        return true;
-                    }
-                }
-                return false;
-            }
-
-            @Override
-            public void onScaleEnd(ScaleGestureDetector detector) {
-                mScaleInProgress = false;
-                mRecyclerView.setNestedScrollingEnabled(true);
-            }
-
-            @Override
-            public boolean onScaleBegin(ScaleGestureDetector detector) {
-                mScaleInProgress = true;
-                mRecyclerView.setNestedScrollingEnabled(false);
-                return true;
-            }
-        });
-        mRecyclerView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                mScaleGestureDetector.onTouchEvent(event);
-                return false;
             }
         });
 
@@ -186,27 +114,20 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
             @Override
             public int getSpanSize(int position) {
                 switch (mAdapter.getItemViewType(position)) {
-                    case WallpapersAdapter.TYPE_HEADER:
+                    case WallpapersAdapterUnified.TYPE_HEADER:
                         return mCurrentSpan;
-                    case WallpapersAdapter.TYPE_IMAGE:
+                    case WallpapersAdapterUnified.TYPE_IMAGE:
                         return 1;
                 }
                 return 1;
             }
         });
-        getWallpapers(false);
+        getWallpapers(false, false);
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        mScaleInProgress = false;
-        mDefaultSpan = getActivity().getResources().getInteger(R.integer.wallpapers_column_count);
-        mMaxSpan = getActivity().getResources().getInteger(R.integer.wallpapers_max_column_count);
-        mMinSpan = getActivity().getResources().getInteger(R.integer.wallpapers_min_column_count);
-        mCurrentSpan = Math.min(Preferences.getPreferences(getActivity()).getColumnSpanCount(mDefaultSpan), mMaxSpan);
-        ViewHelper.setSpanCountToColumns(getActivity(), mRecyclerView, mCurrentSpan);
-        ViewHelper.resetViewBottomPadding(mRecyclerView, true);
         // force reload aspect ratio for images
         mRecyclerView.setAdapter(mAdapter);
     }
@@ -333,24 +254,21 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
         anim.start();*/
     }
 
-    public void initPopupBubble() {
-        int wallpapersCount = new Database(getActivity()).getWallpapersCount();
-        if (wallpapersCount == 0) return;
-
-        if (Preferences.getPreferences(getActivity()).getAvailableWallpapersCount() > wallpapersCount) {
-            int color = ContextCompat.getColor(getActivity(), R.color.popupBubbleText);
-            DrawMeButton popupBubble = (DrawMeButton) getActivity().findViewById(R.id.popup_bubble);
-            popupBubble.setCompoundDrawablesWithIntrinsicBounds(DrawableHelper.getTintedDrawable(
-                    getActivity(), R.drawable.ic_toolbar_arrow_up, color), null, null, null);
-            popupBubble.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Animator.startAlphaAnimation(getActivity().findViewById(R.id.popup_bubble), 200, View.GONE);
-                    getWallpapers(true);
-                }
-            });
-            Animator.startSlideDownAnimation(popupBubble, View.VISIBLE);
-        }
+    public void initPopupBubble(int newWallpaperCount) {
+        int color = ContextCompat.getColor(getActivity(), R.color.popupBubbleText);
+        DrawMeButton popupBubble = (DrawMeButton) getActivity().findViewById(R.id.popup_bubble);
+        popupBubble.setCompoundDrawablesWithIntrinsicBounds(DrawableHelper.getTintedDrawable(
+                getActivity(), R.drawable.ic_toolbar_arrow_up, color), null, null, null);
+        popupBubble.setText(String.valueOf(newWallpaperCount > 99 ? "99+" : newWallpaperCount)
+                + "  " + getResources().getString(R.string.wallpaper_new_added));
+        popupBubble.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Animator.startAlphaAnimation(getActivity().findViewById(R.id.popup_bubble), 200, View.GONE);
+                getWallpapers(true, true);
+            }
+        });
+        Animator.startSlideDownAnimation(popupBubble, View.VISIBLE);
     }
 
     public void filterWallpapers() {
@@ -360,10 +278,10 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
 
     public void downloadWallpaper() {
         if (mAdapter == null) return;
-        //mAdapter.downloadLastSelectedWallpaper();
+        mAdapter.downloadLastSelectedWallpaper();
     }
 
-    private void getWallpapers(final boolean refreshing) {
+    private void getWallpapers(final boolean refreshing, final boolean showNew) {
         final String wallpaperUrl = getActivity().getResources().getString(R.string.wallpaper_json);
         mGetWallpapers = new AsyncTask<Void, Void, Boolean>() {
 
@@ -406,34 +324,58 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
 
                             if (wallpapersJson == null) return false;
                             if (refreshing) {
+                                Preferences.getPreferences(getActivity()).setLastUpdate(
+                                        System.currentTimeMillis());
                                 if (database.getWallpapersCount() > 0) {
                                     List<Wallpaper> wallpapers = database.getWallpapers();
-                                    List<Wallpaper> newWallpapers = new ArrayList<>();
-                                    for (WallpaperJson wallpaper : wallpapersJson.getWallpapers) {
-                                        newWallpapers.add(new Wallpaper(
-                                                0,
-                                                wallpaper.name,
-                                                wallpaper.author,
-                                                wallpaper.thumbUrl,
-                                                wallpaper.url,
-                                                wallpaper.category,
-                                                false));
+                                    List<Category> categories = database.getCategories();
+                                    {
+                                        List<Wallpaper> newWallpapers = new ArrayList<>();
+                                        for (WallpaperJson wallpaper : wallpapersJson.getWallpapers) {
+                                            newWallpapers.add(new Wallpaper(
+                                                    0,
+                                                    wallpaper.name,
+                                                    wallpaper.author,
+                                                    wallpaper.thumbUrl,
+                                                    wallpaper.url,
+                                                    wallpaper.category,
+                                                    false,
+                                                    0));
+                                        }
+
+                                        List<Wallpaper> intersection = (List<Wallpaper>)
+                                                ListUtils.intersect(newWallpapers, wallpapers);
+                                        List<Wallpaper> deleted = (List<Wallpaper>)
+                                                ListUtils.difference(intersection, wallpapers);
+                                        List<Wallpaper> newlyAdded = (List<Wallpaper>)
+                                                ListUtils.difference(intersection, newWallpapers);
+
+                                        database.deleteWallpapers(deleted);
+                                        database.addWallpapers(newlyAdded);
                                     }
 
-                                    List<Wallpaper> intersection = (List<Wallpaper>)
-                                            ListUtils.intersect(newWallpapers, wallpapers);
-                                    List<Wallpaper> deleted = (List<Wallpaper>)
-                                            ListUtils.difference(intersection, wallpapers);
-                                    List<Wallpaper> newlyAdded = (List<Wallpaper>)
-                                            ListUtils.difference(intersection, newWallpapers);
-
-                                    database.deleteCategories();
-                                    database.deleteWallpapers(deleted);
-                                    database.addWallpapers(newlyAdded);
-                                    database.addCategories(wallpapersJson.getCategories);
+                                    {
+                                        List<Category> newCategories = new ArrayList<>();
+                                        for (WallpaperJson category : wallpapersJson.getCategories) {
+                                            newCategories.add(new Category(
+                                                    0,
+                                                    category.name,
+                                                    category.thumbUrl,
+                                                    false));
+                                        }
+                                        List<Category> intersection = (List<Category>)
+                                                ListUtils.intersect(newCategories, categories);
+                                        List<Category> deleted = (List<Category>)
+                                                ListUtils.difference(intersection, categories);
+                                        List<Category> newlyAdded = (List<Category>)
+                                                ListUtils.difference(intersection, newCategories);
+                                        database.addCategories(newlyAdded);
+                                        database.deleteCategories(deleted);
+                                    }
 
                                     Preferences.getPreferences(getActivity()).setAvailableWallpapersCount(
                                             database.getWallpapersCount());
+
                                     if (mCategoryMode) {
                                         wallpapersUnified = database.getFilteredCategoriesUnified();
                                     } else {
@@ -446,7 +388,7 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
                             if (database.getWallpapersCount() > 0)
                                 database.deleteWallpapers();
 
-                            database.addCategories(wallpapersJson.getCategories);
+                            database.addCategories(wallpapersJson);
                             database.addWallpapers(wallpapersJson);
                             if (mCategoryMode) {
                                 wallpapersUnified = database.getFilteredCategoriesUnified();
@@ -477,6 +419,10 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
                     WallpaperBoardListener listener = (WallpaperBoardListener) getActivity();
                     listener.onWallpapersChecked(new Intent().putExtra(Extras.EXTRA_SIZE,
                             Preferences.getPreferences(getActivity()).getAvailableWallpapersCount()));
+
+                    if (showNew) {
+                        showNewWallpapersFragment();
+                    }
                 } else {
                     Toast.makeText(getActivity(), R.string.connection_failed, Toast.LENGTH_LONG).show();
                 }
@@ -485,12 +431,22 @@ public class WallpapersFragment extends Fragment implements WallpaperListener {
         }.execute();
     }
 
-    @Override
-    public boolean isSelectEnabled() {
-        return !mScaleInProgress;
-    }
-
     public void setCategoryMode(boolean value) {
         mCategoryMode = value;
+    }
+
+    private void showNewWallpapersFragment() {
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        if (fm == null) return;
+        FragmentTransaction ft = fm.beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .replace(R.id.container, new NewWallpaperFragment(),
+                        Extras.TAG_NEW_WALLPAPERS)
+                .addToBackStack(null);
+        try {
+            ft.commit();
+        } catch (Exception e) {
+            ft.commitAllowingStateLoss();
+        }
     }
 }

@@ -24,15 +24,13 @@ public class Category {
     private final String mName;
     private final String mThumbUrl;
     private boolean mIsSelected;
-    private boolean mIsMuzeiSelected;
     private int mNumWallpapers;
 
-    public Category(int id, String name, String thumbUrl, boolean isSelected, boolean isMuzeiSelected) {
+    public Category(int id, String name, String thumbUrl, boolean isSelected) {
         mId = id;
         mName = name;
         mThumbUrl = thumbUrl;
         mIsSelected = isSelected;
-        mIsMuzeiSelected = isMuzeiSelected;
     }
 
     public int getId() {
@@ -51,16 +49,8 @@ public class Category {
         return mIsSelected;
     }
 
-    public boolean isMuzeiSelected() {
-        return mIsMuzeiSelected;
-    }
-
     public void setSelected(boolean isSelected) {
         mIsSelected = isSelected;
-    }
-
-    public void setMuzeiSelected(boolean isMuzeiSelected) {
-        mIsMuzeiSelected = isMuzeiSelected;
     }
 
     public int getNumWallpapers() {
@@ -69,5 +59,14 @@ public class Category {
 
     public void setNumWallpapers(int mNumWallpapers) {
         this.mNumWallpapers = mNumWallpapers;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        boolean equals = false;
+        if (object != null && object instanceof Category) {
+            equals = mName.equals(((Category) object).getName());
+        }
+        return equals;
     }
 }

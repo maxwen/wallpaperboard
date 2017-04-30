@@ -27,9 +27,10 @@ public class Wallpaper {
     private final String mUrl;
     private String mCategory;
     private boolean mIsFavorite;
+    private long mAddedOn;
 
     public Wallpaper(int id, String name, String author, String thumbUrl, String url,
-                     String category, boolean isFavorite) {
+                     String category, boolean isFavorite, long addedOn) {
         mId = id;
         mName = name;
         mAuthor = author;
@@ -37,6 +38,7 @@ public class Wallpaper {
         mUrl = url;
         mCategory = category;
         mIsFavorite = isFavorite;
+        mAddedOn = addedOn;
     }
 
     public int getId() {
@@ -71,6 +73,9 @@ public class Wallpaper {
         mIsFavorite = isFavorite;
     }
 
+    public long getAddedOn() {
+        return mAddedOn;
+    }
     @Override
     public boolean equals(Object object) {
         boolean equals = false;

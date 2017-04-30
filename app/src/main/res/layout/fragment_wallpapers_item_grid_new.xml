@@ -32,6 +32,16 @@
             app:heightRatio="@integer/height_ratio"
             app:widthRatio="@integer/width_ratio"/>
 
+        <ImageView
+            android:id="@+id/new_wallpaper"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:scaleType="centerInside"
+            android:theme="@style/ButtonStyle"
+            android:layout_gravity="top|right"
+            android:src="@drawable/ic_new_wallpaper"
+            android:visibility="gone"/>
+
         <LinearLayout
             android:id="@+id/image_info"
             android:layout_width="match_parent"
@@ -84,7 +94,6 @@
                 android:paddingEnd="12dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:theme="@style/ButtonStyle"/>
-
         </LinearLayout>
 
     </FrameLayout>

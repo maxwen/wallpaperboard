@@ -27,6 +27,7 @@ public class Extras {
     public static final String TAG_ABOUT = "about";
     public static final String TAG_CATEGORY = "category";
     public static final String TAG_CATEGORIES = "categories";
+    public static final String TAG_NEW_WALLPAPERS = "newWallpapers";
 
     public static final String EXTRA_POSITION = "position";
     public static final String EXTRA_URL = "url";

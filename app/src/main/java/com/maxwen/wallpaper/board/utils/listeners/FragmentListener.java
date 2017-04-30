@@ -3,7 +3,7 @@ package com.maxwen.wallpaper.board.utils.listeners;
 /*
  * Wallpaper Board
  *
- * Copyright (c) 2017 Dani Mahardhika
+ * Copyright (c) 2017 Max Weninger
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,9 @@ package com.maxwen.wallpaper.board.utils.listeners;
 
 import com.maxwen.wallpaper.board.items.Category;
 
-public interface CategoryListener {
+public interface FragmentListener {
 
-    void onCategorySelected(Category c);
+    void onCategoryFragmentShow(Category c);
 
+    void onNewWallpapersFragmentShow();
 }

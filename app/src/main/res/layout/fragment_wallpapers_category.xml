@@ -29,6 +29,16 @@
             android:layout_height="match_parent"
             android:scaleType="centerCrop"/>
 
+        <ImageView
+            android:id="@+id/new_wallpaper"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:scaleType="centerInside"
+            android:theme="@style/ButtonStyle"
+            android:layout_gravity="top|right"
+            android:src="@drawable/ic_new_wallpaper"
+            android:visibility="gone"/>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

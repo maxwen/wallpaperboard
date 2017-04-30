@@ -265,6 +265,8 @@ public class WallpapersAdapterUnified extends RecyclerView.Adapter<RecyclerView.
         }
         if (mIsCollapseMode) {
             filterCollapsedCategories();
+        } else {
+            mWallpapers = mWallpapersAll;
         }
         notifyDataSetChanged();
     }
@@ -372,12 +374,14 @@ public class WallpapersAdapterUnified extends RecyclerView.Adapter<RecyclerView.
         ImageView favorite;
         @BindView(R.id.image_info)
         View imageInfo;
+        @BindView(R.id.new_wallpaper)
+        ImageView newWallpaper;
 
         ImageHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             container.setOnClickListener(this);
-            //container.setOnLongClickListener(this);
+            container.setOnLongClickListener(this);
             favorite.setOnClickListener(this);
         }
 
@@ -474,6 +478,8 @@ public class WallpapersAdapterUnified extends RecyclerView.Adapter<RecyclerView.
         @BindView(R.id.collapse)
         ImageView collapse;
         Category mCatageory;
+        @BindView(R.id.new_wallpaper)
+        ImageView newWallpaper;
 
         HeaderHolder(View itemView) {
             super(itemView);
@@ -536,15 +542,8 @@ public class WallpapersAdapterUnified extends RecyclerView.Adapter<RecyclerView.
     private void setFavorite(@NonNull ImageView imageView, @ColorInt int color, int position, boolean write) {
         if (position < 0 || position > mWallpapers.size()) return;
 
-        if (mIsFavoriteMode) {
-            if (!mContext.getResources().getBoolean(R.bool.card_wallpaper_auto_generated_color))
-                color = ContextCompat.getColor(mContext, R.color.favoriteColor);
-            imageView.setImageDrawable(DrawableHelper.getTintedDrawable(mContext, R.drawable.ic_toolbar_love, color));
-            return;
-        }
-
         boolean isFavorite = ((Wallpaper) mWallpapers.get(position)).isFavorite();
-        if (!mContext.getResources().getBoolean(R.bool.card_wallpaper_auto_generated_color) && isFavorite)
+        if (isFavorite)
             color = ContextCompat.getColor(mContext, R.color.favoriteColor);
         imageView.setImageDrawable(DrawableHelper.getTintedDrawable(mContext,
                 isFavorite ? R.drawable.ic_toolbar_love : R.drawable.ic_toolbar_unlove, color));
@@ -567,5 +566,14 @@ public class WallpapersAdapterUnified extends RecyclerView.Adapter<RecyclerView.
             }
         }
         return null;
+    }
+
+    public void downloadLastSelectedWallpaper() {
+        if (mLastSelectedPosition < 0 || mLastSelectedPosition > mWallpapers.size()) return;
+
+        WallpaperHelper.downloadWallpaper(mContext,
+                ColorHelper.getAttributeColor(mContext, R.attr.colorAccent),
+                ((Wallpaper) mWallpapers.get(mLastSelectedPosition)).getUrl(),
+                ((Wallpaper) mWallpapers.get(mLastSelectedPosition)).getName());
     }
 }
