@@ -159,6 +159,9 @@ public class WallpapersFragment extends BaseFragment {
         /*if (id == R.id.menu_filter) {
             FilterFragment.showFilterDialog(getActivity().getSupportFragmentManager(), false);
         }*/
+        if (id == R.id.menu_reload) {
+            getWallpapers(true, false);
+        }
         return super.onOptionsItemSelected(item);
     }
 

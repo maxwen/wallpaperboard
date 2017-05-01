@@ -7,4 +7,5 @@
     <string name="category_count">Wallpapers</string>
     <string name="wallpaper_new_added_new">new wallpapers</string>
     <string name="wallpaper_new_title">New Wallpapers</string>
+    <string name="menu_reload">Reload</string>
 </resources>

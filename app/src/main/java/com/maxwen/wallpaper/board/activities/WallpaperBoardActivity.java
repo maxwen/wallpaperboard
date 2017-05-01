@@ -444,7 +444,7 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
             }
         });
 
-        //hideBottomNavBar();
+        hideBottomNavBar();
 
         mAppBar.setExpanded(true);
         mToolbarTitle.setText(c.getName());

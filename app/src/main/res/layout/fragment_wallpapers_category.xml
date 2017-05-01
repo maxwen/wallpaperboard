@@ -79,7 +79,7 @@
             android:scaleType="centerInside"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:theme="@style/ButtonStyle"
-            android:src="@drawable/ic_arrow_drop_down_circle_white"/>
+            android:src="@drawable/ic_arrow_drop_down_circle"/>
 
     </FrameLayout>
 
