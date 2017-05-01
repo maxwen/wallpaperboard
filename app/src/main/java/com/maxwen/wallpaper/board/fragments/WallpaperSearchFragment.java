@@ -6,7 +6,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -55,8 +54,6 @@ import butterknife.ButterKnife;
 
 public class WallpaperSearchFragment extends BaseFragment {
 
-    @BindView(R.id.swipe)
-    SwipeRefreshLayout mSwipe;
     @BindView(R.id.search_result)
     TextView mSearchResult;
 
@@ -76,10 +73,6 @@ public class WallpaperSearchFragment extends BaseFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
-        //ViewCompat.setNestedScrollingEnabled(mRecyclerView, false);
-        ViewHelper.resetViewBottomPadding(mRecyclerView, false);
-        mSwipe.setEnabled(false);
-
         getWallpapers();
     }
 

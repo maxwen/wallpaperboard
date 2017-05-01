@@ -7,15 +7,29 @@
     android:layout_height="match_parent"
     tools:ignore="MissingPrefix">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerview"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:scrollbarSize="4dp"
-        android:scrollbarThumbVertical="?attr/colorAccent"
-        android:scrollbars="vertical"
-        android:paddingBottom="@dimen/bottom_nav_height" />
+        android:paddingBottom="@dimen/bottom_nav_height">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"/>
+
+        <com.futuremind.recyclerviewfastscroll.FastScroller
+            android:id="@+id/fastscroll"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:orientation="vertical"
+            app:fastscroll__handleColor="@color/colorAccent"
+            app:fastscroll__bubbleColor="@color/colorAccent"
+            app:fastscroll__bubbleTextAppearance="@style/FastScrollerTextAppearance"/>
+
+    </RelativeLayout>
 
     <ProgressBar
         android:id="@+id/progress"

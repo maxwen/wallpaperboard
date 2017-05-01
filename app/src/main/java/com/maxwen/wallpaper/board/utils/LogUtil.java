@@ -24,7 +24,7 @@ public class LogUtil {
 
     private static boolean sIsLoggingEnabled = false;
 
-    private static final String TAG = "WallpaperBoard";
+    private static final String TAG = "Wallpapers";
 
     public static void setLoggingEnabled(boolean enabled) {
         LogUtil.sIsLoggingEnabled = enabled;

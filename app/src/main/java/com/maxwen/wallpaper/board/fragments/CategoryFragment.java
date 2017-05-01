@@ -5,7 +5,6 @@ import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,7 +22,6 @@ import com.maxwen.wallpaper.board.utils.listeners.FragmentListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /*
@@ -46,9 +44,6 @@ import butterknife.ButterKnife;
 
 public class CategoryFragment extends BaseFragment {
 
-    @BindView(R.id.swipe)
-    SwipeRefreshLayout mSwipe;
-
     private AsyncTask<Void, Void, Boolean> mGetWallpapers;
     private List<Object> mWallpapers;
     private WallpapersAdapterUnified mAdapter;
@@ -69,7 +64,7 @@ public class CategoryFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_wallpapers, container, false);
         ButterKnife.bind(this, view);
         mWallpapers = new ArrayList<>();
-        mAdapter = new WallpapersAdapterUnified(getActivity(), mWallpapers, false, false, false);
+        mAdapter = new WallpapersAdapterUnified(getActivity(), mWallpapers, false, false, false, false);
         mRecyclerView.setAdapter(mAdapter);
         FragmentListener listener = (FragmentListener) getActivity();
         listener.onCategoryFragmentShow(mCategory);
@@ -115,7 +110,6 @@ public class CategoryFragment extends BaseFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         ViewHelper.resetViewBottomPadding(mRecyclerView, true);
-        mSwipe.setEnabled(false);
 
         ((GridLayoutManager)mRecyclerView.getLayoutManager()).setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override

@@ -6,11 +6,16 @@ import android.util.AttributeSet;
 
 public class WallpaperGridLayoutManager extends GridLayoutManager {
     public WallpaperGridLayoutManager(Context context, AttributeSet attrs, int defStyleAttr,
-                             int defStyleRes) {
+                                      int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
     public WallpaperGridLayoutManager(Context context, int spanCount) {
         super(context, spanCount);
+    }
+
+    @Override
+    public boolean supportsPredictiveItemAnimations() {
+        return true;
     }
 }

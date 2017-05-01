@@ -15,9 +15,6 @@ import com.maxwen.wallpaper.R;
 import com.maxwen.wallpaper.board.helpers.ColorHelper;
 import com.maxwen.wallpaper.board.utils.LogUtil;
 
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -42,7 +39,6 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public class WallpaperBoardSplashActivity extends AppCompatActivity {
 
     private Class<?> mMainActivity;
-    private AsyncTask<Void, Void, Boolean> mCheckRszIo;
     private AsyncTask<Void, Void, Boolean> mPrepareApp;
 
     @Deprecated
@@ -61,7 +57,6 @@ public class WallpaperBoardSplashActivity extends AppCompatActivity {
         splashTitle.setTextColor(ColorHelper.setColorAlpha(titleColor, 0.6f));
 
         prepareApp();
-        checkRszIo();
     }
 
     @Override
@@ -71,7 +66,6 @@ public class WallpaperBoardSplashActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (mCheckRszIo != null) mCheckRszIo.cancel(true);
         super.onBackPressed();
     }
 
@@ -107,41 +101,6 @@ public class WallpaperBoardSplashActivity extends AppCompatActivity {
                     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                     finish();
                 }
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-    private void checkRszIo() {
-        mCheckRszIo = new AsyncTask<Void, Void, Boolean>() {
-
-            final String rszio = "https://rsz.io/";
-
-            @Override
-            protected Boolean doInBackground(Void... voids) {
-                while ((!isCancelled())) {
-                    try {
-                        Thread.sleep(1);
-                        URL url = new URL(rszio);
-                        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                        connection.setReadTimeout(6000);
-                        connection.setConnectTimeout(6000);
-                        int code = connection.getResponseCode();
-                        return code == 200;
-                    } catch (Exception e) {
-                        LogUtil.e(Log.getStackTraceString(e));
-                        return false;
-                    }
-                }
-                return false;
-            }
-
-            @Override
-            protected void onPostExecute(Boolean aBoolean) {
-                super.onPostExecute(aBoolean);
-                mCheckRszIo = null;
-
-                WallpaperBoardActivity.sRszIoAvailable = aBoolean;
-                LogUtil.e("rsz.io availability: " + WallpaperBoardActivity.sRszIoAvailable);
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }

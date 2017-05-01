@@ -31,12 +31,10 @@ import com.danimahardhika.cafebar.CafeBar;
 import com.danimahardhika.cafebar.CafeBarCallback;
 import com.danimahardhika.cafebar.CafeBarDuration;
 import com.danimahardhika.cafebar.CafeBarTheme;
-import com.maxwen.wallpaper.board.activities.WallpaperBoardActivity;
+import com.maxwen.wallpaper.R;
 import com.maxwen.wallpaper.board.preferences.Preferences;
 import com.maxwen.wallpaper.board.utils.ImageConfig;
 import com.maxwen.wallpaper.board.utils.LogUtil;
-import com.maxwen.wallpaper.R;
-
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
@@ -84,9 +82,6 @@ public class WallpaperHelper {
     }
 
     public static String getThumbnailUrl(@NonNull Context context, String url, String thumbUrl) {
-        if (thumbUrl.equals(url) && WallpaperBoardActivity.sRszIoAvailable) {
-            return getRszIoThumbnailUrl(context, url);
-        }
         return thumbUrl;
     }
 

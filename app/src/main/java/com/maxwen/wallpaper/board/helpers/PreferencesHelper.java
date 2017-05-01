@@ -43,7 +43,6 @@ public class PreferencesHelper {
     private static final String KEY_WIFI_ONLY = "wifi_only";
     private static final String KEY_WALLS_DIRECTORY = "wallpaper_directory";
     private static final String KEY_SCROLL_WALLPAPER = "scroll_wallpaper";
-    private static final String KEY_AVAILABLE_WALLPAPERS_COUNT = "available_wallpapers_count";
     private static final String KEY_COLUMN_SPAN_COUNT = "column_span_count";
     private static final String KEY_COLLAPSED_CATEGORY = "collapsed_category";
     private static final String KEY_LAST_UPDATE = "last_update";
@@ -119,14 +118,6 @@ public class PreferencesHelper {
 
     public void setScrollWallpaper(boolean bool) {
         getSharedPreferences().edit().putBoolean(KEY_SCROLL_WALLPAPER, bool).apply();
-    }
-
-    public int getAvailableWallpapersCount() {
-        return getSharedPreferences().getInt(KEY_AVAILABLE_WALLPAPERS_COUNT, 0);
-    }
-
-    public void setAvailableWallpapersCount(int count) {
-        getSharedPreferences().edit().putInt(KEY_AVAILABLE_WALLPAPERS_COUNT, count).apply();
     }
 
     public boolean isConnectedToNetwork() {

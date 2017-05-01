@@ -4,7 +4,6 @@ import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +12,6 @@ import android.view.ViewGroup;
 import com.maxwen.wallpaper.R;
 import com.maxwen.wallpaper.board.adapters.WallpapersAdapter;
 import com.maxwen.wallpaper.board.databases.Database;
-import com.maxwen.wallpaper.board.helpers.ViewHelper;
 import com.maxwen.wallpaper.board.items.Wallpaper;
 import com.maxwen.wallpaper.board.preferences.Preferences;
 import com.maxwen.wallpaper.board.utils.LogUtil;
@@ -22,7 +20,6 @@ import com.maxwen.wallpaper.board.utils.listeners.FragmentListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /*
@@ -45,9 +42,6 @@ import butterknife.ButterKnife;
 
 public class NewWallpaperFragment extends BaseFragment {
 
-    @BindView(R.id.swipe)
-    SwipeRefreshLayout mSwipe;
-
     private AsyncTask<Void, Void, Boolean> mGetWallpapers;
     private List<Wallpaper> mWallpapers;
     private WallpapersAdapter mAdapter;
@@ -68,9 +62,6 @@ public class NewWallpaperFragment extends BaseFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ViewHelper.resetViewBottomPadding(mRecyclerView, true);
-        mSwipe.setEnabled(false);
-
         getWallpapers();
     }
 

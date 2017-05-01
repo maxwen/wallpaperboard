@@ -132,4 +132,8 @@
         <item name="colorControlActivated">?attr/colorAccent</item>
     </style>
 
+    <style name="FastScrollerTextAppearance">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/text_content_title</item>
+    </style>
 </resources>

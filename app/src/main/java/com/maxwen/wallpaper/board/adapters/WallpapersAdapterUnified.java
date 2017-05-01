@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import com.danimahardhika.cafebar.CafeBar;
 import com.danimahardhika.cafebar.CafeBarTheme;
+import com.futuremind.recyclerviewfastscroll.SectionTitleProvider;
 import com.kogitune.activitytransition.ActivityTransitionLauncher;
 import com.maxwen.wallpaper.R;
 import com.maxwen.wallpaper.board.activities.WallpaperBoardPreviewActivity;
@@ -75,7 +76,7 @@ import butterknife.ButterKnife;
  * limitations under the License.
  */
 
-public class WallpapersAdapterUnified extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class WallpapersAdapterUnified extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements SectionTitleProvider {
 
     private final Context mContext;
     private final DisplayImageOptions.Builder mOptions;
@@ -91,6 +92,7 @@ public class WallpapersAdapterUnified extends RecyclerView.Adapter<RecyclerView.
     private boolean mCategoryMode;
     private String mCountString;
     private boolean mIsCollapseMode;
+    private boolean mIsCategorySelectable;
 
     public static final int TYPE_IMAGE = 0;
     public static final int TYPE_HEADER = 1;
@@ -99,11 +101,13 @@ public class WallpapersAdapterUnified extends RecyclerView.Adapter<RecyclerView.
     private static final float ROTATE_180_DEGREE = 180f;
 
     public WallpapersAdapterUnified(@NonNull Context context, @NonNull List<Object> wallpapers,
-                                    boolean isFavoriteMode, boolean isCategoryMode, boolean isCollapseMode) {
+                                    boolean isFavoriteMode, boolean isCategoryMode, boolean isCollapseMode,
+                                    boolean isCategorySelectable) {
         mContext = context;
         mIsFavoriteMode = isFavoriteMode;
         mCategoryMode = isCategoryMode;
         mIsCollapseMode = isCollapseMode;
+        mIsCategorySelectable = isCategorySelectable;
 
         mWallpapersAll = wallpapers;
         if (mIsCollapseMode) {
@@ -231,6 +235,7 @@ public class WallpapersAdapterUnified extends RecyclerView.Adapter<RecyclerView.
             holder.mCatageory = (Category) mWallpapers.get(position);
             holder.category.setText(holder.mCatageory.getName());
             holder.count.setText(holder.mCatageory.getNumWallpapers() + " " + mCountString);
+            holder.container.setClickable(mIsCategorySelectable);
             if (mIsCollapseMode) {
                 holder.collapse.setRotation(!mCollapsedCategories.contains(holder.mCatageory.getName()) ? 180 : 0);
             }
@@ -356,6 +361,18 @@ public class WallpapersAdapterUnified extends RecyclerView.Adapter<RecyclerView.
             }
         }
         notifyDataSetChanged();
+    }
+
+    @Override
+    public String getSectionTitle(int position) {
+        Object o = mWallpapers.get(position);
+        if (o instanceof Category) {
+            return ((Category) o).getName();
+        }
+        if (o instanceof Wallpaper) {
+            return ((Wallpaper) o).getCategory();
+        }
+        return "";
     }
 
     class ImageHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {

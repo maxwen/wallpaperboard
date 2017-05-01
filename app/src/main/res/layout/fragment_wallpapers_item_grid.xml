@@ -41,7 +41,7 @@
             android:layout_gravity="top|right"
             android:src="@drawable/ic_new_wallpaper"
             android:visibility="gone"/>
-        
+
         <LinearLayout
             android:id="@+id/image_info"
             android:layout_width="match_parent"

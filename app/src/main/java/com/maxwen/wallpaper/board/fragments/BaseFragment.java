@@ -4,8 +4,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -18,6 +16,7 @@ import com.maxwen.wallpaper.board.preferences.Preferences;
 import com.maxwen.wallpaper.board.utils.listeners.WallpaperListener;
 
 import butterknife.BindView;
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 
 /*
  *
@@ -50,13 +49,16 @@ public abstract class BaseFragment extends Fragment implements WallpaperListener
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        ViewHelper.resetViewBottomPadding(mRecyclerView, true);
+
         mDefaultSpan = getActivity().getResources().getInteger(R.integer.wallpapers_column_count);
         mMaxSpan = getActivity().getResources().getInteger(R.integer.wallpapers_max_column_count);
         mMinSpan = getActivity().getResources().getInteger(R.integer.wallpapers_min_column_count);
         mCurrentSpan = Math.min(Preferences.getPreferences(getActivity()).getColumnSpanCount(mDefaultSpan), mMaxSpan);
 
-        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), mCurrentSpan));
+        //mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.setItemAnimator(new SlideInLeftAnimator());
+        mRecyclerView.setLayoutManager(new WallpaperGridLayoutManager(getActivity(), mCurrentSpan));
         mRecyclerView.setHasFixedSize(false);
 
         //set scale gesture detector
@@ -116,6 +118,7 @@ public abstract class BaseFragment extends Fragment implements WallpaperListener
         mCurrentSpan = Math.min(Preferences.getPreferences(getActivity()).getColumnSpanCount(mDefaultSpan), mMaxSpan);
         ViewHelper.setSpanCountToColumns(getActivity(), mRecyclerView, mCurrentSpan);
         ViewHelper.resetViewBottomPadding(mRecyclerView, true);
+        mRecyclerView.setNestedScrollingEnabled(true);
     }
 
     @Override

@@ -20,7 +20,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -38,6 +37,7 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.anjlab.android.iab.v3.BillingProcessor;
+import com.maxwen.wallpaper.R;
 import com.maxwen.wallpaper.board.databases.Database;
 import com.maxwen.wallpaper.board.fragments.AboutFragment;
 import com.maxwen.wallpaper.board.fragments.FavoritesFragment;
@@ -63,8 +63,6 @@ import com.maxwen.wallpaper.board.utils.listeners.FragmentListener;
 import com.maxwen.wallpaper.board.utils.listeners.InAppBillingListener;
 import com.maxwen.wallpaper.board.utils.listeners.SearchListener;
 import com.maxwen.wallpaper.board.utils.listeners.WallpaperBoardListener;
-import com.maxwen.wallpaper.R;
-
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
@@ -119,8 +117,6 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
 
     private String mLicenseKey;
     private String[] mDonationProductsId;
-
-    public static boolean sRszIoAvailable;
 
     public void initMainActivity(@Nullable Bundle savedInstanceState, boolean isLicenseCheckerEnabled,
                                  @NonNull byte[] salt, @NonNull String licenseKey,
@@ -335,7 +331,7 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
     public void onWallpapersChecked(@Nullable Intent intent) {
         if (intent != null) {
             String packageName = intent.getStringExtra("packageName");
-            LogUtil.d("Broadcast received from service with packageName: " + packageName);
+            //LogUtil.d("Broadcast received from service with packageName: " + packageName);
 
             if (packageName == null)
                 return;
@@ -351,7 +347,7 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
             int newWallpaperCount = size - offlineSize;
 
             if (newWallpaperCount > 0) {
-                int accent = ColorHelper.getAttributeColor(this, R.attr.colorAccent);
+                /*int accent = ColorHelper.getAttributeColor(this, R.attr.colorAccent);
                 LinearLayout container = (LinearLayout) mBottomNavigationView.getMenu().findItem(R.id.navigation_view_wallpapers).getActionView();
                 if (container != null) {
                     TextView counter = (TextView) container.findViewById(R.id.counter);
@@ -362,7 +358,7 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
                     counter.setTextColor(ColorHelper.getTitleTextColor(accent));
                     counter.setText(String.valueOf(newWallpaperCount > 99 ? "99+" : newWallpaperCount));
                     container.setVisibility(View.VISIBLE);
-                }
+                }*/
                 if (mFragmentTag.equals(Extras.TAG_WALLPAPERS)) {
                     WallpapersFragment fragment = (WallpapersFragment)
                             mFragManager.findFragmentByTag(Extras.TAG_WALLPAPERS);
@@ -371,8 +367,8 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
             }
         }
 
-        LinearLayout container = (LinearLayout) mBottomNavigationView.getMenu().getItem(0).getActionView();
-        if (container != null) container.setVisibility(View.GONE);
+        //LinearLayout container = (LinearLayout) mBottomNavigationView.getMenu().getItem(0).getActionView();
+        //if (container != null) container.setVisibility(View.GONE);
     }
 
     @Override
@@ -427,7 +423,11 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
         mDrawerLayout.setDrawerLockMode(expand ? DrawerLayout.LOCK_MODE_LOCKED_CLOSED :
                 DrawerLayout.LOCK_MODE_UNLOCKED);
         supportInvalidateOptionsMenu();
-        mBottomNavigationView.setVisibility(expand ? View.GONE : View.VISIBLE);
+        if (expand) {
+            hideBottomNavBar();
+        } else {
+            showBottomNavBar();
+        }
     }
 
     @Override
@@ -444,13 +444,8 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
             }
         });
 
-        mBottomNavigationView.animate().alpha(0f).setDuration(500).withEndAction(new Runnable() {
-            @Override
-            public void run() {
-                mBottomNavigationView.setVisibility(View.GONE);
-                mBottomNavigationView.setAlpha(1f);
-            }
-        });
+        //hideBottomNavBar();
+
         mAppBar.setExpanded(true);
         mToolbarTitle.setText(c.getName());
     }
@@ -469,13 +464,8 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
             }
         });
 
-        mBottomNavigationView.animate().alpha(0f).setDuration(500).withEndAction(new Runnable() {
-            @Override
-            public void run() {
-                mBottomNavigationView.setVisibility(View.GONE);
-                mBottomNavigationView.setAlpha(1f);
-            }
-        });
+        hideBottomNavBar();
+
         mAppBar.setExpanded(true);
         mToolbarTitle.setText(getResources().getString(R.string.wallpaper_new_title));
     }
@@ -583,12 +573,6 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
         if (Preferences.getPreferences(this).isConnectedToNetwork() && (wallpapersCount > 0)) {
             Intent intent = new Intent(this, WallpaperBoardService.class);
             startService(intent);
-            return;
-        }
-
-        int size = Preferences.getPreferences(this).getAvailableWallpapersCount();
-        if (size > 0) {
-            onWallpapersChecked(new Intent().putExtra(Extras.EXTRA_SIZE, size));
         }
     }
 
@@ -649,7 +633,7 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
         if (mFragManager.getBackStackEntryCount() > 0) {
             mFragManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             onSearchExpanded(false);
-            mBottomNavigationView.setVisibility(View.VISIBLE);
+            showBottomNavBar();
             mToolbarTitle.setText(getToolbarTitle());
         }
     }
@@ -705,4 +689,21 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
             item.setChecked(c.isSelected());
         }
     }
+
+    private void hideBottomNavBar() {
+        mBottomNavigationView.animate().alpha(0f).setDuration(500).withEndAction(new Runnable() {
+            @Override
+            public void run() {
+                mBottomNavigationView.setVisibility(View.GONE);
+                mBottomNavigationView.setAlpha(1f);
+            }
+        });
+    }
+
+    private void showBottomNavBar() {
+        mBottomNavigationView.setAlpha(0f);
+        mBottomNavigationView.setVisibility(View.VISIBLE);
+        mBottomNavigationView.animate().alpha(1f).setDuration(500);
+    }
 }
+

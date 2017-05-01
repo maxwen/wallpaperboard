@@ -1,6 +1,5 @@
 package com.maxwen.wallpaper.board.fragments;
 
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.PorterDuff;
 import android.os.AsyncTask;
@@ -10,7 +9,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,12 +21,12 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.bluelinelabs.logansquare.LoganSquare;
+import com.futuremind.recyclerviewfastscroll.FastScroller;
 import com.maxwen.wallpaper.R;
 import com.maxwen.wallpaper.board.adapters.WallpapersAdapterUnified;
 import com.maxwen.wallpaper.board.databases.Database;
 import com.maxwen.wallpaper.board.helpers.ColorHelper;
 import com.maxwen.wallpaper.board.helpers.DrawableHelper;
-import com.maxwen.wallpaper.board.helpers.ViewHelper;
 import com.maxwen.wallpaper.board.items.Category;
 import com.maxwen.wallpaper.board.items.Wallpaper;
 import com.maxwen.wallpaper.board.items.WallpaperJson;
@@ -38,7 +36,6 @@ import com.maxwen.wallpaper.board.utils.Extras;
 import com.maxwen.wallpaper.board.utils.ListUtils;
 import com.maxwen.wallpaper.board.utils.LogUtil;
 import com.maxwen.wallpaper.board.utils.listeners.SearchListener;
-import com.maxwen.wallpaper.board.utils.listeners.WallpaperBoardListener;
 import com.rafakob.drawme.DrawMeButton;
 
 import java.io.InputStream;
@@ -70,10 +67,10 @@ import butterknife.ButterKnife;
 
 public class WallpapersFragment extends BaseFragment {
 
-    @BindView(R.id.swipe)
-    SwipeRefreshLayout mSwipe;
     @BindView(R.id.progress)
     ProgressBar mProgress;
+    @BindView(R.id.fastscroll)
+    FastScroller mFastScroller;
     //@BindView(R.id.reveal_bg)
     //View mRevealBg;
 
@@ -84,7 +81,7 @@ public class WallpapersFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_wallpapers, container, false);
+        View view = inflater.inflate(R.layout.fragment_wallpapers_new, container, false);
         ButterKnife.bind(this, view);
         return view;
     }
@@ -92,23 +89,10 @@ public class WallpapersFragment extends BaseFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ViewHelper.resetViewBottomPadding(mRecyclerView, true);
+        mFastScroller.setRecyclerView(mRecyclerView);
 
         mProgress.getIndeterminateDrawable().setColorFilter(ColorHelper.getAttributeColor(
                 getActivity(), R.attr.colorAccent), PorterDuff.Mode.SRC_IN);
-
-        mSwipe.setColorSchemeColors(ColorHelper.getAttributeColor(
-                getActivity(), R.attr.colorAccent));
-        mSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                if (mProgress.getVisibility() == View.GONE) {
-                    getWallpapers(true, false);
-                    return;
-                }
-                mSwipe.setRefreshing(false);
-            }
-        });
 
         ((GridLayoutManager) mRecyclerView.getLayoutManager()).setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
@@ -130,6 +114,7 @@ public class WallpapersFragment extends BaseFragment {
         super.onConfigurationChanged(newConfig);
         // force reload aspect ratio for images
         mRecyclerView.setAdapter(mAdapter);
+        mFastScroller.setRecyclerView(mRecyclerView);
     }
 
     @Override
@@ -290,8 +275,7 @@ public class WallpapersFragment extends BaseFragment {
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                if (!refreshing) mProgress.setVisibility(View.VISIBLE);
-                else mSwipe.setRefreshing(true);
+                mProgress.setVisibility(View.VISIBLE);
                 wallpapersUnified = new ArrayList<>();
 
                 DrawMeButton popupBubble = (DrawMeButton) getActivity().findViewById(R.id.popup_bubble);
@@ -373,9 +357,6 @@ public class WallpapersFragment extends BaseFragment {
                                         database.deleteCategories(deleted);
                                     }
 
-                                    Preferences.getPreferences(getActivity()).setAvailableWallpapersCount(
-                                            database.getWallpapersCount());
-
                                     if (mCategoryMode) {
                                         wallpapersUnified = database.getFilteredCategoriesUnified();
                                     } else {
@@ -390,6 +371,7 @@ public class WallpapersFragment extends BaseFragment {
 
                             database.addCategories(wallpapersJson);
                             database.addWallpapers(wallpapersJson);
+
                             if (mCategoryMode) {
                                 wallpapersUnified = database.getFilteredCategoriesUnified();
                             } else {
@@ -409,16 +391,12 @@ public class WallpapersFragment extends BaseFragment {
             @Override
             protected void onPostExecute(Boolean aBoolean) {
                 super.onPostExecute(aBoolean);
-                if (refreshing) mSwipe.setRefreshing(false);
                 mProgress.setVisibility(View.GONE);
                 if (aBoolean) {
                     setHasOptionsMenu(true);
-                    mAdapter = new WallpapersAdapterUnified(getActivity(), wallpapersUnified, false, mCategoryMode, !mCategoryMode);
+                    mAdapter = new WallpapersAdapterUnified(getActivity(), wallpapersUnified, false, mCategoryMode, !mCategoryMode, true);
                     mRecyclerView.setAdapter(mAdapter);
-
-                    WallpaperBoardListener listener = (WallpaperBoardListener) getActivity();
-                    listener.onWallpapersChecked(new Intent().putExtra(Extras.EXTRA_SIZE,
-                            Preferences.getPreferences(getActivity()).getAvailableWallpapersCount()));
+                    mFastScroller.setRecyclerView(mRecyclerView);
 
                     if (showNew) {
                         showNewWallpapersFragment();
