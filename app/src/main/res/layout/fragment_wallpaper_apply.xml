@@ -9,7 +9,7 @@
               tools:ignore="MissingPrefix">
 
     <LinearLayout
-        android:id="@+id/apply"
+        android:id="@+id/apply_all"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground"
@@ -19,7 +19,7 @@
         app:theme="@style/ButtonStyle">
 
         <ImageView
-            android:id="@+id/apply_icon"
+            android:id="@+id/apply_all_icon"
             android:layout_width="28dp"
             android:layout_height="28dp"/>
 
@@ -35,26 +35,16 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="@dimen/content_margin"
                 android:layout_marginStart="@dimen/content_margin"
-                android:text="@string/wallpaper_apply"
+                android:text="@string/wallpaper_type_both"
                 android:textColor="?android:attr/textColorPrimary"
                 android:textSize="@dimen/text_content_title"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="@dimen/content_margin"
-                android:layout_marginStart="@dimen/content_margin"
-                android:text="@string/wallpaper_apply_scroll"
-                android:textColor="?android:attr/textColorSecondary"
-                android:textSize="@dimen/text_content"/>
 
         </LinearLayout>
 
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/save"
+        android:id="@+id/apply_home"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground"
@@ -63,7 +53,7 @@
         app:theme="@style/ButtonStyle">
 
         <ImageView
-            android:id="@+id/save_icon"
+            android:id="@+id/apply_home_icon"
             android:layout_width="28dp"
             android:layout_height="28dp"/>
 
@@ -73,10 +63,35 @@
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="@dimen/content_margin"
             android:layout_marginStart="@dimen/content_margin"
-            android:text="@string/menu_save"
+            android:text="@string/wallpaper_type_system"
             android:textColor="?android:attr/textColorPrimary"
             android:textSize="@dimen/text_content_title"/>
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/apply_lock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:orientation="horizontal"
+        android:padding="@dimen/dialog_item_padding"
+        app:theme="@style/ButtonStyle">
+
+        <ImageView
+            android:id="@+id/apply_lock_icon"
+            android:layout_width="28dp"
+            android:layout_height="28dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/content_margin"
+            android:layout_marginStart="@dimen/content_margin"
+            android:text="@string/wallpaper_type_lock"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="@dimen/text_content_title"/>
+
+    </LinearLayout>
 </LinearLayout>

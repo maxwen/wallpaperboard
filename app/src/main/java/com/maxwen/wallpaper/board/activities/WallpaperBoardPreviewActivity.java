@@ -5,7 +5,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
-import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -32,7 +31,6 @@ import com.danimahardhika.cafebar.CafeBarTheme;
 import com.kogitune.activitytransition.ActivityTransition;
 import com.kogitune.activitytransition.ExitActivityTransition;
 import com.maxwen.wallpaper.R;
-import com.maxwen.wallpaper.board.fragments.dialogs.WallpaperSettingsFragment;
 import com.maxwen.wallpaper.board.helpers.ColorHelper;
 import com.maxwen.wallpaper.board.helpers.DrawableHelper;
 import com.maxwen.wallpaper.board.helpers.FileHelper;
@@ -234,7 +232,7 @@ public class WallpaperBoardPreviewActivity extends AppCompatActivity implements 
             return true;
         } else if (id == R.id.menu_save) {
             if (PermissionHelper.isPermissionStorageGranted(this)) {
-                File target = new File(WallpaperHelper.getDefaultWallpapersDirectory(this).toString()
+                File target = new File(WallpaperHelper.getWallpapersDirectory(this).toString()
                         + File.separator + mName + FileHelper.IMAGE_EXTENSION);
 
                 if (target.exists()) {
@@ -248,7 +246,6 @@ public class WallpaperBoardPreviewActivity extends AppCompatActivity implements 
                             .icon(R.drawable.ic_toolbar_download)
                             .positiveText(R.string.wallpaper_download_exist_replace)
                             .positiveColor(mColor)
-                            .positiveTypeface(Typeface.createFromAsset(getAssets(), "fonts/Font-Bold.ttf"))
                             .onPositive(new CafeBarCallback() {
                                 @Override
                                 public void OnClick(@NonNull CafeBar cafeBar) {
@@ -257,7 +254,6 @@ public class WallpaperBoardPreviewActivity extends AppCompatActivity implements 
                                 }
                             })
                             .negativeText(R.string.wallpaper_download_exist_new)
-                            .negativeTypeface(Typeface.createFromAsset(getAssets(), "fonts/Font-Bold.ttf"))
                             .onNegative(new CafeBarCallback() {
                                 @Override
                                 public void OnClick(@NonNull CafeBar cafeBar) {
@@ -275,10 +271,10 @@ public class WallpaperBoardPreviewActivity extends AppCompatActivity implements 
 
             PermissionHelper.requestStoragePermission(this);
             return true;
-        } else if (id == R.id.menu_wallpaper_settings) {
+        } /*else if (id == R.id.menu_wallpaper_settings) {
             WallpaperSettingsFragment.showWallpaperSettings(getSupportFragmentManager());
             return true;
-        }
+        }*/
         return super.onOptionsItemSelected(item);
     }
 

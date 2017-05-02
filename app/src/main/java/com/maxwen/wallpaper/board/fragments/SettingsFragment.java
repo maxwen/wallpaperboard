@@ -2,6 +2,7 @@ package com.maxwen.wallpaper.board.fragments;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
@@ -108,14 +109,24 @@ public class SettingsFragment extends Fragment {
                 getActivity().getResources().getString(R.string.pref_wallpaper_header),
                 "", "", "", Setting.Type.HEADER, -1));
 
-        String directory = getActivity().getResources().getString(R.string.pref_wallpaper_location_desc);
-        if (Preferences.getPreferences(getActivity()).getWallsDirectory().length() > 0) {
+        String directory = "";
+        if (Preferences.getPreferences(getActivity()).getWallsDirectory() == null) {
+            directory = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_PICTURES) +"/"+
+                    getActivity().getResources().getString(R.string.app_name)).getAbsolutePath();
+        } else {
             directory = Preferences.getPreferences(getActivity()).getWallsDirectory() + File.separator;
         }
 
+        // TODO either make it changeable or remove ripple
         settings.add(new Setting(-1, "",
                 getActivity().getResources().getString(R.string.pref_wallpaper_location),
                 directory, "", Setting.Type.WALLPAPER, -1));
+
+        settings.add(new Setting(-1, "",
+                getActivity().getResources().getString(R.string.wallpaper_scroll_enable),
+                getActivity().getResources().getString(R.string.wallpaper_scroll_enable_desc),
+                "", Setting.Type.SCROLL, Preferences.getPreferences(getActivity()).isScrollWallpaper() ? 1 : 0));
 
         mRecyclerView.setAdapter(new SettingsAdapter(getActivity(), settings));
     }

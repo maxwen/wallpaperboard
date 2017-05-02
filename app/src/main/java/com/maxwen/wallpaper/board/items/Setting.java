@@ -80,7 +80,8 @@ public class Setting {
        HEADER(0),
        CACHE(1),
        THEME(2),
-       WALLPAPER(3);
+       WALLPAPER(3),
+       SCROLL(4);
 
        private final int mType;
 

@@ -127,6 +127,8 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
 
         ViewHelper.resetNavigationBarTranslucent(this,
                 getResources().getConfiguration().orientation);
+        ViewHelper.resetViewBottomPadding(mBottomNavigationView, true);
+
         ColorHelper.setStatusBarIconColor(this);
         registerBroadcastReceiver();
 
@@ -266,6 +268,7 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
         super.onConfigurationChanged(newConfig);
         resetNavigationView(newConfig.orientation);
         ViewHelper.resetNavigationBarTranslucent(this, newConfig.orientation);
+        ViewHelper.resetViewBottomPadding(mBottomNavigationView, true);
     }
 
     @Override

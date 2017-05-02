@@ -210,6 +210,13 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
                         Preferences.getPreferences(mContext).setDarkTheme(!checkBox.isChecked());
                         ((AppCompatActivity) mContext).recreate();
                         break;
+                    case SCROLL:
+                        Preferences.getPreferences(mContext).setScrollWallpaper(!checkBox.isChecked());
+                        ((AppCompatActivity) mContext).recreate();
+                        break;
+                    case WALLPAPER:
+                        // TODO
+                        break;
                 }
             }
         }

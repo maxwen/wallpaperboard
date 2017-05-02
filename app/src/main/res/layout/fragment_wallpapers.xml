@@ -14,8 +14,7 @@
         android:clipToPadding="false"
         android:scrollbarSize="4dp"
         android:scrollbarThumbVertical="?attr/colorAccent"
-        android:scrollbars="vertical"
-        android:paddingBottom="@dimen/bottom_nav_height" />
+        android:scrollbars="vertical" />
 
     <ProgressBar
         android:id="@+id/progress"

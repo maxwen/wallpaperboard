@@ -109,7 +109,7 @@ public class PreferencesHelper {
     }
 
     public String getWallsDirectory() {
-        return getSharedPreferences().getString(KEY_WALLS_DIRECTORY, "");
+        return getSharedPreferences().getString(KEY_WALLS_DIRECTORY, null);
     }
 
     public boolean isScrollWallpaper() {

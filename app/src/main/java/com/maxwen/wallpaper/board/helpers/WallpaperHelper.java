@@ -11,7 +11,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.RectF;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -32,6 +31,7 @@ import com.danimahardhika.cafebar.CafeBarCallback;
 import com.danimahardhika.cafebar.CafeBarDuration;
 import com.danimahardhika.cafebar.CafeBarTheme;
 import com.maxwen.wallpaper.R;
+import com.maxwen.wallpaper.board.fragments.dialogs.WallpaperApplyFragment;
 import com.maxwen.wallpaper.board.preferences.Preferences;
 import com.maxwen.wallpaper.board.utils.ImageConfig;
 import com.maxwen.wallpaper.board.utils.LogUtil;
@@ -67,9 +67,9 @@ import java.net.URL;
 
 public class WallpaperHelper {
 
-    public static File getDefaultWallpapersDirectory(@NonNull Context context) {
+    public static File getWallpapersDirectory(@NonNull Context context) {
         try {
-            if (Preferences.getPreferences(context).getWallsDirectory().length() == 0) {
+            if (Preferences.getPreferences(context).getWallsDirectory() == null) {
                 return new File(Environment.getExternalStoragePublicDirectory(
                         Environment.DIRECTORY_PICTURES) +"/"+
                         context.getResources().getString(R.string.app_name));
@@ -85,15 +85,9 @@ public class WallpaperHelper {
         return thumbUrl;
     }
 
-    private static String getRszIoThumbnailUrl(@NonNull Context context, String url) {
-        url = url.replaceFirst("https://|http://", "");
-        ImageSize imageSize = ImageConfig.getThumbnailSize(context);
-        return "https://rsz.io/" +url+ "?height=" +imageSize.getWidth();
-    }
-
     private static String getWallpaperUri(@NonNull Context context, String url, String filename) {
         if (PermissionHelper.isPermissionStorageGranted(context)) {
-            File directory = getDefaultWallpapersDirectory(context);
+            File directory = getWallpapersDirectory(context);
             if (new File(directory + File.separator + filename).exists()) {
                 return "file://" + directory + File.separator + filename;
             }
@@ -106,7 +100,7 @@ public class WallpaperHelper {
 
         File cache = ImageLoader.getInstance().getDiskCache().get(link);
         if (cache != null) {
-            File target = new File(getDefaultWallpapersDirectory(context).toString()
+            File target = new File(getWallpapersDirectory(context).toString()
                     + File.separator + name + FileHelper.IMAGE_EXTENSION);
 
             if (FileHelper.copyFile(cache, target)) {
@@ -130,7 +124,7 @@ public class WallpaperHelper {
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                output = WallpaperHelper.getDefaultWallpapersDirectory(context);
+                output = WallpaperHelper.getWallpapersDirectory(context);
                 file = new File(output.toString() + File.separator + name + FileHelper.IMAGE_EXTENSION);
 
                 MaterialDialog.Builder builder = new MaterialDialog.Builder(context);
@@ -243,9 +237,6 @@ public class WallpaperHelper {
         String downloaded = context.getResources().getString(
                 R.string.wallpaper_downloaded);
 
-        if (Preferences.getPreferences(context).getWallsDirectory().length() == 0)
-            Preferences.getPreferences(context).setWallsDirectory(file.getParent());
-
         CafeBar.Builder builder = new CafeBar.Builder(context);
         builder.theme(new CafeBarTheme.Custom(ColorHelper.getAttributeColor(context, R.attr.card_background)))
                 .duration(CafeBarDuration.MEDIUM.getDuration())
@@ -253,7 +244,6 @@ public class WallpaperHelper {
                 .content(downloaded + " " + file.toString())
                 .icon(R.drawable.ic_toolbar_download)
                 .neutralText(R.string.open)
-                .neutralTypeface(Typeface.createFromAsset(context.getAssets(), "fonts/Font-Bold.ttf"))
                 .neutralColor(color)
                 .onNeutral(new CafeBarCallback() {
                     @Override
@@ -338,25 +328,8 @@ public class WallpaperHelper {
                                       @ColorInt final int color, final String url, final String name) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            final MaterialDialog.Builder builder = new MaterialDialog.Builder(context);
-            builder.title(R.string.wallpaper_type_dialog_title)
-                    .widgetColor(color)
-                    .items(R.array.wallpaper_type_list)
-                    .itemsCallback(new MaterialDialog.ListCallback() {
-                        @Override
-                        public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                            int applyFlag = WallpaperManager.FLAG_LOCK | WallpaperManager.FLAG_SYSTEM;
-                            if (which == 1) {
-                                applyFlag = WallpaperManager.FLAG_SYSTEM;
-                            } else if (which == 2) {
-                                applyFlag = WallpaperManager.FLAG_LOCK;
-                            }
-                            doApplyWallpaper(context, rectF, color, url, name, applyFlag);
-                        }
-                    })
-                    .negativeText(android.R.string.cancel)
-                    .show();
-
+            WallpaperApplyFragment.showWallpaperApply(
+                    ((AppCompatActivity) context).getSupportFragmentManager(), rectF, url, name);
         } else {
             doApplyWallpaper(context, rectF, color, url, name, -1);
         }

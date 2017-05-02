@@ -74,7 +74,6 @@ public class WallpaperSettingsFragment extends DialogFragment implements View.On
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         MaterialDialog.Builder builder = new MaterialDialog.Builder(getActivity());
-        builder.title(R.string.menu_wallpaper_settings);
         builder.customView(R.layout.fragment_wallpaper_settings, false);
         builder.positiveText(R.string.close);
         MaterialDialog dialog = builder.build();

@@ -1,32 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="MissingPrefix"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/dialog_content_padding"
+            tools:ignore="MissingPrefix">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/enable_scroll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/content_margin"
+            android:background="?attr/selectableItemBackground"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:background="?attr/selectableItemBackground"
+            android:padding="@dimen/dialog_item_padding"
             app:theme="@style/ButtonStyle">
 
             <android.support.v7.widget.AppCompatRadioButton
                 android:id="@+id/enable_scroll_radio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:clickable="false"
                 android:background="@android:color/transparent"
+                android:clickable="false"
                 app:theme="@style/CheckBoxStyle"/>
 
             <LinearLayout
@@ -37,26 +38,26 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/wallpaper_scroll_enable"
-                    android:textSize="@dimen/text_content_title"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginRight="6dp"
                     android:layout_marginEnd="6dp"
-                    android:textColor="?android:attr/textColorPrimary"/>
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="6dp"
+                    android:layout_marginStart="10dp"
+                    android:text="@string/wallpaper_scroll_enable"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="@dimen/text_content_title"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/wallpaper_scroll_enable_desc"
-                    android:textSize="@dimen/text_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginRight="6dp"
                     android:layout_marginEnd="6dp"
-                    android:textColor="?android:attr/textColorSecondary"/>
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="6dp"
+                    android:layout_marginStart="10dp"
+                    android:text="@string/wallpaper_scroll_enable_desc"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textSize="@dimen/text_content"/>
 
             </LinearLayout>
 
@@ -66,18 +67,18 @@
             android:id="@+id/disable_scroll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/content_margin"
+            android:background="?attr/selectableItemBackground"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:background="?attr/selectableItemBackground"
+            android:padding="@dimen/dialog_item_padding"
             app:theme="@style/ButtonStyle">
 
             <android.support.v7.widget.AppCompatRadioButton
                 android:id="@+id/disable_scroll_radio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:clickable="false"
                 android:background="@android:color/transparent"
+                android:clickable="false"
                 app:theme="@style/CheckBoxStyle"/>
 
             <LinearLayout
@@ -88,26 +89,26 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/wallpaper_scroll_disable"
-                    android:textSize="@dimen/text_content_title"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginRight="6dp"
                     android:layout_marginEnd="6dp"
-                    android:textColor="?android:attr/textColorPrimary"/>
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="6dp"
+                    android:layout_marginStart="10dp"
+                    android:text="@string/wallpaper_scroll_disable"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="@dimen/text_content_title"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/wallpaper_scroll_disable_desc"
-                    android:textSize="@dimen/text_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginRight="6dp"
                     android:layout_marginEnd="6dp"
-                    android:textColor="?android:attr/textColorSecondary"/>
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="6dp"
+                    android:layout_marginStart="10dp"
+                    android:text="@string/wallpaper_scroll_disable_desc"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textSize="@dimen/text_content"/>
 
             </LinearLayout>
 

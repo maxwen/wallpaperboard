@@ -2,7 +2,6 @@ package com.maxwen.wallpaper.board.fragments.dialogs;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,14 +17,13 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.danimahardhika.cafebar.CafeBar;
 import com.danimahardhika.cafebar.CafeBarCallback;
 import com.danimahardhika.cafebar.CafeBarTheme;
+import com.maxwen.wallpaper.R;
 import com.maxwen.wallpaper.board.helpers.ColorHelper;
 import com.maxwen.wallpaper.board.helpers.DrawableHelper;
 import com.maxwen.wallpaper.board.helpers.FileHelper;
 import com.maxwen.wallpaper.board.helpers.PermissionHelper;
 import com.maxwen.wallpaper.board.helpers.WallpaperHelper;
 import com.maxwen.wallpaper.board.utils.Extras;
-import com.maxwen.wallpaper.R;
-
 
 import java.io.File;
 
@@ -93,6 +91,7 @@ public class WallpaperOptionsFragment extends DialogFragment implements View.OnC
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         MaterialDialog.Builder builder = new MaterialDialog.Builder(getActivity());
         builder.customView(R.layout.fragment_wallpaper_options, false);
+        builder.negativeText(android.R.string.cancel);
         MaterialDialog dialog = builder.build();
         dialog.show();
 
@@ -145,7 +144,7 @@ public class WallpaperOptionsFragment extends DialogFragment implements View.OnC
             WallpaperHelper.applyWallpaper(getActivity(), null, color, mUrl, mName);
         } else if (id == R.id.save) {
             if (PermissionHelper.isPermissionStorageGranted(getActivity())) {
-                File target = new File(WallpaperHelper.getDefaultWallpapersDirectory(getActivity()).toString()
+                File target = new File(WallpaperHelper.getWallpapersDirectory(getActivity()).toString()
                         + File.separator + mName + FileHelper.IMAGE_EXTENSION);
 
                 if (target.exists()) {
@@ -160,7 +159,6 @@ public class WallpaperOptionsFragment extends DialogFragment implements View.OnC
                             .icon(R.drawable.ic_toolbar_download)
                             .positiveText(R.string.wallpaper_download_exist_replace)
                             .positiveColor(color)
-                            .positiveTypeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/Font-Bold.ttf"))
                             .onPositive(new CafeBarCallback() {
                                 @Override
                                 public void OnClick(@NonNull CafeBar cafeBar) {
@@ -174,7 +172,6 @@ public class WallpaperOptionsFragment extends DialogFragment implements View.OnC
                                 }
                             })
                             .negativeText(R.string.wallpaper_download_exist_new)
-                            .negativeTypeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/Font-Bold.ttf"))
                             .onNegative(new CafeBarCallback() {
                                 @Override
                                 public void OnClick(@NonNull CafeBar cafeBar) {

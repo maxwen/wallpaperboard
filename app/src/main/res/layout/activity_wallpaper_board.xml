@@ -55,7 +55,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:background="?android:attr/windowBackground"
-            app:menu="@menu/bottom_navigation_view" />
+            app:menu="@menu/bottom_navigation_view"/>
             app:layout_behavior="com.maxwen.wallpaper.board.activities.BottomNavigationBehavior"-->
 
     </android.support.design.widget.CoordinatorLayout>

@@ -52,6 +52,8 @@ public class FavoritesFragment extends BaseFragment {
         mWallpapers = new ArrayList<>();
         mAdapter = new WallpapersAdapter(getActivity(), mWallpapers, true, false);
         mRecyclerView.setAdapter(mAdapter);
+        // we show bottom navigation view but we dont want to use the fastscroll view
+        mRecyclerView.setPadding(0, 0, 0, getResources().getDimensionPixelSize(R.dimen.bottom_nav_height));
         return view;
     }
 
