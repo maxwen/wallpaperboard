@@ -1,6 +1,5 @@
 package com.maxwen.wallpaper.board.activities;
 
-import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -32,6 +31,7 @@ import com.danimahardhika.cafebar.CafeBarCallback;
 import com.danimahardhika.cafebar.CafeBarTheme;
 import com.kogitune.activitytransition.ActivityTransition;
 import com.kogitune.activitytransition.ExitActivityTransition;
+import com.maxwen.wallpaper.R;
 import com.maxwen.wallpaper.board.fragments.dialogs.WallpaperSettingsFragment;
 import com.maxwen.wallpaper.board.helpers.ColorHelper;
 import com.maxwen.wallpaper.board.helpers.DrawableHelper;
@@ -43,8 +43,6 @@ import com.maxwen.wallpaper.board.preferences.Preferences;
 import com.maxwen.wallpaper.board.utils.Animator;
 import com.maxwen.wallpaper.board.utils.Extras;
 import com.maxwen.wallpaper.board.utils.ImageConfig;
-import com.maxwen.wallpaper.R;
-
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -54,7 +52,6 @@ import java.io.File;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 /*
@@ -205,11 +202,6 @@ public class WallpaperBoardPreviewActivity extends AppCompatActivity implements 
         MenuItem save = menu.findItem(R.id.menu_save);
         save.setVisible(getResources().getBoolean(R.bool.enable_wallpaper_download));
         return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
     @Override

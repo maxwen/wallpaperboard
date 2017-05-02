@@ -30,8 +30,7 @@
             android:text="@string/minute"
             android:textColor="?android:attr/textColorPrimary"
             android:textSize="@dimen/text_content_subtitle"
-            app:theme="@style/CheckBoxStyle"
-            fontPath="fonts/Font-Regular.ttf"/>
+            app:theme="@style/CheckBoxStyle"/>
 
         <RadioButton
             android:id="@+id/hour"
@@ -41,8 +40,7 @@
             android:text="@string/hour"
             android:textColor="?android:attr/textColorPrimary"
             android:textSize="@dimen/text_content_subtitle"
-            app:theme="@style/CheckBoxStyle"
-            fontPath="fonts/Font-Regular.ttf"/>
+            app:theme="@style/CheckBoxStyle"/>
 
     </LinearLayout>
 

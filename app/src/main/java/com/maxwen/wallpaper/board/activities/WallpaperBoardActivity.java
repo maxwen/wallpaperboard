@@ -1,6 +1,5 @@
 package com.maxwen.wallpaper.board.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -71,7 +70,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /*
  * Wallpaper Board
@@ -239,11 +237,6 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
         if (isLicenseCheckerEnabled && !Preferences.getPreferences(this).isLicensed()) {
             finish();
         }
-    }
-
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
     @Override

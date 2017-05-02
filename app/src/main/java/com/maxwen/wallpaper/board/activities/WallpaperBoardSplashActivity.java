@@ -1,6 +1,5 @@
 package com.maxwen.wallpaper.board.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,7 +15,6 @@ import com.maxwen.wallpaper.board.helpers.ColorHelper;
 import com.maxwen.wallpaper.board.utils.LogUtil;
 
 import butterknife.ButterKnife;
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /*
  * Wallpaper Board
@@ -57,11 +55,6 @@ public class WallpaperBoardSplashActivity extends AppCompatActivity {
         splashTitle.setTextColor(ColorHelper.setColorAlpha(titleColor, 0.6f));
 
         prepareApp();
-    }
-
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
     @Override

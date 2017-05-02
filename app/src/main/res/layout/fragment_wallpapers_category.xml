@@ -8,10 +8,11 @@
     android:layout_marginBottom="@dimen/card_category_margin_bottom"
     android:layout_marginLeft="@dimen/card_category_margin_left"
     android:layout_marginRight="@dimen/card_category_margin_right"
-    app:cardBackgroundColor="@color/category_card_background"
+    app:cardBackgroundColor="?attr/card_background"
     app:cardCornerRadius="@dimen/card_corner_radius"
     app:cardElevation="@dimen/card_elevation"
     app:cardUseCompatPadding="@bool/card_use_compat_padding"
+    app:contentPadding="@dimen/card_content_padding"
     tools:ignore="MissingPrefix">
 
     <FrameLayout
@@ -52,7 +53,6 @@
 
             <TextView
                 android:id="@+id/category"
-                fontPath="fonts/Font-Regular.ttf"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
@@ -62,7 +62,6 @@
 
             <TextView
                 android:id="@+id/count"
-                fontPath="fonts/Font-Regular.ttf"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"

@@ -37,8 +37,7 @@
                     android:textColor="?attr/toolbar_icon"
                     android:maxLines="1"
                     android:ellipsize="end"
-                    android:textSize="@dimen/text_toolbar_title"
-                    fontPath="fonts/Font-Medium.ttf"/>
+                    android:textSize="@dimen/text_toolbar_title"/>
 
             </android.support.v7.widget.Toolbar>
 

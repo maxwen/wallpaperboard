@@ -41,7 +41,6 @@
 
     <TextView
         android:id="@+id/search_result"
-        fontPath="fonts/Font-Medium.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -53,7 +52,6 @@
 
     <com.rafakob.drawme.DrawMeButton
         android:id="@+id/popup_bubble"
-        fontPath="fonts/Font-Medium.ttf"
         android:layout_width="wrap_content"
         android:layout_height="36dp"
         android:layout_gravity="center_horizontal"
@@ -67,10 +65,4 @@
         app:dm_shapeRadiusHalfHeight="true"
         app:dm_textColor="@color/popupBubbleText"/>
 
-    <View
-        android:id="@+id/reveal_bg"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@android:color/white"
-        android:visibility="gone"/>
 </FrameLayout>

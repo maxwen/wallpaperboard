@@ -2,6 +2,6 @@
 <resources>
     <integer name="wallpapers_column_count">3</integer>
     <integer name="wallpapers_max_column_count">4</integer>
-    <integer name="height_ratio">1</integer>
-    <integer name="width_ratio">1</integer>
+    <integer name="height_ratio">15</integer>
+    <integer name="width_ratio">10</integer>
 </resources>

@@ -42,8 +42,7 @@
                     android:textColor="@android:color/white"
                     android:maxLines="1"
                     android:ellipsize="end"
-                    android:textSize="@dimen/text_content_title"
-                    fontPath="fonts/Font-Medium.ttf"/>
+                    android:textSize="@dimen/text_content_title"/>
 
                 <TextView
                     android:id="@+id/toolbar_subtitle"
@@ -53,8 +52,7 @@
                     android:textColor="@android:color/white"
                     android:maxLines="1"
                     android:ellipsize="end"
-                    android:textSize="@dimen/text_content"
-                    fontPath="fonts/Font-Regular.ttf"/>
+                    android:textSize="@dimen/text_content"/>
 
             </LinearLayout>
 

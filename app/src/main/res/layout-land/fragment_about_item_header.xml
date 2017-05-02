@@ -51,8 +51,7 @@
             android:gravity="center_horizontal"
             android:text="@string/about_title"
             android:textColor="?android:attr/textColorPrimary"
-            android:textSize="@dimen/text_title"
-            fontPath="fonts/Font-Medium.ttf"/>
+            android:textSize="@dimen/text_title"/>
 
         <org.sufficientlysecure.htmltextview.HtmlTextView
             android:id="@+id/subtitle"
@@ -66,8 +65,7 @@
             android:paddingTop="@dimen/content_padding"
             android:gravity="center_horizontal"
             android:textColor="?android:attr/textColorSecondary"
-            android:textSize="@dimen/text_content"
-            fontPath="fonts/Font-Regular.ttf"/>
+            android:textSize="@dimen/text_content"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -88,8 +86,7 @@
                 android:ellipsize="end"
                 android:background="?attr/selectableItemBackground"
                 android:theme="@style/AccentButtonStyle"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                fontPath="fonts/Font-Medium.ttf"/>
+                style="@style/Widget.AppCompat.Button.Borderless"/>
 
             <android.support.v7.widget.AppCompatButton
                 android:id="@+id/link1"
@@ -103,8 +100,7 @@
                 android:ellipsize="end"
                 android:background="?attr/selectableItemBackground"
                 android:theme="@style/AccentButtonStyle"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                fontPath="fonts/Font-Medium.ttf"/>
+                style="@style/Widget.AppCompat.Button.Borderless"/>
 
             <android.support.v7.widget.AppCompatButton
                 android:id="@+id/email"
@@ -118,8 +114,7 @@
                 android:ellipsize="end"
                 android:background="?attr/selectableItemBackground"
                 android:theme="@style/AccentButtonStyle"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                fontPath="fonts/Font-Medium.ttf"/>
+                style="@style/Widget.AppCompat.Button.Borderless"/>
 
         </LinearLayout>
 

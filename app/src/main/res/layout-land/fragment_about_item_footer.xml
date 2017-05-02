@@ -26,8 +26,7 @@
             android:layout_height="wrap_content"
             android:text="@string/about_dashboard"
             android:textSize="@dimen/text_content_title"
-            android:textColor="?android:attr/textColorPrimary"
-            fontPath="fonts/Font-Medium.ttf"/>
+            android:textColor="?android:attr/textColorPrimary"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -35,8 +34,7 @@
             android:layout_marginTop="@dimen/content_padding"
             android:text="@string/about_dashboard_dev"
             android:textSize="@dimen/text_content"
-            android:textColor="?android:attr/textColorPrimary"
-            fontPath="fonts/Font-Regular.ttf"/>
+            android:textColor="?android:attr/textColorPrimary"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -57,8 +55,7 @@
                 android:ellipsize="end"
                 android:background="?attr/selectableItemBackground"
                 android:theme="@style/AccentButtonStyle"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                fontPath="fonts/Font-Medium.ttf"/>
+                style="@style/Widget.AppCompat.Button.Borderless"/>
 
             <android.support.v7.widget.AppCompatButton
                 android:id="@+id/dev_github"
@@ -72,8 +69,7 @@
                 android:ellipsize="end"
                 android:background="?attr/selectableItemBackground"
                 android:theme="@style/AccentButtonStyle"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                fontPath="fonts/Font-Medium.ttf"/>
+                style="@style/Widget.AppCompat.Button.Borderless"/>
 
         </LinearLayout>
 

@@ -33,7 +33,6 @@
         android:paddingLeft="@dimen/content_margin"
         android:paddingStart="@dimen/content_margin"
         android:textSize="@dimen/text_content_title"
-        android:textColor="?android:attr/textColorPrimary"
-        fontPath="fonts/Font-Regular.ttf"/>
+        android:textColor="?android:attr/textColorPrimary"/>
 
 </LinearLayout>

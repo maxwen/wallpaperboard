@@ -14,8 +14,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
-
 /*
  * Wallpaper Board
  *
@@ -42,11 +40,6 @@ public class WallpaperBoardApplication extends Application {
         super.onCreate();
         if (!ImageLoader.getInstance().isInited())
             ImageLoader.getInstance().init(ImageConfig.getImageLoaderConfiguration(this));
-
-        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("fonts/Font-Regular.ttf")
-                .setFontAttrId(R.attr.fontPath)
-                .build());
 
         //Enable logging
         LogUtil.setLoggingEnabled(true);

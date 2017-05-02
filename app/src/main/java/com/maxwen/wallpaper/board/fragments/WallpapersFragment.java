@@ -71,8 +71,6 @@ public class WallpapersFragment extends BaseFragment {
     ProgressBar mProgress;
     @BindView(R.id.fastscroll)
     FastScroller mFastScroller;
-    //@BindView(R.id.reveal_bg)
-    //View mRevealBg;
 
     private WallpapersAdapterUnified mAdapter;
     private AsyncTask<Void, Void, Boolean> mGetWallpapers;
@@ -106,7 +104,7 @@ public class WallpapersFragment extends BaseFragment {
                 return 1;
             }
         });
-        getWallpapers(false, false);
+        getWallpapers(false, false, false);
     }
 
     @Override
@@ -160,7 +158,7 @@ public class WallpapersFragment extends BaseFragment {
             FilterFragment.showFilterDialog(getActivity().getSupportFragmentManager(), false);
         }*/
         if (id == R.id.menu_reload) {
-            getWallpapers(true, false);
+            getWallpapers(true, false, false);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -253,7 +251,7 @@ public class WallpapersFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 Animator.startAlphaAnimation(getActivity().findViewById(R.id.popup_bubble), 200, View.GONE);
-                getWallpapers(true, true);
+                getWallpapers(true, true, false);
             }
         });
         Animator.startSlideDownAnimation(popupBubble, View.VISIBLE);
@@ -269,7 +267,7 @@ public class WallpapersFragment extends BaseFragment {
         mAdapter.downloadLastSelectedWallpaper();
     }
 
-    private void getWallpapers(final boolean refreshing, final boolean showNew) {
+    private void getWallpapers(final boolean refreshing, final boolean showNew, final boolean forceRebuild) {
         final String wallpaperUrl = getActivity().getResources().getString(R.string.wallpaper_json);
         mGetWallpapers = new AsyncTask<Void, Void, Boolean>() {
 
@@ -292,7 +290,7 @@ public class WallpapersFragment extends BaseFragment {
                     try {
                         Thread.sleep(1);
                         Database database = new Database(getActivity());
-                        if (!refreshing && database.getWallpapersCount() > 0) {
+                        if (!refreshing) {
                             if (mCategoryMode) {
                                 wallpapersUnified = database.getFilteredCategoriesUnified();
                             } else {
@@ -310,70 +308,58 @@ public class WallpapersFragment extends BaseFragment {
                             WallpaperJson wallpapersJson = LoganSquare.parse(stream, WallpaperJson.class);
 
                             if (wallpapersJson == null) return false;
-                            if (refreshing) {
-                                Preferences.getPreferences(getActivity()).setLastUpdate(
-                                        System.currentTimeMillis());
-                                if (database.getWallpapersCount() > 0) {
-                                    List<Wallpaper> wallpapers = database.getWallpapers();
-                                    List<Category> categories = database.getCategories();
-                                    {
-                                        List<Wallpaper> newWallpapers = new ArrayList<>();
-                                        for (WallpaperJson wallpaper : wallpapersJson.getWallpapers) {
-                                            newWallpapers.add(new Wallpaper(
-                                                    0,
-                                                    wallpaper.name,
-                                                    wallpaper.author,
-                                                    wallpaper.thumbUrl,
-                                                    wallpaper.url,
-                                                    wallpaper.category,
-                                                    false,
-                                                    0));
-                                        }
 
-                                        List<Wallpaper> intersection = (List<Wallpaper>)
-                                                ListUtils.intersect(newWallpapers, wallpapers);
-                                        List<Wallpaper> deleted = (List<Wallpaper>)
-                                                ListUtils.difference(intersection, wallpapers);
-                                        List<Wallpaper> newlyAdded = (List<Wallpaper>)
-                                                ListUtils.difference(intersection, newWallpapers);
-
-                                        database.deleteWallpapers(deleted);
-                                        database.addWallpapers(newlyAdded);
-                                    }
-
-                                    {
-                                        List<Category> newCategories = new ArrayList<>();
-                                        for (WallpaperJson category : wallpapersJson.getCategories) {
-                                            newCategories.add(new Category(
-                                                    0,
-                                                    category.name,
-                                                    category.thumbUrl,
-                                                    false));
-                                        }
-                                        List<Category> intersection = (List<Category>)
-                                                ListUtils.intersect(newCategories, categories);
-                                        List<Category> deleted = (List<Category>)
-                                                ListUtils.difference(intersection, categories);
-                                        List<Category> newlyAdded = (List<Category>)
-                                                ListUtils.difference(intersection, newCategories);
-                                        database.addCategories(newlyAdded);
-                                        database.deleteCategories(deleted);
-                                    }
-
-                                    if (mCategoryMode) {
-                                        wallpapersUnified = database.getFilteredCategoriesUnified();
-                                    } else {
-                                        wallpapersUnified = database.getFilteredWallpapersUnified();
-                                    }
-                                    return true;
+                            if (forceRebuild) {
+                                database.deleteCategories();
+                                database.deleteWallpapers();
+                            }
+                            Preferences.getPreferences(getActivity()).setLastUpdate(
+                                    System.currentTimeMillis());
+                            List<Wallpaper> wallpapers = database.getWallpapers();
+                            List<Category> categories = database.getCategories();
+                            {
+                                List<Wallpaper> newWallpapers = new ArrayList<>();
+                                for (WallpaperJson wallpaper : wallpapersJson.getWallpapers) {
+                                    newWallpapers.add(new Wallpaper(
+                                            0,
+                                            wallpaper.name,
+                                            wallpaper.author,
+                                            wallpaper.thumbUrl,
+                                            wallpaper.url,
+                                            wallpaper.category,
+                                            false,
+                                            0));
                                 }
+
+                                List<Wallpaper> intersection = (List<Wallpaper>)
+                                        ListUtils.intersect(newWallpapers, wallpapers);
+                                List<Wallpaper> deleted = (List<Wallpaper>)
+                                        ListUtils.difference(intersection, wallpapers);
+                                List<Wallpaper> newlyAdded = (List<Wallpaper>)
+                                        ListUtils.difference(intersection, newWallpapers);
+
+                                database.deleteWallpapers(deleted);
+                                database.addWallpapers(newlyAdded);
                             }
 
-                            if (database.getWallpapersCount() > 0)
-                                database.deleteWallpapers();
-
-                            database.addCategories(wallpapersJson);
-                            database.addWallpapers(wallpapersJson);
+                            {
+                                List<Category> newCategories = new ArrayList<>();
+                                for (WallpaperJson category : wallpapersJson.getCategories) {
+                                    newCategories.add(new Category(
+                                            0,
+                                            category.name,
+                                            category.thumbUrl,
+                                            false));
+                                }
+                                List<Category> intersection = (List<Category>)
+                                        ListUtils.intersect(newCategories, categories);
+                                List<Category> deleted = (List<Category>)
+                                        ListUtils.difference(intersection, categories);
+                                List<Category> newlyAdded = (List<Category>)
+                                        ListUtils.difference(intersection, newCategories);
+                                database.addCategories(newlyAdded);
+                                database.deleteCategories(deleted);
+                            }
 
                             if (mCategoryMode) {
                                 wallpapersUnified = database.getFilteredCategoriesUnified();

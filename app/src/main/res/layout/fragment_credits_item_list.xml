@@ -21,8 +21,7 @@
         android:paddingRight="@dimen/content_margin"
         android:paddingEnd="@dimen/content_margin"
         android:textColor="?android:attr/textColorPrimary"
-        android:textSize="@dimen/text_content_subtitle"
-        fontPath="fonts/Font-Regular.ttf"/>
+        android:textSize="@dimen/text_content_subtitle"/>
 
     <TextView
         android:id="@+id/subtitle"
@@ -33,7 +32,6 @@
         android:paddingRight="@dimen/content_margin"
         android:paddingEnd="@dimen/content_margin"
         android:textColor="?android:attr/textColorSecondary"
-        android:textSize="@dimen/text_content"
-        fontPath="fonts/Font-Regular.ttf"/>
+        android:textSize="@dimen/text_content"/>
 
 </LinearLayout>

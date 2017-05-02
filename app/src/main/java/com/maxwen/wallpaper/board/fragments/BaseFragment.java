@@ -39,10 +39,10 @@ public abstract class BaseFragment extends Fragment implements WallpaperListener
 
     @BindView(R.id.recyclerview)
     RecyclerView mRecyclerView;
+
     protected ScaleGestureDetector mScaleGestureDetector;
     protected int mCurrentSpan;
     protected int mDefaultSpan;
-    protected boolean mScaleInProgress;
     protected int mMaxSpan;
     protected int mMinSpan;
 
@@ -65,6 +65,7 @@ public abstract class BaseFragment extends Fragment implements WallpaperListener
         mScaleGestureDetector = new ScaleGestureDetector(getActivity(), new ScaleGestureDetector.SimpleOnScaleGestureListener() {
             @Override
             public boolean onScale(ScaleGestureDetector detector) {
+                final float sf = detector.getScaleFactor();
                 if (detector.getTimeDelta() > 200 && Math.abs(detector.getCurrentSpan() - detector.getPreviousSpan()) > 100) {
                     if (detector.getCurrentSpan() - detector.getPreviousSpan() < -1) {
                         int span = Math.min(mCurrentSpan + 1, mMaxSpan);
@@ -89,12 +90,10 @@ public abstract class BaseFragment extends Fragment implements WallpaperListener
             }
             @Override
             public void onScaleEnd(ScaleGestureDetector detector) {
-                mScaleInProgress = false;
                 mRecyclerView.setNestedScrollingEnabled(true);
             }
             @Override
             public boolean onScaleBegin(ScaleGestureDetector detector) {
-                mScaleInProgress = true;
                 mRecyclerView.setNestedScrollingEnabled(false);
                 return true;
             }
@@ -103,7 +102,7 @@ public abstract class BaseFragment extends Fragment implements WallpaperListener
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 mScaleGestureDetector.onTouchEvent(event);
-                return false;
+                return mScaleGestureDetector.isInProgress();
             }
         });
     }
@@ -111,7 +110,6 @@ public abstract class BaseFragment extends Fragment implements WallpaperListener
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        mScaleInProgress = false;
         mDefaultSpan = getActivity().getResources().getInteger(R.integer.wallpapers_column_count);
         mMaxSpan = getActivity().getResources().getInteger(R.integer.wallpapers_max_column_count);
         mMinSpan = getActivity().getResources().getInteger(R.integer.wallpapers_min_column_count);
@@ -131,6 +129,6 @@ public abstract class BaseFragment extends Fragment implements WallpaperListener
 
     @Override
     public boolean isSelectEnabled() {
-        return !mScaleInProgress;
+        return !mScaleGestureDetector.isInProgress();
     }
 }

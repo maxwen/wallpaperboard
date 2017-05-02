@@ -26,8 +26,7 @@
         android:drawablePadding="@dimen/content_margin"
         android:gravity="center_vertical"
         android:textColor="?android:attr/textColorPrimary"
-        android:textSize="@dimen/text_content_header"
-        fontPath="fonts/Font-Medium.ttf"/>
+        android:textSize="@dimen/text_content_header"/>
 
     <LinearLayout
         android:id="@+id/container"
@@ -51,16 +50,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="?android:attr/textColorPrimary"
-                android:textSize="@dimen/text_content_title"
-                fontPath="fonts/Font-Regular.ttf"/>
+                android:textSize="@dimen/text_content_title"/>
 
             <TextView
                 android:id="@+id/content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="?android:attr/textColorSecondary"
-                android:textSize="@dimen/text_content"
-                fontPath="fonts/Font-Regular.ttf"/>
+                android:textSize="@dimen/text_content"/>
 
             <TextView
                 android:id="@+id/footer"
@@ -68,8 +65,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/content_padding"
                 android:textColor="?attr/colorAccent"
-                android:textSize="@dimen/text_content"
-                fontPath="fonts/Font-Regular.ttf"/>
+                android:textSize="@dimen/text_content"/>
 
         </LinearLayout>
 

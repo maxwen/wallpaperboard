@@ -13,7 +13,8 @@
     app:cardBackgroundColor="?attr/card_background"
     app:cardElevation="@dimen/card_elevation"
     app:cardUseCompatPadding="@bool/card_use_compat_padding"
-    app:cardCornerRadius="@dimen/card_corner_radius">
+    app:cardCornerRadius="@dimen/card_corner_radius"
+    app:contentPadding="@dimen/card_content_padding">
     
     <FrameLayout
         android:id="@+id/container"
@@ -68,8 +69,7 @@
                     android:textColor="?android:attr/textColorPrimary"
                     android:textSize="@dimen/text_content"
                     android:maxLines="1"
-                    android:ellipsize="end"
-                    fontPath="fonts/Font-Medium.ttf"/>
+                    android:ellipsize="end"/>
 
                 <TextView
                     android:id="@+id/author"
@@ -78,8 +78,7 @@
                     android:textColor="?android:attr/textColorSecondary"
                     android:textSize="@dimen/text_content_secondary"
                     android:maxLines="1"
-                    android:ellipsize="end"
-                    fontPath="fonts/Font-Regular.ttf"/>
+                    android:ellipsize="end"/>
 
                 <TextView
                     android:id="@+id/category"
@@ -88,8 +87,7 @@
                     android:textColor="?android:attr/textColorSecondary"
                     android:textSize="@dimen/text_content_secondary"
                     android:maxLines="1"
-                    android:ellipsize="end"
-                    fontPath="fonts/Font-Regular.ttf"/>
+                    android:ellipsize="end"/>
             </LinearLayout>
 
             <ImageView
