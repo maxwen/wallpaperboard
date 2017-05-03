@@ -18,13 +18,17 @@
 
 package com.maxwen.wallpaper.board.fragments.dialogs;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -63,8 +67,10 @@ public class DirectoryChooserDialog extends DialogFragment
     private int mTextColorDisabled;
     private ChosenDirectoryListener mListener;
     private String mStartFolder;
+    private boolean mPermsChecked;
 
     private static final String TAG = "com.maxwen.wallpaper.board.dialog.wallpaper.folder";
+    private static final int PERMISSION_STORAGE = 0;
 
     public interface ChosenDirectoryListener {
         public void onChooseDirOk(Uri chosenDir);
@@ -100,6 +106,17 @@ public class DirectoryChooserDialog extends DialogFragment
             mSDCardDirectory = new File(mSDCardDirectory).getCanonicalPath();
         } catch (IOException ioe) {
         }
+        mPermsChecked = true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if (requestCode == PERMISSION_STORAGE
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            mPermsChecked = true;
+            updateDirectory();
+        }
     }
 
     public void setChoosenListener(ChosenDirectoryListener listener) {
@@ -117,6 +134,16 @@ public class DirectoryChooserDialog extends DialogFragment
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
             mStartFolder = getArguments().getString(Extras.EXTRA_FOLDER);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            int read = getActivity().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
+            int write = getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            if (read != PackageManager.PERMISSION_GRANTED ||
+                    write != PackageManager.PERMISSION_GRANTED) {
+                mPermsChecked = false;
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_STORAGE);
+            }
         }
     }
 
@@ -139,6 +166,9 @@ public class DirectoryChooserDialog extends DialogFragment
 
     private List<File> getDirectories(String dir) {
         List<File> dirs = new ArrayList<File>();
+        if (!mPermsChecked) {
+            return dirs;
+        }
 
         try {
             File dirFile = new File(dir);
@@ -173,11 +203,15 @@ public class DirectoryChooserDialog extends DialogFragment
 
     private void updateDirectory() {
         mSubDirs.clear();
-        mSubDirs.addAll(getDirectories(mCurrentDir));
-        mListAdapter.notifyDataSetChanged();
-        boolean enableOk = true; //!mCurrentDir.equals(mSDCardDirectory);
-        ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_POSITIVE).setText(getResources().getString(android.R.string.ok));
-        ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_POSITIVE).setVisibility(enableOk ? View.VISIBLE : View.GONE);
+        if (mPermsChecked) {
+            mSubDirs.addAll(getDirectories(mCurrentDir));
+            mListAdapter.notifyDataSetChanged();
+            boolean enableOk = true; //!mCurrentDir.equals(mSDCardDirectory);
+            ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_POSITIVE).setText(getResources().getString(android.R.string.ok));
+            ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_POSITIVE).setVisibility(enableOk ? View.VISIBLE : View.GONE);
+        } else {
+            ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_POSITIVE).setVisibility(View.GONE);
+        }
     }
 
     private ArrayAdapter<File> createListAdapter(List<File> items) {

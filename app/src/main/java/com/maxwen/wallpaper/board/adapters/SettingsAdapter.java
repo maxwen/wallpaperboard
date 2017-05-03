@@ -22,7 +22,6 @@ import com.maxwen.wallpaper.board.fragments.dialogs.DirectoryChooserDialog;
 import com.maxwen.wallpaper.board.helpers.ColorHelper;
 import com.maxwen.wallpaper.board.helpers.DrawableHelper;
 import com.maxwen.wallpaper.board.helpers.FileHelper;
-import com.maxwen.wallpaper.board.helpers.PermissionHelper;
 import com.maxwen.wallpaper.board.items.Setting;
 import com.maxwen.wallpaper.board.preferences.Preferences;
 import com.maxwen.wallpaper.board.utils.LogUtil;
@@ -221,12 +220,10 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
                         ((AppCompatActivity) mContext).recreate();
                         break;
                     case WALLPAPER:
-                        if (PermissionHelper.isPermissionStorageGranted(mContext)) {
-                            DirectoryChooserDialog.showDirectoryChooserDialog(
-                                    ((AppCompatActivity) mContext).getSupportFragmentManager(),
-                                    SettingsAdapter.this,
-                                    Preferences.getPreferences(mContext).getWallsDirectory());
-                        }
+                        DirectoryChooserDialog.showDirectoryChooserDialog(((AppCompatActivity) mContext).getSupportFragmentManager(),
+                                SettingsAdapter.this,
+                                Preferences.getPreferences(mContext).getWallsDirectory());
+
                         break;
                 }
             }
