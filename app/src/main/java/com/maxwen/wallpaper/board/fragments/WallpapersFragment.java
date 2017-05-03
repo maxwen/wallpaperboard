@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.futuremind.recyclerviewfastscroll.FastScroller;
 import com.maxwen.wallpaper.R;
+import com.maxwen.wallpaper.board.activities.WallpaperBoardActivity;
 import com.maxwen.wallpaper.board.adapters.WallpapersAdapterUnified;
 import com.maxwen.wallpaper.board.databases.Database;
 import com.maxwen.wallpaper.board.helpers.ColorHelper;
@@ -117,7 +118,6 @@ public class WallpapersFragment extends BaseFragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_wallpapers, menu);
         MenuItem search = menu.findItem(R.id.menu_search);
 
@@ -127,7 +127,6 @@ public class WallpapersFragment extends BaseFragment {
                 FragmentManager fm = getActivity().getSupportFragmentManager();
                 if (fm == null) return false;
 
-                setHasOptionsMenu(false);
                 SearchListener listener = (SearchListener) getActivity();
                 listener.onSearchExpanded(true);
 
@@ -154,9 +153,6 @@ public class WallpapersFragment extends BaseFragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        /*if (id == R.id.menu_filter) {
-            FilterFragment.showFilterDialog(getActivity().getSupportFragmentManager(), false);
-        }*/
         if (id == R.id.menu_reload) {
             getWallpapers(true, false, false);
         }
@@ -240,7 +236,7 @@ public class WallpapersFragment extends BaseFragment {
         anim.start();*/
     }
 
-    public void initPopupBubble(int newWallpaperCount) {
+    public void initPopupBubble(int newWallpaperCount, final boolean reload) {
         int color = ContextCompat.getColor(getActivity(), R.color.popupBubbleText);
         DrawMeButton popupBubble = (DrawMeButton) getActivity().findViewById(R.id.popup_bubble);
         popupBubble.setCompoundDrawablesWithIntrinsicBounds(DrawableHelper.getTintedDrawable(
@@ -251,7 +247,11 @@ public class WallpapersFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 Animator.startAlphaAnimation(getActivity().findViewById(R.id.popup_bubble), 200, View.GONE);
-                getWallpapers(true, true, false);
+                if (reload) {
+                    getWallpapers(true, true, false);
+                } else {
+                    ((WallpaperBoardActivity)getActivity()).showNew();
+                }
             }
         });
         Animator.startSlideDownAnimation(popupBubble, View.VISIBLE);
@@ -272,6 +272,7 @@ public class WallpapersFragment extends BaseFragment {
         mGetWallpapers = new AsyncTask<Void, Void, Boolean>() {
 
             List<Object> wallpapersUnified;
+            int newAddedCount;
 
             @Override
             protected void onPreExecute() {
@@ -290,7 +291,7 @@ public class WallpapersFragment extends BaseFragment {
                     try {
                         Thread.sleep(1);
                         Database database = new Database(getActivity());
-                        if (!refreshing) {
+                        if (!refreshing && database.getWallpapersCount() != 0) {
                             if (mCategoryMode) {
                                 wallpapersUnified = database.getFilteredCategoriesUnified();
                             } else {
@@ -313,8 +314,7 @@ public class WallpapersFragment extends BaseFragment {
                                 database.deleteCategories();
                                 database.deleteWallpapers();
                             }
-                            Preferences.getPreferences(getActivity()).setLastUpdate(
-                                    System.currentTimeMillis());
+
                             List<Wallpaper> wallpapers = database.getWallpapers();
                             List<Category> categories = database.getCategories();
                             {
@@ -338,6 +338,12 @@ public class WallpapersFragment extends BaseFragment {
                                 List<Wallpaper> newlyAdded = (List<Wallpaper>)
                                         ListUtils.difference(intersection, newWallpapers);
 
+                                if (newlyAdded.size() != 0) {
+                                    // only update last update timestamp if new ones will be added
+                                    Preferences.getPreferences(getActivity()).setLastUpdate(
+                                            System.currentTimeMillis());
+                                    newAddedCount = newlyAdded.size();
+                                }
                                 database.deleteWallpapers(deleted);
                                 database.addWallpapers(newlyAdded);
                             }
@@ -382,13 +388,15 @@ public class WallpapersFragment extends BaseFragment {
                 super.onPostExecute(aBoolean);
                 mProgress.setVisibility(View.GONE);
                 if (aBoolean) {
-                    setHasOptionsMenu(true);
                     mAdapter = new WallpapersAdapterUnified(getActivity(), wallpapersUnified, false, mCategoryMode, !mCategoryMode, true);
                     mRecyclerView.setAdapter(mAdapter);
                     mFastScroller.setRecyclerView(mRecyclerView);
-
                     if (showNew) {
                         showNewWallpapersFragment();
+                    } else {
+                        if (newAddedCount != 0) {
+                            ((WallpaperBoardActivity) getActivity()).showNewWallpaperBubble(newAddedCount, false);
+                        }
                     }
                 } else {
                     Toast.makeText(getActivity(), R.string.connection_failed, Toast.LENGTH_LONG).show();
@@ -403,17 +411,6 @@ public class WallpapersFragment extends BaseFragment {
     }
 
     private void showNewWallpapersFragment() {
-        FragmentManager fm = getActivity().getSupportFragmentManager();
-        if (fm == null) return;
-        FragmentTransaction ft = fm.beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .replace(R.id.container, new NewWallpaperFragment(),
-                        Extras.TAG_NEW_WALLPAPERS)
-                .addToBackStack(null);
-        try {
-            ft.commit();
-        } catch (Exception e) {
-            ft.commitAllowingStateLoss();
-        }
+        ((WallpaperBoardActivity)getActivity()).showNew();
     }
 }

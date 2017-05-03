@@ -1,7 +1,6 @@
 package com.maxwen.wallpaper.board.fragments.dialogs;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,14 +10,13 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.widget.ListView;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.maxwen.wallpaper.R;
-
+import com.maxwen.wallpaper.board.activities.WallpaperBoardActivity;
 import com.maxwen.wallpaper.board.adapters.FilterAdapter;
 import com.maxwen.wallpaper.board.databases.Database;
-import com.maxwen.wallpaper.board.fragments.WallpapersFragment;
 import com.maxwen.wallpaper.board.items.Category;
-import com.maxwen.wallpaper.board.utils.Extras;
 
 import java.util.List;
 
@@ -76,6 +74,14 @@ public class FilterFragment extends DialogFragment {
         MaterialDialog.Builder builder = new MaterialDialog.Builder(getActivity());
         builder.title(R.string.wallpaper_filter);
         builder.customView(R.layout.fragment_filter, false);
+        builder.positiveText(android.R.string.ok);
+        builder.onPositive(new MaterialDialog.SingleButtonCallback() {
+            @Override
+            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                if (getActivity() == null) return;
+                ((WallpaperBoardActivity) getActivity()).filterWallpapers();
+            }
+        });
         MaterialDialog dialog = builder.build();
         dialog.show();
 
@@ -93,19 +99,5 @@ public class FilterFragment extends DialogFragment {
         super.onActivityCreated(savedInstanceState);
         List<Category> categories = new Database(getActivity()).getCategories();
         listView.setAdapter(new FilterAdapter(getActivity(), categories));
-    }
-
-    @Override
-    public void onDismiss(DialogInterface dialog) {
-        if (getActivity() == null) return;
-
-        FragmentManager fm = getActivity().getSupportFragmentManager();
-        if (fm == null) return;
-
-        WallpapersFragment fragment = (WallpapersFragment) fm.findFragmentByTag(Extras.TAG_WALLPAPERS);
-        if (fragment != null) {
-            fragment.filterWallpapers();
-        }
-        super.onDismiss(dialog);
     }
 }

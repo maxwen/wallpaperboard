@@ -9,4 +9,9 @@
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="always" />
 
+    <!--<item
+        android:id="@+id/menu_filter"
+        android:icon="@drawable/ic_toolbar_filter"
+        android:title="@string/menu_filter"
+        app:showAsAction="always" />-->
 </menu>

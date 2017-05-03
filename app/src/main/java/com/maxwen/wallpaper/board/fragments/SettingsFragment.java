@@ -119,7 +119,6 @@ public class SettingsFragment extends Fragment {
             directory = Preferences.getPreferences(getActivity()).getWallsDirectory() + File.separator;
         }
 
-        // TODO either make it changeable or remove ripple
         settings.add(new Setting(-1, "",
                 getActivity().getResources().getString(R.string.pref_wallpaper_location),
                 directory, "", Setting.Type.WALLPAPER, -1));

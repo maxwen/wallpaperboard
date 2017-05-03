@@ -18,9 +18,13 @@
             android:icon="@drawable/ic_drawer_favorites"
             android:title="@string/navigation_view_favorites" />
         <item
+            android:id="@+id/navigation_view_new"
+            android:icon="@drawable/ic_new_wallpaper"
+            android:title="@string/navigation_view_new" />
+        <!--<item
             android:id="@+id/menu_filter"
             android:icon="@drawable/ic_toolbar_filter"
             android:title="@string/menu_filter"
-            app:actionLayout="@layout/navigation_view_counter"/>
+            app:actionLayout="@layout/navigation_view_counter"/>-->
     </group>
 </menu>

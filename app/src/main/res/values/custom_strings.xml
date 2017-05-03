@@ -9,4 +9,5 @@
     <string name="wallpaper_new_title">New Wallpapers</string>
     <string name="menu_reload">Reload</string>
     <string name="folder_dialog_title">Select folder</string>
+    <string name="navigation_view_new">New</string>
 </resources>

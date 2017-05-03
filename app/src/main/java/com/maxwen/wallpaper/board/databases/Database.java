@@ -163,7 +163,8 @@ public class Database extends SQLiteOpenHelper {
             ContentValues values = new ContentValues();
             values.put(KEY_NAME, categories.get(i).getName());
             values.put(KEY_THUMB_URL, categories.get(i).getThumbUrl());
-            values.put(KEY_SELECTED, categories.get(i).isSelected());
+            // new categories are always selected by default
+            values.put(KEY_SELECTED, 1);
 
             db.insert(TABLE_CATEGORIES, null, values);
         }

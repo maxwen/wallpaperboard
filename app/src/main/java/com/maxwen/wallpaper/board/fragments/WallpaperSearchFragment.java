@@ -72,13 +72,11 @@ public class WallpaperSearchFragment extends BaseFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setHasOptionsMenu(true);
         getWallpapers();
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_wallpaper_search, menu);
         MenuItem search = menu.findItem(R.id.menu_search);
         int color = ColorHelper.getAttributeColor(getActivity(), R.attr.toolbar_icon);
@@ -176,7 +174,9 @@ public class WallpaperSearchFragment extends BaseFragment {
                     try {
                         Thread.sleep(1);
                         Database database = new Database(getActivity());
-                        wallpapers = database.getFilteredWallpapers();
+                        // TODO should search use filter?
+                        //wallpapers = database.getFilteredWallpapers();
+                        wallpapers = database.getWallpapers();
                         return true;
                     } catch (Exception e) {
                         LogUtil.e(Log.getStackTraceString(e));

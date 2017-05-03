@@ -38,8 +38,6 @@ public class PreferencesHelper {
     private static final String KEY_LICENSED = "licensed";
     private static final String KEY_FIRST_RUN = "first_run";
     private static final String KEY_DARK_THEME = "dark_theme";
-    private static final String KEY_ROTATE_TIME = "rotate_time";
-    private static final String KEY_ROTATE_MINUTE = "rotate_minute";
     private static final String KEY_WIFI_ONLY = "wifi_only";
     private static final String KEY_WALLS_DIRECTORY = "wallpaper_directory";
     private static final String KEY_SCROLL_WALLPAPER = "scroll_wallpaper";
@@ -78,22 +76,6 @@ public class PreferencesHelper {
 
     public void setDarkTheme(boolean bool) {
         getSharedPreferences().edit().putBoolean(KEY_DARK_THEME, bool).apply();
-    }
-
-    public void setRotateTime (int time) {
-        getSharedPreferences().edit().putInt(KEY_ROTATE_TIME, time).apply();
-    }
-
-    public int getRotateTime() {
-        return getSharedPreferences().getInt(KEY_ROTATE_TIME, 3600000);
-    }
-
-    public void setRotateMinute (boolean bool) {
-        getSharedPreferences().edit().putBoolean(KEY_ROTATE_MINUTE, bool).apply();
-    }
-
-    public boolean isRotateMinute() {
-        return getSharedPreferences().getBoolean(KEY_ROTATE_MINUTE, false);
     }
 
     public boolean isWifiOnly() {
@@ -169,4 +151,6 @@ public class PreferencesHelper {
     public long getLastUpdate() {
         return getSharedPreferences().getLong(KEY_LAST_UPDATE, 0);
     }
+
+    // TODO add update interval to check for new + notification + open new
 }

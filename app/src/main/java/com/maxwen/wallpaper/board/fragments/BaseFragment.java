@@ -5,11 +5,16 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
 import com.maxwen.wallpaper.R;
+import com.maxwen.wallpaper.board.activities.WallpaperBoardActivity;
+import com.maxwen.wallpaper.board.fragments.dialogs.FilterFragment;
 import com.maxwen.wallpaper.board.helpers.ViewHelper;
 import com.maxwen.wallpaper.board.items.Category;
 import com.maxwen.wallpaper.board.preferences.Preferences;
@@ -50,6 +55,7 @@ public abstract class BaseFragment extends Fragment implements WallpaperListener
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         ViewHelper.resetViewBottomPadding(mRecyclerView, true);
+        setHasOptionsMenu(true);
 
         mDefaultSpan = getActivity().getResources().getInteger(R.integer.wallpapers_column_count);
         mMaxSpan = getActivity().getResources().getInteger(R.integer.wallpapers_max_column_count);
@@ -88,10 +94,12 @@ public abstract class BaseFragment extends Fragment implements WallpaperListener
                 }
                 return false;
             }
+
             @Override
             public void onScaleEnd(ScaleGestureDetector detector) {
                 mRecyclerView.setNestedScrollingEnabled(true);
             }
+
             @Override
             public boolean onScaleBegin(ScaleGestureDetector detector) {
                 mRecyclerView.setNestedScrollingEnabled(false);
@@ -130,5 +138,29 @@ public abstract class BaseFragment extends Fragment implements WallpaperListener
     @Override
     public boolean isSelectEnabled() {
         return !mScaleGestureDetector.isInProgress();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_wallpapers_base, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.navigation_view_settings) {
+            ((WallpaperBoardActivity) getActivity()).showSettings();
+            return true;
+        }
+        if (id == R.id.navigation_view_about) {
+            ((WallpaperBoardActivity) getActivity()).showAbout();
+            return true;
+        }
+        if (id == R.id.menu_filter) {
+            FilterFragment.showFilterDialog(getActivity().getSupportFragmentManager());
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

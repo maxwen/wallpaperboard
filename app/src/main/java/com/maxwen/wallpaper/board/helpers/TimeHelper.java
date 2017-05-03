@@ -3,7 +3,6 @@ package com.maxwen.wallpaper.board.helpers;
 import android.support.annotation.NonNull;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 
 /*
@@ -26,11 +25,11 @@ import java.util.Locale;
 
 public class TimeHelper {
 
-    public static String getDateTime() {
+    /*public static String getDateTime() {
         SimpleDateFormat dateFormat = getDefaultDateTimeFormat();
         Date date = new Date();
         return dateFormat.format(date);
-    }
+    }*/
 
     @NonNull
     private static SimpleDateFormat getDefaultDateTimeFormat() {
