@@ -1,6 +1,7 @@
 package com.maxwen.wallpaper.board.adapters;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatCheckBox;
@@ -15,13 +16,16 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.maxwen.wallpaper.R;
+import com.maxwen.wallpaper.board.fragments.SettingsFragment;
+import com.maxwen.wallpaper.board.fragments.dialogs.DirectoryChooserDialog;
 import com.maxwen.wallpaper.board.helpers.ColorHelper;
 import com.maxwen.wallpaper.board.helpers.DrawableHelper;
 import com.maxwen.wallpaper.board.helpers.FileHelper;
+import com.maxwen.wallpaper.board.helpers.PermissionHelper;
 import com.maxwen.wallpaper.board.items.Setting;
 import com.maxwen.wallpaper.board.preferences.Preferences;
 import com.maxwen.wallpaper.board.utils.LogUtil;
-import com.maxwen.wallpaper.R;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -48,17 +52,19 @@ import butterknife.ButterKnife;
  * limitations under the License.
  */
 
-public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHolder> {
+public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHolder> implements DirectoryChooserDialog.ChosenDirectoryListener {
 
     private final Context mContext;
     private final List<Setting> mSettings;
+    private final SettingsFragment mParent;
 
     private static final int TYPE_CONTENT = 0;
     private static final int TYPE_FOOTER = 1;
 
-    public SettingsAdapter(@NonNull Context context, @NonNull List<Setting> settings) {
+    public SettingsAdapter(@NonNull Context context, SettingsFragment parent, @NonNull List<Setting> settings) {
         mContext = context;
         mSettings = settings;
+        mParent = parent;
     }
 
     @Override
@@ -215,10 +221,29 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
                         ((AppCompatActivity) mContext).recreate();
                         break;
                     case WALLPAPER:
-                        // TODO
+                        if (PermissionHelper.isPermissionStorageGranted(mContext)) {
+                            DirectoryChooserDialog.showDirectoryChooserDialog(
+                                    ((AppCompatActivity) mContext).getSupportFragmentManager(),
+                                    SettingsAdapter.this,
+                                    Preferences.getPreferences(mContext).getWallsDirectory());
+                        }
                         break;
                 }
             }
         }
+    }
+
+    @Override
+    public void onChooseDirOk(Uri chosenDir) {
+        String path = chosenDir.getPath();
+        File f = new File(path);
+        if (f.isDirectory() && f.exists()) {
+            Preferences.getPreferences(mContext).setWallsDirectory(f.getAbsolutePath());
+        }
+        mParent.refresh();
+    }
+
+    @Override
+    public void onChooseDirCancel() {
     }
 }

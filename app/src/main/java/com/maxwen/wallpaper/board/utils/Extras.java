@@ -37,6 +37,7 @@ public class Extras {
     public static final String EXTRA_RECT = "rect";
     public static final String EXTRA_SIZE = "size";
     public static final String EXTRA_PACKAGE_NAME = "packageName";
+    public static final String EXTRA_FOLDER = "folder";
 
     public static final String EXTRA_KEY = "key";
     public static final String EXTRA_PRODUCT_ID = "productId";

@@ -52,6 +52,7 @@ public class SettingsFragment extends Fragment {
 
     @BindView(R.id.recyclerview)
     RecyclerView mRecyclerView;
+    private SettingsAdapter mAdapter;
 
     @Nullable
     @Override
@@ -128,6 +129,11 @@ public class SettingsFragment extends Fragment {
                 getActivity().getResources().getString(R.string.wallpaper_scroll_enable_desc),
                 "", Setting.Type.SCROLL, Preferences.getPreferences(getActivity()).isScrollWallpaper() ? 1 : 0));
 
-        mRecyclerView.setAdapter(new SettingsAdapter(getActivity(), settings));
+        mAdapter = new SettingsAdapter(getActivity(), this, settings);
+        mRecyclerView.setAdapter(mAdapter);
+    }
+
+    public void refresh() {
+        initSettings();
     }
 }

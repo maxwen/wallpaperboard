@@ -104,7 +104,7 @@ public class PreferencesHelper {
         getSharedPreferences().edit().putBoolean(KEY_WIFI_ONLY, bool).apply();
     }
 
-    void setWallsDirectory(String directory) {
+    public void setWallsDirectory(String directory) {
         getSharedPreferences().edit().putString(KEY_WALLS_DIRECTORY, directory).apply();
     }
 

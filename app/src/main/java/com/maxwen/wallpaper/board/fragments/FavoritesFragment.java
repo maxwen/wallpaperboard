@@ -68,6 +68,7 @@ public class FavoritesFragment extends BaseFragment {
         super.onConfigurationChanged(newConfig);
         // force reload aspect ratio for images
         mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setPadding(0, 0, 0, getResources().getDimensionPixelSize(R.dimen.bottom_nav_height));
     }
 
     @Override
