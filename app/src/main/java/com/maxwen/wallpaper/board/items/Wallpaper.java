@@ -84,4 +84,8 @@ public class Wallpaper {
         }
         return equals;
     }
+    @Override
+    public int hashCode() {
+        return getName().hashCode();
+    }
 }

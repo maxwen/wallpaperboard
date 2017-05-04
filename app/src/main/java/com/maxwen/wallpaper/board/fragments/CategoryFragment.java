@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import com.maxwen.wallpaper.R;
 import com.maxwen.wallpaper.board.adapters.WallpapersAdapterUnified;
 import com.maxwen.wallpaper.board.databases.Database;
-import com.maxwen.wallpaper.board.helpers.ViewHelper;
 import com.maxwen.wallpaper.board.items.Category;
 import com.maxwen.wallpaper.board.utils.LogUtil;
 import com.maxwen.wallpaper.board.utils.listeners.FragmentListener;
@@ -109,7 +108,6 @@ public class CategoryFragment extends BaseFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ViewHelper.resetViewBottomPadding(mRecyclerView, true);
 
         ((GridLayoutManager)mRecyclerView.getLayoutManager()).setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override

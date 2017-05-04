@@ -69,4 +69,9 @@ public class Category {
         }
         return equals;
     }
+
+    @Override
+    public int hashCode() {
+        return getName().hashCode();
+    }
 }

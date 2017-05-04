@@ -424,8 +424,8 @@ public class Database extends SQLiteOpenHelper {
         return wallpapers;
     }
 
-    public List<Wallpaper> getWallpapersNewer(long millis) {
-        List<Wallpaper> wallpapers = new ArrayList<>();
+    public Set<Wallpaper> getWallpapersNewer(long millis) {
+        Set<Wallpaper> wallpapers = new HashSet<>();
         SQLiteDatabase db = this.getReadableDatabase();
         StringBuilder CONDITION = new StringBuilder();
         List<String> selection = new ArrayList<>();
@@ -453,9 +453,8 @@ public class Database extends SQLiteOpenHelper {
         return wallpapers;
     }
 
-    public List<Wallpaper> getWallpapersNewer(long millis, List<String> categories) {
-        List<Wallpaper> wallpapers = new ArrayList<>();
-        Set<String> cSet = new HashSet<>();
+    public Set<Wallpaper> getWallpapersNewer(long millis, Set<String> categories) {
+        Set<Wallpaper> wallpapers = new HashSet<>();
         SQLiteDatabase db = this.getReadableDatabase();
         StringBuilder CONDITION = new StringBuilder();
         List<String> selection = new ArrayList<>();
@@ -476,12 +475,11 @@ public class Database extends SQLiteOpenHelper {
                         cursor.getInt(6) == 1,
                         cursor.getLong(7));
                 wallpapers.add(wallpaper);
-                cSet.add(cursor.getString(5));
+                categories.add(cursor.getString(5));
             } while (cursor.moveToNext());
         }
         cursor.close();
         db.close();
-        categories.addAll(cSet);
         return wallpapers;
     }
 

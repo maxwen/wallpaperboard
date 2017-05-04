@@ -145,7 +145,9 @@ public class ViewHelper {
 
         int left = view.getPaddingLeft();
         int right = view.getPaddingRight();
-        int bottom = view.getPaddingBottom();
+        // TODO on permanent navbar this will not be null on the first rotate
+        //int bottom = view.getPaddingBottom();
+        int bottom = 0;
         int top = view.getPaddingTop();
         int navBar = 0;
 
