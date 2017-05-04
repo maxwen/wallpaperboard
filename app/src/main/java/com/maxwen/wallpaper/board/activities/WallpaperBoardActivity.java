@@ -100,7 +100,7 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
         super.setTheme(Preferences.getPreferences(this).isDarkTheme() ?
                 R.style.AppThemeDark : R.style.AppTheme);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_wallpaper_board_new);
+        setContentView(R.layout.activity_wallpaper_board);
         ButterKnife.bind(this);
 
         ViewHelper.resetNavigationBarTranslucent(this,

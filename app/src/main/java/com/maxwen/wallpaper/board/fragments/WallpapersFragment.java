@@ -88,6 +88,7 @@ public class WallpapersFragment extends BaseFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        // TODO when the fast scroller gets activated the bottom navigation bar should be hidden
         mFastScroller.setRecyclerView(mRecyclerView);
 
         mProgress.getIndeterminateDrawable().setColorFilter(ColorHelper.getAttributeColor(

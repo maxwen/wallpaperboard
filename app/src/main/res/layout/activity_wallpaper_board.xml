@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.DrawerLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingPrefix"
-    android:id="@+id/drawer_layout"
+    android:id="@+id/root_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:openDrawer="start">
+    android:layout_height="match_parent">
 
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/coordinator"
@@ -55,22 +54,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:background="?android:attr/windowBackground"
-            app:menu="@menu/bottom_navigation_view"/>
-            app:layout_behavior="com.maxwen.wallpaper.board.activities.BottomNavigationBehavior"-->
+            app:menu="@menu/bottom_navigation_view"
+            app:layout_behavior="com.maxwen.wallpaper.board.activities.BottomNavigationBehavior" />
 
     </android.support.design.widget.CoordinatorLayout>
 
-    <android.support.design.widget.NavigationView
-        android:id="@+id/navigation_view"
-        android:layout_width="@dimen/navigation_view_width"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:fitsSystemWindows="true"
-        android:background="?attr/card_background"
-        android:theme="@style/NavigationViewStyle"
-        app:headerLayout="@layout/navigation_view_header"
-        app:itemIconTint="@color/navigation_view_item_highlight"
-        app:itemTextColor="@color/navigation_view_item_highlight"
-        app:menu="@menu/menu_navigation_view"/>
-
-</android.support.v4.widget.DrawerLayout>
+</FrameLayout>
