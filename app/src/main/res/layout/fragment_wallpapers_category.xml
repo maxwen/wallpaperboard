@@ -38,6 +38,7 @@
             android:scaleType="centerInside"
             android:src="@drawable/ic_new_wallpaper"
             android:theme="@style/ButtonStyle"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:visibility="gone"/>
 
         <LinearLayout

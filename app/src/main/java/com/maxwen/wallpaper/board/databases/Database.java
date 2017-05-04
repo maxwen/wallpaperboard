@@ -15,9 +15,11 @@ import com.maxwen.wallpaper.board.items.WallpaperJson;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 /*
  * Wallpaper Board
@@ -451,6 +453,38 @@ public class Database extends SQLiteOpenHelper {
         return wallpapers;
     }
 
+    public List<Wallpaper> getWallpapersNewer(long millis, List<String> categories) {
+        List<Wallpaper> wallpapers = new ArrayList<>();
+        Set<String> cSet = new HashSet<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        StringBuilder CONDITION = new StringBuilder();
+        List<String> selection = new ArrayList<>();
+        CONDITION.append(KEY_ADDED_ON + " > ?");
+        selection.add(String.valueOf(millis));
+        Cursor cursor = db.query(TABLE_WALLPAPERS, null, CONDITION.toString(),
+                selection.toArray(new String[selection.size()]), null, null,
+                KEY_CATEGORY);
+        if (cursor.moveToFirst()) {
+            do {
+                Wallpaper wallpaper = new Wallpaper(
+                        cursor.getInt(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getString(3),
+                        cursor.getString(4),
+                        cursor.getString(5),
+                        cursor.getInt(6) == 1,
+                        cursor.getLong(7));
+                wallpapers.add(wallpaper);
+                cSet.add(cursor.getString(5));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        categories.addAll(cSet);
+        return wallpapers;
+    }
+
     public List<Object> getWallpapersUnified() {
         List<Object> wallpapers = new ArrayList<>();
         Map<String, Category> categoryMap = getCategoryMap();
@@ -754,7 +788,6 @@ public class Database extends SQLiteOpenHelper {
 
     @Nullable
     public int getWallpapersCountOfCatgegory(String category) {
-        List<Object> wallpapers = new ArrayList<>();
         List<String> selection = new ArrayList<>();
 
         StringBuilder CONDITION = new StringBuilder();

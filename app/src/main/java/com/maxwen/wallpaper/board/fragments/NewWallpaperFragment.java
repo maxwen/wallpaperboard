@@ -109,11 +109,11 @@ public class NewWallpaperFragment extends BaseFragment {
                     try {
                         Thread.sleep(1);
                         Database database = new Database(getActivity());
-                        LogUtil.d("timestamp:" + Preferences.getPreferences(getActivity()).getLastUpdate());
+                        /*LogUtil.d("timestamp:" + Preferences.getPreferences(getActivity()).getLastUpdate());
                         List<Wallpaper> newList = database.getWallpapersNewer(Preferences.getPreferences(getActivity()).getLastUpdate());
                         for (Wallpaper w : newList) {
                             LogUtil.d(w.getName() + ":" + w.getAddedOn());
-                        }
+                        }*/
                         mWallpapers.addAll(database.getWallpapersNewer(Preferences.getPreferences(getActivity()).getLastUpdate()));
                         return true;
                     } catch (Exception e) {
