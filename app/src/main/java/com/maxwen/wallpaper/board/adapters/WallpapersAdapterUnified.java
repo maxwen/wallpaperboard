@@ -222,7 +222,7 @@ public class WallpapersAdapterUnified extends RecyclerView.Adapter<RecyclerView.
                                     });
                                 }
                             } else {
-                                int color = Color.WHITE;
+                                int color = mContext.getResources().getColor(R.color.image_info_text);
                                 holder.imageInfo.setBackgroundColor(mContext.getResources().getColor(R.color.image_info_bg));
                                 holder.name.setTextColor(color);
                                 holder.author.setTextColor(color);
@@ -253,6 +253,13 @@ public class WallpapersAdapterUnified extends RecyclerView.Adapter<RecyclerView.
                             super.onLoadingComplete(imageUri, view, loadedImage);
                         }
                     }, null);
+
+            int color = mContext.getResources().getColor(R.color.image_info_text);
+            holder.imageInfo.setBackgroundColor(mContext.getResources().getColor(R.color.image_info_bg));
+            holder.category.setTextColor(color);
+            holder.count.setTextColor(color);
+            holder.collapse.setImageDrawable(DrawableHelper.getTintedDrawable(mContext,
+                    R.drawable.ic_expand, color));
         }
     }
 
@@ -497,6 +504,8 @@ public class WallpapersAdapterUnified extends RecyclerView.Adapter<RecyclerView.
         Category mCatageory;
         @BindView(R.id.new_wallpaper)
         ImageView newWallpaper;
+        @BindView(R.id.image_info)
+        View imageInfo;
 
         HeaderHolder(View itemView) {
             super(itemView);

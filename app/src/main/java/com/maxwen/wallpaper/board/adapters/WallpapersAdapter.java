@@ -177,7 +177,7 @@ public class WallpapersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                 });
                             }
                         } else {
-                            int color = Color.WHITE;
+                            int color = mContext.getResources().getColor(R.color.image_info_text);
                             holder.imageInfo.setBackgroundColor(mContext.getResources().getColor(R.color.image_info_bg));
                             holder.name.setTextColor(color);
                             holder.author.setTextColor(color);

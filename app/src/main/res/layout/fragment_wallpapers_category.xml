@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/card"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/card_category_margin_bottom"
-    android:layout_marginLeft="@dimen/card_category_margin_left"
-    android:layout_marginRight="@dimen/card_category_margin_right"
-    app:cardBackgroundColor="?attr/card_background"
-    app:cardCornerRadius="@dimen/card_corner_radius"
-    app:cardElevation="@dimen/card_elevation"
-    app:cardUseCompatPadding="@bool/card_use_compat_padding"
-    app:contentPadding="@dimen/card_content_padding"
-    tools:ignore="MissingPrefix">
+                                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                                    xmlns:tools="http://schemas.android.com/tools"
+                                    android:id="@+id/card"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="@dimen/card_category_margin_bottom"
+                                    android:layout_marginLeft="@dimen/card_category_margin_left"
+                                    android:layout_marginRight="@dimen/card_category_margin_right"
+                                    app:cardBackgroundColor="?attr/card_background"
+                                    app:cardCornerRadius="@dimen/card_corner_radius"
+                                    app:cardElevation="@dimen/card_elevation"
+                                    app:cardUseCompatPadding="@bool/card_use_compat_padding"
+                                    app:contentPadding="@dimen/card_content_padding"
+                                    tools:ignore="MissingPrefix">
 
     <FrameLayout
         android:id="@+id/container"
@@ -34,52 +34,64 @@
             android:id="@+id/new_wallpaper"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:scaleType="centerInside"
-            android:theme="@style/ButtonStyle"
             android:layout_gravity="top|right"
+            android:scaleType="centerInside"
             android:src="@drawable/ic_new_wallpaper"
+            android:theme="@style/ButtonStyle"
             android:visibility="gone"/>
 
         <LinearLayout
+            android:id="@+id/image_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingBottom="@dimen/content_margin"
-            android:paddingEnd="8dp"
-            android:paddingLeft="@dimen/content_margin"
-            android:paddingRight="8dp"
-            android:paddingStart="@dimen/content_margin"
-            android:paddingTop="@dimen/content_margin">
+            android:layout_gravity="bottom"
+            android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/category"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:textColor="@android:color/white"
-                android:textSize="@dimen/text_content_header" />
+                android:orientation="vertical"
+                android:layout_gravity="center_vertical"
+                android:paddingBottom="@dimen/content_margin"
+                android:paddingEnd="8dp"
+                android:paddingLeft="@dimen/content_margin"
+                android:paddingRight="8dp"
+                android:paddingStart="@dimen/content_margin"
+                android:paddingTop="@dimen/content_margin">
 
-            <TextView
-                android:id="@+id/count"
-                android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/category"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/text_content"/>
+
+                <TextView
+                    android:id="@+id/count"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/text_content_secondary"/>
+            </LinearLayout>
+
+            <Space
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:textColor="@android:color/white"
-                android:textSize="@dimen/text_content_secondary" />
+                android:layout_weight="1"/>
+
+            <ImageView
+                android:id="@+id/collapse"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center_vertical"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
+                android:theme="@style/ButtonStyle"/>
         </LinearLayout>
-
-        <ImageView
-            android:id="@+id/collapse"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="right|bottom"
-            android:scaleType="centerInside"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:theme="@style/ButtonStyle"
-            android:src="@drawable/ic_arrow_drop_down_circle"/>
-
     </FrameLayout>
 
 </android.support.v7.widget.CardView>

@@ -25,7 +25,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.anjlab.android.iab.v3.BillingProcessor;
 import com.maxwen.wallpaper.R;
 import com.maxwen.wallpaper.board.databases.Database;
-import com.maxwen.wallpaper.board.fragments.AboutFragment;
 import com.maxwen.wallpaper.board.fragments.FavoritesFragment;
 import com.maxwen.wallpaper.board.fragments.NewWallpaperFragment;
 import com.maxwen.wallpaper.board.fragments.SettingsFragment;
@@ -155,7 +154,7 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
                 }
                 if (id == R.id.navigation_view_new) {
                     setMenuChecked(false);
-                    mPosition = 5;
+                    mPosition = 4;
                     setFragment(getFragment(mPosition));
                     item.setChecked(true);
                     mToolbarTitle.setText(getToolbarTitle());
@@ -425,14 +424,8 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
         mToolbarTitle.setText(getToolbarTitle());;
     }
 
-    public void showAbout() {
-        mPosition = 4;
-        setFragment(getFragment(mPosition));
-        mToolbarTitle.setText(getToolbarTitle());;
-    }
-
     public void showNew() {
-        mPosition = 5;
+        mPosition = 4;
         setFragment(getFragment(mPosition));
         mToolbarTitle.setText(getToolbarTitle());;
     }
@@ -456,9 +449,6 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
             mFragmentTag = Extras.TAG_SETTINGS;
             return new SettingsFragment();
         } else if (position == 4) {
-            mFragmentTag = Extras.TAG_ABOUT;
-            return new AboutFragment();
-        } else if (position == 5) {
             mFragmentTag = Extras.TAG_NEW_WALLPAPERS;
             return new NewWallpaperFragment();
         }
@@ -485,8 +475,6 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
             case 3:
                 return R.id.navigation_view_settings;
             case 4:
-                return R.id.navigation_view_about;
-            case 5:
                 return R.id.navigation_view_new;
         }
         return R.id.navigation_view_wallpapers;
@@ -503,8 +491,6 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
             case 3:
                 return getResources().getString(R.string.navigation_view_settings);
             case 4:
-                return getResources().getString(R.string.navigation_view_about);
-            case 5:
                 return getResources().getString(R.string.navigation_view_new);
         }
         return getResources().getString(R.string.navigation_view_wallpapers);

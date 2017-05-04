@@ -153,10 +153,7 @@ public abstract class BaseFragment extends Fragment implements WallpaperListener
             ((WallpaperBoardActivity) getActivity()).showSettings();
             return true;
         }
-        if (id == R.id.navigation_view_about) {
-            ((WallpaperBoardActivity) getActivity()).showAbout();
-            return true;
-        }
+
         if (id == R.id.menu_filter) {
             FilterFragment.showFilterDialog(getActivity().getSupportFragmentManager());
             return true;
