@@ -96,6 +96,7 @@ public class WallpapersAdapterUnified extends RecyclerView.Adapter<RecyclerView.
     private String mCountString;
     private boolean mIsCollapseMode;
     private boolean mIsCategorySelectable;
+    private int mColumnsCount;
 
     public static final int TYPE_IMAGE = 0;
     public static final int TYPE_HEADER = 1;
@@ -181,9 +182,7 @@ public class WallpapersAdapterUnified extends RecyclerView.Adapter<RecyclerView.
             setFavorite(holder.favorite, ColorHelper.getAttributeColor(
                     mContext, android.R.attr.textColorPrimary), position, false);
 
-            String url = WallpaperHelper.getThumbnailUrl(mContext,
-                    w.getUrl(),
-                    w.getThumbUrl());
+            String url = w.getThumbUrl();
 
             ImageLoader.getInstance().displayImage(url, new ImageViewAware(holder.image),
                     mOptions.build(), ImageConfig.getThumbnailSize(mContext), new SimpleImageLoadingListener() {
@@ -199,7 +198,7 @@ public class WallpapersAdapterUnified extends RecyclerView.Adapter<RecyclerView.
                                 holder.name.setTextColor(primary);
                                 holder.author.setTextColor(primary);
                             } else {
-                                int color = Color.WHITE;
+                                int color = mContext.getResources().getColor(R.color.image_info_text);
                                 holder.imageInfo.setBackgroundColor(mContext.getResources().getColor(R.color.image_info_bg));
                                 holder.name.setTextColor(color);
                                 holder.author.setTextColor(color);
@@ -389,6 +388,10 @@ public class WallpapersAdapterUnified extends RecyclerView.Adapter<RecyclerView.
             return ((Wallpaper) o).getCategory();
         }
         return "";
+    }
+
+    public void setColumnsCount(int columnsCount) {
+        mColumnsCount = columnsCount;
     }
 
     class ImageHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {

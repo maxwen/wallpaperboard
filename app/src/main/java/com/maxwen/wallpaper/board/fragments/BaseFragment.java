@@ -54,7 +54,7 @@ public abstract class BaseFragment extends Fragment implements WallpaperListener
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ViewHelper.resetViewBottomPadding(mRecyclerView, true);
+        ViewHelper.resetViewBottomPadding(mRecyclerView, ((WallpaperBoardActivity) getActivity()).getNavBarHeight(), true);
         setHasOptionsMenu(true);
 
         mDefaultSpan = getActivity().getResources().getInteger(R.integer.wallpapers_column_count);
@@ -79,6 +79,7 @@ public abstract class BaseFragment extends Fragment implements WallpaperListener
                             mCurrentSpan = span;
                             ViewHelper.setSpanCountToColumns(getActivity(), mRecyclerView, mCurrentSpan);
                             Preferences.getPreferences(getActivity()).setColumnSpanCount(mCurrentSpan);
+                            onSpanCountChanged();
                         }
                         return true;
                     } else if (detector.getCurrentSpan() - detector.getPreviousSpan() > 1) {
@@ -87,6 +88,7 @@ public abstract class BaseFragment extends Fragment implements WallpaperListener
                             mCurrentSpan = span;
                             ViewHelper.setSpanCountToColumns(getActivity(), mRecyclerView, mCurrentSpan);
                             Preferences.getPreferences(getActivity()).setColumnSpanCount(mCurrentSpan);
+                            onSpanCountChanged();
                         }
                         ViewHelper.setSpanCountToColumns(getActivity(), mRecyclerView, mCurrentSpan);
                         return true;
@@ -122,8 +124,9 @@ public abstract class BaseFragment extends Fragment implements WallpaperListener
         mMaxSpan = getActivity().getResources().getInteger(R.integer.wallpapers_max_column_count);
         mMinSpan = getActivity().getResources().getInteger(R.integer.wallpapers_min_column_count);
         mCurrentSpan = Math.min(Preferences.getPreferences(getActivity()).getColumnSpanCount(mDefaultSpan), mMaxSpan);
+        onSpanCountChanged();
         ViewHelper.setSpanCountToColumns(getActivity(), mRecyclerView, mCurrentSpan);
-        ViewHelper.resetViewBottomPadding(mRecyclerView, true);
+        ViewHelper.resetViewBottomPadding(mRecyclerView, ((WallpaperBoardActivity) getActivity()).getNavBarHeight(), true);
         mRecyclerView.setNestedScrollingEnabled(true);
     }
 
@@ -159,5 +162,12 @@ public abstract class BaseFragment extends Fragment implements WallpaperListener
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    protected void onSpanCountChanged() {
+    }
+
+    public void resetViewBottomPadding() {
+        ViewHelper.resetViewBottomPadding(mRecyclerView, ((WallpaperBoardActivity) getActivity()).getNavBarHeight(), true);
     }
 }

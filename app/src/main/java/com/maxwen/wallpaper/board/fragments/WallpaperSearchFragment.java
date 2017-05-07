@@ -192,10 +192,16 @@ public class WallpaperSearchFragment extends BaseFragment {
                 if (aBoolean) {
                     mAdapter = new WallpapersAdapter(getActivity(), wallpapers, false, true);
                     mRecyclerView.setAdapter(mAdapter);
+                    onSpanCountChanged();
                     if (mSearchView != null) mSearchView.requestFocus();
                     SoftKeyboardHelper.openKeyboard(getActivity());
                 }
             }
         }.execute();
+    }
+
+    @Override
+    protected void onSpanCountChanged() {
+        mAdapter.setColumnsCount(mCurrentSpan);
     }
 }

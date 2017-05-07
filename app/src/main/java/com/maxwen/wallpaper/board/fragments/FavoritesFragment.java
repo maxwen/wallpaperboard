@@ -52,14 +52,13 @@ public class FavoritesFragment extends BaseFragment {
         mWallpapers = new ArrayList<>();
         mAdapter = new WallpapersAdapter(getActivity(), mWallpapers, true, false);
         mRecyclerView.setAdapter(mAdapter);
-        // we show bottom navigation view but we dont want to use the fastscroll view
-        //mRecyclerView.setPadding(0, 0, 0, getResources().getDimensionPixelSize(R.dimen.bottom_nav_height));
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        onSpanCountChanged();
         getWallpapers();
     }
 
@@ -68,7 +67,6 @@ public class FavoritesFragment extends BaseFragment {
         super.onConfigurationChanged(newConfig);
         // force reload aspect ratio for images
         mRecyclerView.setAdapter(mAdapter);
-        //mRecyclerView.setPadding(0, 0, 0, getResources().getDimensionPixelSize(R.dimen.bottom_nav_height));
     }
 
     @Override
@@ -122,5 +120,10 @@ public class FavoritesFragment extends BaseFragment {
                 mGetWallpapers = null;
             }
         }.execute();
+    }
+
+    @Override
+    protected void onSpanCountChanged() {
+        mAdapter.setColumnsCount(mCurrentSpan);
     }
 }

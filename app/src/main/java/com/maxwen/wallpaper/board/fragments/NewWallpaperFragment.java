@@ -54,8 +54,7 @@ public class NewWallpaperFragment extends BaseFragment {
         mWallpapers = new ArrayList<>();
         mAdapter = new WallpapersAdapter(getActivity(), mWallpapers, false, false);
         mRecyclerView.setAdapter(mAdapter);
-        // we show bottom navigation view but we dont want to use the fastscroll view
-        //mRecyclerView.setPadding(0, 0, 0, getResources().getDimensionPixelSize(R.dimen.bottom_nav_height));
+        onSpanCountChanged();
         FragmentListener listener = (FragmentListener) getActivity();
         listener.onNewWallpapersFragmentShow();
         return view;
@@ -64,6 +63,7 @@ public class NewWallpaperFragment extends BaseFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        onSpanCountChanged();
         getWallpapers();
     }
 
@@ -72,7 +72,6 @@ public class NewWallpaperFragment extends BaseFragment {
         super.onConfigurationChanged(newConfig);
         // force reload aspect ratio for images
         mRecyclerView.setAdapter(mAdapter);
-        //mRecyclerView.setPadding(0, 0, 0, getResources().getDimensionPixelSize(R.dimen.bottom_nav_height));
     }
 
     @Override
@@ -131,5 +130,10 @@ public class NewWallpaperFragment extends BaseFragment {
                 mGetWallpapers = null;
             }
         }.execute();
+    }
+
+    @Override
+    protected void onSpanCountChanged() {
+        mAdapter.setColumnsCount(mCurrentSpan);
     }
 }

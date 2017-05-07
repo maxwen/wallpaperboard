@@ -76,15 +76,25 @@ public class ImageConfig {
     public static DisplayImageOptions.Builder getRawDefaultImageOptions() {
         DisplayImageOptions.Builder options = new DisplayImageOptions.Builder();
         options.delayBeforeLoading(10)
-                .bitmapConfig(Bitmap.Config.RGB_565)
+                .bitmapConfig(Bitmap.Config.ARGB_8888)
                 .imageScaleType(ImageScaleType.EXACTLY);
         return options;
     }
 
+    // ratio with to height
+    public static float getThumbnailSizeRatio(Context context) {
+        int heightRatio = context.getResources().getInteger(R.integer.height_ratio);
+        int widthRatio = context.getResources().getInteger(R.integer.width_ratio);
+        return (float) widthRatio / (float) heightRatio;
+    }
+
     public static ImageSize getThumbnailSize(@NonNull Context context) {
-        int quality = context.getResources().getInteger(R.integer.wallpaper_grid_preview_quality);
+        /*int quality = context.getResources().getInteger(R.integer.wallpaper_grid_preview_quality);
         if (quality <= 0) quality = 1;
-        return new ImageSize((50 * quality), (50 * quality));
+        float withRatio = getThumbnailSizeRatio(context);
+        ImageSize s = new ImageSize((int)(100f * withRatio * (float)quality), (100 * quality));
+        return s;*/
+        return null;
     }
 }
 

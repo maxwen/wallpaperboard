@@ -12,7 +12,6 @@ import android.os.Build;
 import android.support.annotation.IntegerRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -137,11 +136,10 @@ public class ViewHelper {
         }
     }
 
-    public static void resetViewBottomPadding(@Nullable View view, boolean scroll) {
+    public static void resetViewBottomPadding(@Nullable View view, int navBarHeight, boolean scroll) {
         if (view == null) return;
 
         Context context = ContextHelper.getBaseContext(view);
-        int orientation = context.getResources().getConfiguration().orientation;
 
         int left = view.getPaddingLeft();
         int right = view.getPaddingRight();
@@ -149,63 +147,17 @@ public class ViewHelper {
         //int bottom = view.getPaddingBottom();
         int bottom = 0;
         int top = view.getPaddingTop();
-        int navBar = 0;
+        int navBar = navBarHeight;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            boolean tabletMode = context.getResources().getBoolean(R.bool.tablet_mode);
-            if (tabletMode || orientation == Configuration.ORIENTATION_PORTRAIT) {
-                navBar = getNavigationBarHeight(context);
-            }
-
-            if (!scroll) {
-                navBar += ViewHelper.getStatusBarHeight(context);
-            }
+        if (!scroll) {
+            navBar += ViewHelper.getStatusBarHeight(context);
         }
 
-        if (bottom > navBar) bottom -= getNavigationBarHeight(context);
+        if (bottom > navBar) bottom -= navBarHeight;
         if (!scroll) {
             navBar += ViewHelper.getToolbarHeight(context);
         }
         view.setPadding(left, top, right, (bottom + navBar));
-    }
-
-    public static void resetViewBottomMargin(@Nullable View view) {
-        if (view == null) return;
-
-        Context context = ContextHelper.getBaseContext(view);
-        int orientation = context.getResources().getConfiguration().orientation;
-
-        if (!(view.getLayoutParams() instanceof CoordinatorLayout.LayoutParams))
-            return;
-
-        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) view.getLayoutParams();
-        int left = params.leftMargin;
-        int right = params.rightMargin;
-        int bottom = params.bottomMargin;
-        int top = params.topMargin;
-        int bottomNavBar = 0;
-        int rightNavBar = 0;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            boolean tabletMode = context.getResources().getBoolean(R.bool.tablet_mode);
-            if (tabletMode || orientation == Configuration.ORIENTATION_PORTRAIT) {
-                bottomNavBar = getNavigationBarHeight(context);
-            } else {
-                rightNavBar = getNavigationBarHeight(context);
-            }
-        }
-
-        int navBar = getNavigationBarHeight(context);
-        if ((bottom > bottomNavBar) && ((bottom - navBar) > 0))
-            bottom -= navBar;
-        if ((right > rightNavBar) && ((right - navBar) > 0))
-            right -= navBar;
-
-        params.setMargins(left, top, (right + rightNavBar), (bottom + bottomNavBar));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            params.setMarginEnd((right + rightNavBar));
-        }
-        view.setLayoutParams(params);
     }
 
     public static int getStatusBarHeight(@NonNull Context context) {
@@ -216,46 +168,11 @@ public class ViewHelper {
         return 0;
     }
 
-    public static int getNavigationBarHeight(@NonNull Context context) {
-        Point appUsableSize = getAppUsableScreenSize(context);
-        Point realScreenSize = getRealScreenSize(context);
-
-        if (appUsableSize.x < realScreenSize.x) {
-            Point point = new Point(realScreenSize.x - appUsableSize.x, appUsableSize.y);
-            return point.x;
-        }
-
-        if (appUsableSize.y < realScreenSize.y) {
-            Point point = new Point(appUsableSize.x, realScreenSize.y - appUsableSize.y);
-            return point.y;
-        }
-        return 0;
-    }
-
-    private static Point getAppUsableScreenSize(@NonNull Context context) {
-        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        Display display = windowManager.getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        return size;
-    }
-
     public static Point getRealScreenSize(@NonNull Context context) {
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Display display = windowManager.getDefaultDisplay();
         Point size = new Point();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            display.getRealSize(size);
-        } else {
-            try {
-                size.x = (Integer) Display.class.getMethod("getRawWidth").invoke(display);
-                size.y = (Integer) Display.class.getMethod("getRawHeight").invoke(display);
-            } catch (Exception e) {
-                size.x = display.getWidth();
-                size.y = display.getHeight();
-            }
-        }
+        display.getRealSize(size);
         return size;
     }
 

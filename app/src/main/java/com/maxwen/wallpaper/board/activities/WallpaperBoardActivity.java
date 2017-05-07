@@ -8,10 +8,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.v13.view.ViewCompat;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.OnApplyWindowInsetsListener;
+import android.support.v4.view.WindowInsetsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
@@ -93,6 +96,7 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
 
     private String mLicenseKey;
     private String[] mDonationProductsId;
+    private int mNavBarHeight;
 
     public void initMainActivity(@Nullable Bundle savedInstanceState, boolean isLicenseCheckerEnabled,
                                  @NonNull byte[] salt, @NonNull String licenseKey,
@@ -105,7 +109,6 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
 
         ViewHelper.resetNavigationBarTranslucent(this,
                 getResources().getConfiguration().orientation);
-        ViewHelper.resetViewBottomPadding(mBottomNavigationView, true);
 
         ColorHelper.setStatusBarIconColor(this);
         registerBroadcastReceiver();
@@ -128,33 +131,22 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
+                int newPosition = -1;
                 if (id == R.id.navigation_view_wallpapers) {
-                    setMenuChecked(false);
-                    mPosition = 0;
-                    setFragment(getFragment(mPosition));
-                    item.setChecked(true);
-                    mToolbarTitle.setText(getToolbarTitle());
-                    return true;
+                    newPosition = 0;
                 }
                 if (id == R.id.navigation_view_favorites) {
-                    setMenuChecked(false);
-                    mPosition = 2;
-                    setFragment(getFragment(mPosition));
-                    item.setChecked(true);
-                    mToolbarTitle.setText(getToolbarTitle());
-                    return true;
+                    newPosition = 2;
                 }
                 if (id == R.id.navigation_view_categories) {
-                    setMenuChecked(false);
-                    mPosition = 1;
-                    setFragment(getFragment(mPosition));
-                    item.setChecked(true);
-                    mToolbarTitle.setText(getToolbarTitle());
-                    return true;
+                    newPosition = 1;
                 }
                 if (id == R.id.navigation_view_new) {
+                    newPosition = 4;
+                }
+                if (newPosition != -1 && newPosition != mPosition) {
                     setMenuChecked(false);
-                    mPosition = 4;
+                    mPosition = newPosition;
                     setFragment(getFragment(mPosition));
                     item.setChecked(true);
                     mToolbarTitle.setText(getToolbarTitle());
@@ -192,7 +184,21 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
         }
         mToolbarTitle.setText(getToolbarTitle());
 
-
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.coordinator),
+                new OnApplyWindowInsetsListener() { // setContentView() must be fired already
+                    @Override
+                    public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
+                        mNavBarHeight = insets.getSystemWindowInsetBottom();
+                        ViewHelper.resetViewBottomPadding(mBottomNavigationView, mNavBarHeight, true);
+                        // need to call here since first fragment is created before this
+                        WallpapersFragment fragment = (WallpapersFragment) mFragManager.findFragmentByTag(Extras.TAG_WALLPAPERS);
+                        if (fragment != null) {
+                            fragment.resetViewBottomPadding();
+                        }
+                        return insets;
+                    }
+                }
+        );
         if (Preferences.getPreferences(this).isFirstRun() && isLicenseCheckerEnabled) {
             LicenseHelper.getLicenseChecker(this).checkLicense(mLicenseKey, salt);
             return;
@@ -230,7 +236,6 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         ViewHelper.resetNavigationBarTranslucent(this, newConfig.orientation);
-        ViewHelper.resetViewBottomPadding(mBottomNavigationView, true);
     }
 
     @Override
@@ -421,13 +426,15 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
     public void showSettings() {
         mPosition = 3;
         setFragment(getFragment(mPosition));
-        mToolbarTitle.setText(getToolbarTitle());;
+        mToolbarTitle.setText(getToolbarTitle());
+        ;
     }
 
     public void showNew() {
         mPosition = 4;
         setFragment(getFragment(mPosition));
-        mToolbarTitle.setText(getToolbarTitle());;
+        mToolbarTitle.setText(getToolbarTitle());
+        setMenuChecked(true);
     }
 
     @Nullable
@@ -567,6 +574,10 @@ public class WallpaperBoardActivity extends AppCompatActivity implements Activit
                     mFragManager.findFragmentByTag(Extras.TAG_CATEGORIES);
             if (fragment != null) fragment.initPopupBubble(newWallpaperCount, reload);
         }
+    }
+
+    public int getNavBarHeight() {
+        return mNavBarHeight;
     }
 }
 

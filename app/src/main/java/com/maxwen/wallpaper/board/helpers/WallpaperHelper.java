@@ -35,6 +35,7 @@ import com.maxwen.wallpaper.board.fragments.dialogs.WallpaperApplyFragment;
 import com.maxwen.wallpaper.board.preferences.Preferences;
 import com.maxwen.wallpaper.board.utils.ImageConfig;
 import com.maxwen.wallpaper.board.utils.LogUtil;
+import com.maxwen.wallpaper.firebase.FirebaseHelper;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
@@ -79,10 +80,6 @@ public class WallpaperHelper {
             return new File(context.getFilesDir().toString() +"/Pictures/"+
                     context.getResources().getString(R.string.app_name));
         }
-    }
-
-    public static String getThumbnailUrl(@NonNull Context context, String url, String thumbUrl) {
-        return thumbUrl;
     }
 
     private static String getWallpaperUri(@NonNull Context context, String url, String filename) {
@@ -337,6 +334,8 @@ public class WallpaperHelper {
     public static void doApplyWallpaper(@NonNull Context context, @Nullable RectF rectF,
                                       @ColorInt int color, String url, String name, int applyFlag) {
         final MaterialDialog.Builder builder = new MaterialDialog.Builder(context);
+
+        FirebaseHelper.getPreferences(context).addApplyWallpaperEvent(url);
 
         builder.widgetColor(color)
                 .progress(true, 0)

@@ -391,6 +391,7 @@ public class WallpapersFragment extends BaseFragment {
                 if (aBoolean) {
                     mAdapter = new WallpapersAdapterUnified(getActivity(), wallpapersUnified, false, mCategoryMode, !mCategoryMode, true);
                     mRecyclerView.setAdapter(mAdapter);
+                    onSpanCountChanged();
                     mFastScroller.setRecyclerView(mRecyclerView);
                     if (showNew) {
                         showNewWallpapersFragment();
@@ -413,5 +414,10 @@ public class WallpapersFragment extends BaseFragment {
 
     private void showNewWallpapersFragment() {
         ((WallpaperBoardActivity)getActivity()).showNew();
+    }
+
+    @Override
+    protected void onSpanCountChanged() {
+        mAdapter.setColumnsCount(mCurrentSpan);
     }
 }

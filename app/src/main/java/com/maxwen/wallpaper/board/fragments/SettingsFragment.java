@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 
 import com.maxwen.wallpaper.R;
 
+import com.maxwen.wallpaper.board.activities.WallpaperBoardActivity;
 import com.maxwen.wallpaper.board.adapters.SettingsAdapter;
 import com.maxwen.wallpaper.board.helpers.FileHelper;
 import com.maxwen.wallpaper.board.helpers.ViewHelper;
@@ -66,7 +67,7 @@ public class SettingsFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         ViewCompat.setNestedScrollingEnabled(mRecyclerView, false);
-        ViewHelper.resetViewBottomPadding(mRecyclerView, false);
+        ViewHelper.resetViewBottomPadding(mRecyclerView, ((WallpaperBoardActivity) getActivity()).getNavBarHeight(), true);
 
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -77,7 +78,7 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        ViewHelper.resetViewBottomPadding(mRecyclerView, false);
+        ViewHelper.resetViewBottomPadding(mRecyclerView, ((WallpaperBoardActivity) getActivity()).getNavBarHeight(), true);
     }
 
     private void initSettings() {

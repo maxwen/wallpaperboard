@@ -99,7 +99,6 @@ public class WallpaperBoardPreviewActivity extends AppCompatActivity implements 
         setContentView(R.layout.activity_wallpaper_preview);
         ButterKnife.bind(this);
         ViewHelper.setApplicationWindowColor(this);
-        ViewHelper.resetViewBottomMargin(mFab);
         ColorHelper.setTransparentStatusBar(this,
                 ContextCompat.getColor(this, R.color.wallpaperStatusBar));
         mIsEnter = true;
@@ -191,7 +190,6 @@ public class WallpaperBoardPreviewActivity extends AppCompatActivity implements 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        ViewHelper.resetViewBottomMargin(mFab);
     }
 
     @Override

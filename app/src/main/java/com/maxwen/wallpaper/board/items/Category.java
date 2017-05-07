@@ -25,6 +25,7 @@ public class Category {
     private final String mThumbUrl;
     private boolean mIsSelected;
     private int mNumWallpapers;
+    private String mColor;
 
     public Category(int id, String name, String thumbUrl, boolean isSelected) {
         mId = id;

@@ -108,6 +108,7 @@ public class CategoryFragment extends BaseFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        onSpanCountChanged();
 
         ((GridLayoutManager)mRecyclerView.getLayoutManager()).setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
@@ -177,5 +178,10 @@ public class CategoryFragment extends BaseFragment {
                 mGetWallpapers = null;
             }
         }.execute();
+    }
+
+    @Override
+    protected void onSpanCountChanged() {
+        mAdapter.setColumnsCount(mCurrentSpan);
     }
 }
